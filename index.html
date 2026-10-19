@@ -495,14 +495,50 @@
             return null;
         }
 
+        // ===== Penilaian Isian Singkat (toleran) =====
+        // Toleransi: huruf besar/kecil, spasi (termasuk spasi ganda / tanpa spasi), tanda baca di tepi,
+        // tanda hubung di antara huruf, aksen, format angka (3,5 = 3.5 = 3.50; 1.000 = 1000),
+        // serta kata "atau" / tanda | / ; pada kunci maupun jawaban siswa: cukup satu bagian yang cocok.
+        function isNormBase(x) {
+            let t = String(x == null ? '' : x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            t = t.replace(/[\u2010-\u2015\u2212]/g, '-').replace(/[\u00a0\u200b]/g, ' ');
+            t = t.replace(/(\d)\s*,\s*(\d)/g, '$1,$2');
+            t = t.replace(/\s+/g, '');
+            t = t.replace(/(\p{L})-+(?=\p{L})/gu, '$1');
+            t = t.replace(/[^\p{L}\p{N}.,\/%+\-=^]/gu, '');
+            t = t.replace(/^[.,\/=+^]+|[.,\/=+^\-]+$/g, '');
+            return t;
+        }
+        function isVariants(x) {
+            const b = isNormBase(x), out = new Set([b]);
+            if (/^-?\d+([.,]\d+)?$/.test(b)) {
+                const n = parseFloat(b.replace(',', '.'));
+                if (isFinite(n)) out.add('#' + n);
+            }
+            if (/^-?\d{1,3}(\.\d{3})+$/.test(b)) out.add('#' + parseFloat(b.replace(/\./g, '')));
+            if (/^-?\d{1,3}(,\d{3})+$/.test(b)) out.add('#' + parseFloat(b.replace(/,/g, '')));
+            return out;
+        }
+        function isParts(x) {
+            const raw = String(x == null ? '' : x).trim(), set = new Set();
+            if (!raw) return [];
+            set.add(raw);
+            raw.split(/\||;|\s+atau\s+|\s+or\s+/i).forEach(p => { p = p.trim(); if (p) set.add(p); });
+            return [...set];
+        }
+        function isMatch(ans, key) {
+            const keyV = new Set();
+            isParts(key).forEach(k => isVariants(k).forEach(v => { if (v) keyV.add(v); }));
+            // Kunci: tiap bagian dipisah | (variasi dari guru) dipakai penuh; "atau" juga dianggap pemisah.
+            return isParts(ans).some(a => [...isVariants(a)].some(v => v && keyV.has(v)));
+        }
+
         function pts(q, ans) {
             if (!has(q, ans)) return 0;
             if (q.ty === 'pg' || !q.ty) return Number(ans) === Number(q.a) ? 1 : 0;
             if (q.ty === 'is') {
                 if (!ans || !q.k) return 0;
-                const cleanUser = String(ans).trim().toLowerCase().replace(/\s+/g, ' ');
-                const keys = String(q.k).split('|').map(k => k.trim().toLowerCase().replace(/\s+/g, ' '));
-                return keys.includes(cleanUser) ? 1 : 0;
+                return isMatch(ans, q.k) ? 1 : 0;
             }
             if (q.ty === 'pk') {
                 if (!Array.isArray(ans) || !Array.isArray(q.ks)) return 0;
@@ -2176,7 +2212,7 @@
         // ===== Panduan per jenis soal (form admin) =====
         const Q_GUIDE = {
             pg: { n: 'Pilihan Ganda (PG)', d: 'Siswa memilih satu jawaban benar dari beberapa opsi.', s: ['Tulis pertanyaan di kolom Teks Pertanyaan.', 'Isi opsi jawaban (minimal 2). Pakai tombol + Tambah Opsi atau X untuk mengatur jumlahnya.', 'Pilih Kunci Jawaban Benar dari daftar.'], e: 'Pertanyaan: Berapa hasil 5 + 7? Opsi: 10, 11, 12, 13. Kunci: Opsi 3.', t: 'Benar = 1 poin, salah = 0. Gambar dan teks sisipan boleh ditambahkan.' },
-            is: { n: 'Isian Singkat (IS)', d: 'Siswa mengetik jawaban singkat sendiri.', s: ['Tulis pertanyaan.', 'Isi Kunci Jawaban. Beri tanda | untuk beberapa variasi jawaban yang dianggap benar.'], e: 'Pertanyaan: Ibukota Indonesia adalah... Kunci: jakarta|dki jakarta', t: 'Huruf besar/kecil dan spasi ganda tidak dibedakan, tetapi ejaan harus sama persis. Benar = 1 poin.' },
+            is: { n: 'Isian Singkat (IS)', d: 'Siswa mengetik jawaban singkat sendiri.', s: ['Tulis pertanyaan.', 'Isi Kunci Jawaban. Beri tanda | atau kata "atau" untuk beberapa variasi jawaban yang dianggap benar.'], e: 'Pertanyaan: Ibukota Indonesia adalah... Kunci: jakarta|dki jakarta', t: 'Huruf besar/kecil, spasi (ganda maupun tanpa spasi), tanda baca di ujung, dan format angka (3,5 = 3.5) tidak dibedakan. Jika jawaban siswa atau kunci memakai kata "atau", cukup satu bagian yang cocok dianggap benar. Ejaan huruf tetap harus sama. Benar = 1 poin.' },
             pk: { n: 'Pilihan Kompleks (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Nilai penuh hanya jika pilihan siswa sama persis dengan kunci (tidak ada nilai sebagian).' },
             mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Nilai sebagian: tiap pasangan benar dihitung proporsional. Tulis item kanan dengan jelas dan tidak kembar.' },
             fl: { n: 'Flashcard (FL)', d: 'Permainan kartu terbalik: siswa mencari pasangan kartu yang sama.', s: ['Tulis instruksi singkat.', 'Isi Pasangan Data: tiap pasangan menjadi dua kartu yang harus dicocokkan.'], e: 'Kiri: 3 + 4, kanan: 7. Kiri: 2 x 5, kanan: 10.', t: 'Nilai = jumlah pasangan yang ditemukan dibagi total pasangan. Pakai 4 sampai 8 pasangan agar layar tidak penuh.' },
@@ -2348,7 +2384,7 @@
                         ` : ''}
 
                         ${fq.ty === 'is' ? `
-                            <label>Kunci Jawaban (huruf besar/kecil tidak dibedakan; gunakan | untuk variasi, misal: jakarta|dki jakarta)</label>
+                            <label>Kunci Jawaban (huruf besar/kecil & spasi tidak dibedakan; gunakan | atau kata "atau" untuk variasi, misal: jakarta|dki jakarta)</label>
                             <input type="text" placeholder="Contoh: jakarta|dki jakarta" value="${esc(fq.k || '')}" oninput="state.formQuestion.k=this.value">
                         ` : ''}
 
