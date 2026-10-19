@@ -1424,16 +1424,23 @@
         const uhList = (m) => [...Array(Math.max(3, (state.uhMax || {})[m] || 0, ...(config.questions || []).filter(q => q.mp === m).map(q => +q.uh || 1)))].map((_, i) => i + 1);
         const qCountUH = (m, u) => (config.questions || []).filter(q => q.mp === m && qUH(q) === String(u)).map(() => 1).length;
         function setQUH(u) { state.qUH = u; render(); }
+        // Filter kelas (1-6) pada daftar soal guru; '' = semua kelas
+        const curKelas = () => state.qKelas || '';
+        const qKls = (q) => String(q.kl || '');
+        const qCountKls = (m, u, k) => (config.questions || []).filter(q => (q.mp || '') === m && (m === '' || qUH(q) === String(u)) && (k === '' || qKls(q) === String(k))).length;
+        function setQKelas(k) { state.qKelas = k; render(); }
+        function setFormKelas(k) { if (k) state.formQuestion.kl = k; else delete state.formQuestion.kl; render(); }
         function addUH(m) { state.uhMax = state.uhMax || {}; state.uhMax[m] = uhList(m).length + 1; state.qUH = state.uhMax[m]; render(); }
         const curQMapel = () => state.qMapel !== undefined ? state.qMapel : (qCount('') > 0 ? '' : MAPEL[0]);
         function setQMapel(m) { state.qMapel = m; render(); }
         function moveUntagged(m) { config.questions.forEach(q => { if (!q.mp) q.mp = m; }); Storage.saveConfig(config); state.qMapel = m; toast('✅ Soal dipindahkan ke ' + m); render(); }
         function renderQuestionsTab() {
             const sel = curQMapel(); let n = 0;
-            const items = (config.questions || []).map((q, idx) => (q.mp || '') === sel && (sel === '' || qUH(q) === curQUH()) ? `
+            const items = (config.questions || []).map((q, idx) => (q.mp || '') === sel && (sel === '' || qUH(q) === curQUH()) && (curKelas() === '' || qKls(q) === curKelas()) ? `
                 <div style="border: 1px solid var(--border); background-color: var(--bg); border-radius: 16px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <div>
                         <span class="q-badge" style="font-size: 0.75rem; padding: 2px 8px;">Soal ${++n} (${(q.ty || 'pg').toUpperCase()})</span>
+                        ${q.kl ? `<span class="q-badge" style="font-size: 0.75rem; padding: 2px 8px; background: var(--primary); color: #fff;">🏫 Kelas ${esc(q.kl)}</span>` : `<span class="q-badge" style="font-size: 0.75rem; padding: 2px 8px; opacity: 0.7;">Semua kelas</span>`}
                         <div style="font-weight: 600; margin-top: 4px;">${esc(q.t)}</div>
                     </div>
                     <div style="display: flex; gap: 8px;">
@@ -1456,6 +1463,7 @@
                     ${MAPEL.map(m => `<button class="${m === sel ? '' : 'secondary'}" onclick="setQMapel('${m}')" style="${smallBtn}">${m} (${qCount(m)})</button>`).join('')}
                 </div>
                 ${sel !== '' ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center"><b>📝 Ulangan Harian:</b>${uhList(sel).map(u => `<button class="${String(u) === curQUH() ? 'success' : 'secondary'}" onclick="setQUH(${u})" style="${smallBtn}">UH ${u} (${qCountUH(sel, u)})</button>`).join('')}<button class="secondary" onclick="addUH('${sel}')" style="${smallBtn}">➕ UH</button></div>` : ''}
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center"><b>🏫 Kelas:</b><button class="${curKelas() === '' ? 'success' : 'secondary'}" onclick="setQKelas('')" style="${smallBtn}">Semua (${qCountKls(sel, curQUH(), '')})</button>${[1, 2, 3, 4, 5, 6].map(k => `<button class="${curKelas() === String(k) ? 'success' : 'secondary'}" onclick="setQKelas('${k}')" style="${smallBtn}">Kelas ${k} (${qCountKls(sel, curQUH(), k)})</button>`).join('')}</div>
                 ${sel === '' ? `<div style="border:1px dashed var(--border);border-radius:16px;padding:12px;margin-bottom:12px"><p style="margin:0 0 8px;color:var(--text-muted)">Soal lama ini belum punya mapel dan tidak akan muncul di ulangan. Pindahkan semuanya ke satu mapel, atau edit satu per satu.</p><select id="mv-mapel">${MAPEL.map(m => `<option>${m}</option>`).join('')}</select><button class="secondary" onclick="moveUntagged(document.getElementById('mv-mapel').value)">Pindahkan semua ke mapel ini</button></div>` : ''}
                 <div style="display: flex; flex-direction: column; gap: 12px;">${items || '<p style="color:var(--text-muted)">Belum ada soal untuk mata pelajaran ini.</p>'}</div>
             `;
@@ -2073,6 +2081,8 @@
             if (fromAdd) state.showQuestionModal = false;
             if (!state.gen) state.gen = { subject: 'mat', grade: 4, diff: 1, topic: 'all', type: 'pg', count: 5, items: [], replaceIdx: null };
             state.gen.replaceIdx = (fromAdd && state.editingQIndex !== null) ? state.editingQIndex : null;
+            // Tingkat kelas mesin soal mengikuti kelas yang sedang dipilih (filter daftar atau form soal)
+            { const k = +((fromAdd && state.formQuestion && state.formQuestion.kl) || curKelas() || 0); if (k >= 1 && k <= 6 && state.gen.grade !== k) { state.gen.grade = k; state.gen.topic = 'all'; state.gen.items = []; } }
             if (state.gen.replaceIdx !== null) state.gen.count = 1;
             else { const gs = Object.keys(GEN_MAP).find(k => GEN_MAP[k] === curQMapel()); if (gs && genSubjects(state.gen.grade).some(s => s[0] === gs) && state.gen.subject !== gs) { state.gen.subject = gs; state.gen.topic = 'all'; state.gen.items = []; } }
             state.showGenModal = true; render();
@@ -2081,8 +2091,8 @@
             const picked = state.gen.items.filter(x => x.on).map(x => JSON.parse(JSON.stringify(x.q)));
             if (picked.length === 0) { toast("⚠️ Pilih minimal 1 soal untuk ditambahkan!"); return; }
             const ri = state.gen.replaceIdx;
-            if (ri !== null && ri !== undefined && ri < config.questions.length) { picked[0].mp = config.questions[ri].mp || ''; picked[0].uh = config.questions[ri].uh || 1; config.questions[ri] = picked[0]; picked.length = 1; state.editingQIndex = null; state.gen.replaceIdx = null; }
-            else { const mp = GEN_MAP[state.gen.subject || 'mat']; picked.forEach(q => { q.mp = mp; q.uh = +curQUH(); config.questions.push(q); }); state.qMapel = mp; }
+            if (ri !== null && ri !== undefined && ri < config.questions.length) { picked[0].mp = config.questions[ri].mp || ''; picked[0].uh = config.questions[ri].uh || 1; if (state.gen.grade) picked[0].kl = +state.gen.grade; config.questions[ri] = picked[0]; picked.length = 1; state.editingQIndex = null; state.gen.replaceIdx = null; }
+            else { const mp = GEN_MAP[state.gen.subject || 'mat']; picked.forEach(q => { q.mp = mp; q.uh = +curQUH(); if (state.gen.grade) q.kl = +state.gen.grade; config.questions.push(q); }); state.qMapel = mp; }
             Storage.saveConfig(config);
             state.showGenModal = false; state.gen.items = [];
             toast(`✅ ${picked.length} soal ditambahkan!`);
@@ -2222,6 +2232,7 @@
         function openAddQuestionModal() {
             state.editingQIndex = null;
             state.formQuestion = { ty: 'pg', t: '', o: ['','','',''], a: 0, k: '', ks: [], p: [], mp: curQMapel(), uh: +curQUH() };
+            if (curKelas()) state.formQuestion.kl = +curKelas();
             state.showQuestionModal = true;
             render();
         }
@@ -2295,6 +2306,12 @@
 
                         <label>Ulangan Harian ke-</label>
                         <select onchange="state.formQuestion.uh=+this.value">${[...Array(Math.max(10, uhList(fq.mp || '').length))].map((_, i) => `<option value="${i + 1}" ${(fq.uh || 1) === i + 1 ? 'selected' : ''}>UH ${i + 1}</option>`).join('')}</select>
+
+                        <label>Kelas</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+                            <button type="button" class="${!fq.kl ? 'success' : 'secondary'}" onclick="setFormKelas(0)" style="${smallBtn}">Semua</button>
+                            ${[1, 2, 3, 4, 5, 6].map(k => `<button type="button" class="${+fq.kl === k ? 'success' : 'secondary'}" onclick="setFormKelas(${k})" style="${smallBtn}">Kelas ${k}</button>`).join('')}
+                        </div>
 
                         <label>Tipe Soal</label>
                         <select onchange="changeFormType(this.value)">
@@ -2469,6 +2486,7 @@
                 if (rawUh) { uh = parseInt(rawUh, 10); if (!(uh >= 1 && uh <= 99)) { err('UH "' + rawUh + '" tidak valid (isi angka 1 sampai 99)'); continue; } }
                 const opts = ci.o.map(j => get(r, j)), filled = opts.map((v, j) => ({ v, j })).filter(x => x.v);
                 const q = { ty, t, o: [], a: 0, k: '', ks: [], p: [], mp, uh };
+                if (curKelas()) q.kl = +curKelas();
                 const kunci = get(r, ci.k);
                 if (ty === 'pg') {
                     if (filled.length < 2) { err('PG butuh minimal 2 opsi'); continue; }
@@ -2536,7 +2554,7 @@
             if (!fq.t.trim()) { toast("⚠️ Teks pertanyaan wajib diisi!"); return; }
             if (!fq.mp) { toast("⚠️ Pilih mata pelajaran untuk soal ini!"); return; }
             if (fq.ty === 'dd' && !ddParse(fq.t).ans.length) { toast("⚠️ Beri tanda { } pada kata jawaban, contoh: Ibu ke {pasar}"); return; }
-            fq.uh = fq.uh || 1; state.qUH = fq.uh; state.qMapel = fq.mp;
+            fq.uh = fq.uh || 1; state.qUH = fq.uh; state.qMapel = fq.mp; if (!fq.kl) delete fq.kl;
             if (fq.ty === 'pk' && (!fq.ks || fq.ks.length === 0)) { toast("⚠️ Pilih minimal 1 kunci jawaban yang benar!"); return; }
             if ((fq.ty === 'mj' || fq.ty === 'fl') && (!fq.p || fq.p.length === 0)) { toast("⚠️ Masukkan minimal 1 pasangan!"); return; }
 
