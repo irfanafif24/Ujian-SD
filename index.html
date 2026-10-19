@@ -710,7 +710,7 @@
                 `;
             } else if (q.ty === 'mj') {
                 if (!q._om) {
-                    let rightItems = (q.p || []).map(p => p.r);
+                    let rightItems = (q.p || []).map(p => p.r).concat(Array.isArray(q.dc) ? q.dc.filter(x => String(x || '').trim() !== '') : []);
                     q._om = fisherYatesShuffle(rightItems);
                 }
                 const pairs = q.p || [];
@@ -2214,7 +2214,7 @@
             pg: { n: 'Pilihan Ganda (PG)', d: 'Siswa memilih satu jawaban benar dari beberapa opsi.', s: ['Tulis pertanyaan di kolom Teks Pertanyaan.', 'Isi opsi jawaban (minimal 2). Pakai tombol + Tambah Opsi atau X untuk mengatur jumlahnya.', 'Pilih Kunci Jawaban Benar dari daftar.'], e: 'Pertanyaan: Berapa hasil 5 + 7? Opsi: 10, 11, 12, 13. Kunci: Opsi 3.', t: 'Benar = 1 poin, salah = 0. Gambar dan teks sisipan boleh ditambahkan.' },
             is: { n: 'Isian Singkat (IS)', d: 'Siswa mengetik jawaban singkat sendiri.', s: ['Tulis pertanyaan.', 'Isi Kunci Jawaban. Beri tanda | atau kata "atau" untuk beberapa variasi jawaban yang dianggap benar.'], e: 'Pertanyaan: Ibukota Indonesia adalah... Kunci: jakarta|dki jakarta', t: 'Huruf besar/kecil, spasi (ganda maupun tanpa spasi), tanda baca di ujung, dan format angka (3,5 = 3.5) tidak dibedakan. Jika jawaban siswa atau kunci memakai kata "atau", cukup satu bagian yang cocok dianggap benar. Ejaan huruf tetap harus sama. Benar = 1 poin.' },
             pk: { n: 'Pilihan Kompleks (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Nilai penuh hanya jika pilihan siswa sama persis dengan kunci (tidak ada nilai sebagian).' },
-            mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Nilai sebagian: tiap pasangan benar dihitung proporsional. Tulis item kanan dengan jelas dan tidak kembar.' },
+            mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.', 'Tambahkan Jawaban Pengecoh bila perlu; tombol Hapus Soal menghapus item kiri tetapi jawabannya tetap ada sebagai pengecoh.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Nilai sebagian: tiap pasangan benar dihitung proporsional. Tulis item kanan dengan jelas dan tidak kembar.' },
             fl: { n: 'Flashcard (FL)', d: 'Permainan kartu terbalik: siswa mencari pasangan kartu yang sama.', s: ['Tulis instruksi singkat.', 'Isi Pasangan Data: tiap pasangan menjadi dua kartu yang harus dicocokkan.'], e: 'Kiri: 3 + 4, kanan: 7. Kiri: 2 x 5, kanan: 10.', t: 'Nilai = jumlah pasangan yang ditemukan dibagi total pasangan. Pakai 4 sampai 8 pasangan agar layar tidak penuh.' },
             dd: { n: 'Melengkapi Kalimat Seret & Lepas (DD)', d: 'Siswa menyeret kata ke kotak kosong di dalam kalimat.', s: ['Tulis kalimat di Teks Pertanyaan, lalu beri tanda kurung kurawal { } pada kata yang harus diisi siswa.', 'Isi Kata Pengecoh (opsional) dipisah koma agar pilihan lebih beragam.', 'Gambar dan teks sisipan (opsional) tampil di atas kalimat, sama seperti tipe PG, PK, dan IS.'], e: 'Ibu pergi ke {pasar} membeli {sayur}. Pengecoh: sekolah, buku.', t: 'Kalimat itu sendiri tampil ke siswa dengan kotak kosong, jadi jawaban di dalam { } tidak terlihat. Nilai sebagian: tiap kotak benar dihitung proporsional. Di HP, ketuk kata lalu ketuk kotaknya.' }
         };
@@ -2324,6 +2324,18 @@
         }
         function addFormPair() { if(!state.formQuestion.p) state.formQuestion.p = []; state.formQuestion.p.push({l:'', r:''}); render(); }
         function rmFormPair(i) { state.formQuestion.p.splice(i, 1); render(); }
+        // Hapus soal (item kiri) tetapi jawaban (item kanan) tetap tersimpan sebagai pengecoh
+        function rmFormPairKeepAnswer(i) {
+            const fq = state.formQuestion, pair = (fq.p || [])[i];
+            if (!pair) return;
+            const r = String(pair.r || '').trim();
+            if (!Array.isArray(fq.dc)) fq.dc = [];
+            if (r) fq.dc.push(r);
+            fq.p.splice(i, 1);
+            render();
+        }
+        function addFormDistractor() { if (!Array.isArray(state.formQuestion.dc)) state.formQuestion.dc = []; state.formQuestion.dc.push(''); render(); }
+        function rmFormDistractor(i) { state.formQuestion.dc.splice(i, 1); render(); }
 
         function renderQuestionModal() {
             const fq = state.formQuestion;
@@ -2413,10 +2425,23 @@
                                     <span style="font-size:0.8rem; font-weight:700;">${i+1}.</span>
                                     <input type="text" placeholder="Item Kiri" value="${esc(pair.l)}" oninput="state.formQuestion.p[${i}].l=this.value" style="margin-bottom:0;">
                                     <input type="text" placeholder="Item Kanan" value="${esc(pair.r)}" oninput="state.formQuestion.p[${i}].r=this.value" style="margin-bottom:0;">
-                                    <button class="danger" onclick="rmFormPair(${i})" style="width:auto; margin-bottom:0; padding:10px;">X</button>
+                                    ${fq.ty === 'mj' ? `<button class="secondary" title="Hapus soal (kiri) saja, jawaban (kanan) tetap tersimpan sebagai pengecoh" onclick="rmFormPairKeepAnswer(${i})" style="width:auto; margin-bottom:0; padding:10px; white-space:nowrap; font-size:0.8rem;">Hapus Soal</button>` : ''}
+                                    <button class="danger" title="Hapus pasangan beserta jawabannya" onclick="rmFormPair(${i})" style="width:auto; margin-bottom:0; padding:10px;">X</button>
                                 </div>
                             `).join('')}
                             <button class="secondary" onclick="addFormPair()" style="padding:8px; font-size:0.9rem;">+ Tambah Pasangan Baru</button>
+                            ${fq.ty === 'mj' ? `
+                                <label style="margin-top:16px;">Jawaban Pengecoh (opsional)</label>
+                                <p style="color:var(--text-muted);font-size:0.85rem;margin:0 0 8px;">Jawaban tambahan di kolom kanan yang tidak punya soal. Tombol <b>Hapus Soal</b> pada pasangan di atas akan memindahkan jawabannya ke sini.</p>
+                                ${(Array.isArray(fq.dc) ? fq.dc : []).map((d, i) => `
+                                    <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+                                        <span style="font-size:0.8rem; font-weight:700;">🎯</span>
+                                        <input type="text" placeholder="Jawaban pengecoh" value="${esc(d)}" oninput="state.formQuestion.dc[${i}]=this.value" style="margin-bottom:0;">
+                                        <button class="danger" onclick="rmFormDistractor(${i})" style="width:auto; margin-bottom:0; padding:10px;">X</button>
+                                    </div>
+                                `).join('')}
+                                <button class="secondary" onclick="addFormDistractor()" style="padding:8px; font-size:0.9rem;">+ Tambah Jawaban Pengecoh</button>
+                            ` : ''}
                         ` : ''}
 
                         <div style="display: flex; gap: 12px; margin-top: 24px;">
@@ -2593,6 +2618,13 @@
             fq.uh = fq.uh || 1; state.qUH = fq.uh; state.qMapel = fq.mp; if (!fq.kl) delete fq.kl;
             if (fq.ty === 'pk' && (!fq.ks || fq.ks.length === 0)) { toast("⚠️ Pilih minimal 1 kunci jawaban yang benar!"); return; }
             if ((fq.ty === 'mj' || fq.ty === 'fl') && (!fq.p || fq.p.length === 0)) { toast("⚠️ Masukkan minimal 1 pasangan!"); return; }
+
+            if (fq.ty === 'mj') {
+                const used = new Set((fq.p || []).map(x => String(x.r || '').trim()));
+                const dc = [];
+                (Array.isArray(fq.dc) ? fq.dc : []).forEach(x => { x = String(x || '').trim(); if (x && !used.has(x) && !dc.includes(x)) dc.push(x); });
+                if (dc.length) fq.dc = dc; else delete fq.dc;
+            } else { delete fq.dc; }
 
             if (state.editingQIndex !== null) { config.questions[state.editingQIndex] = fq; } 
             else { config.questions.push(fq); }
