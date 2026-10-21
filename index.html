@@ -406,6 +406,37 @@
             .opt-card.selected .opt-prefix { background: #f59e0b !important; }
             .imp-box { background: #2e1065; } .imp-box > b { color: #ddd6fe; }
         }
+
+        /* ===== Perapian tampilan: mudah dipakai anak & guru ===== */
+        :focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+        .home-wrap { max-width: 720px; margin: 0 auto; }
+        .home-top { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin: 4px 0 12px; }
+        .home-top .chip { width: auto; margin: 0; padding: 8px 16px; min-height: 40px; font-size: .9rem; background: var(--card); color: var(--text-main); border: 2px solid var(--border); border-radius: 999px; box-shadow: none; }
+        .home-card { padding: 28px 24px; }
+        .home-hero { text-align: center; margin-bottom: 20px; }
+        .home-emoji { font-size: 3.5rem; line-height: 1; margin-bottom: 8px; }
+        .home-hero h2 { margin-bottom: 6px; }
+        .home-hero p { color: var(--text-muted); margin: 0; }
+        .step { background: var(--bg); border: 2px solid var(--border); border-radius: 20px; padding: 16px; margin-bottom: 16px; text-align: left; }
+        .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .step-head h3 { margin: 0; text-align: left; font-size: 1.15rem; }
+        .step-no { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
+        .step input[type="text"], .step input[type="number"], .step input[type="password"], .step select { background: var(--card); font-size: 1.05rem; margin-bottom: 12px; }
+        .step > :last-child { margin-bottom: 0; }
+        .mapel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 10px; }
+        .mapel-tile { flex-direction: column; gap: 4px; margin: 0; padding: 12px 8px; min-height: 84px; background: var(--card); color: var(--text-main); border: 3px solid var(--border); border-radius: 18px; box-shadow: none; text-align: center; line-height: 1.2; font-size: .95rem; }
+        .mapel-tile .mt-ic { font-size: 1.8rem; line-height: 1; }
+        .mapel-tile.on { border-color: #f59e0b; background: #fef9c3; color: #92400e; box-shadow: 0 0 0 3px #fde68a; }
+        .btn-start { font-size: 1.2rem; min-height: 56px; margin-bottom: 0; }
+        body.exam-mode input[type="text"] { font-size: 1.25rem; padding: 16px 18px; }
+        .admin-nav { position: sticky; top: 0; z-index: 20; background: var(--bg); padding: 8px 0; scroll-snap-type: x proximity; }
+        .admin-nav button { scroll-snap-align: start; min-height: 48px; }
+        .card table tbody tr:nth-child(even) { background: rgba(148, 163, 184, .12); }
+        .card table td, .card table th { padding: 8px 6px; }
+        @media (hover: none) { .opt-card:hover { transform: none; } }
+        @media (max-width: 480px) { .card { padding: 18px; border-radius: 20px; } .home-card { padding: 18px 14px; } .step { padding: 12px; } .mapel-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (prefers-color-scheme: dark) { .mapel-tile.on { background: #78350f; color: #fde68a; box-shadow: 0 0 0 3px #b45309; } .step { background: #0f172a; } }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
 </head>
 <body>
@@ -483,7 +514,7 @@
             questions.forEach((q, i) => {
                 const a = ans ? ans[i] : undefined;
                 if (!has(q, a)) kosong++;
-                else if (pts(q, a) >= 1) benar++;
+                else if (pts(q, a) >= maxPts(q)) benar++;
                 else salah++;
             });
             return { benar, salah, kosong, total: questions.length };
@@ -533,6 +564,9 @@
             return isParts(ans).some(a => [...isVariants(a)].some(v => v && keyV.has(v)));
         }
 
+        // Poin maksimal soal: menjodohkan = jumlah pasangan, jenis lain = 1
+        function maxPts(q) { return (q && q.ty === 'mj') ? Math.max(1, (q.p || []).length) : 1; }
+
         function pts(q, ans) {
             if (!has(q, ans)) return 0;
             if (q.ty === 'pg' || !q.ty) return Number(ans) === Number(q.a) ? 1 : 0;
@@ -558,7 +592,7 @@
                 const nm = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase();
                 let correct = 0;
                 q.p.forEach((p, i) => { if (ans[i] != null && nm(ans[i]) === nm(p.r)) correct++; });
-                return q.p.length > 0 ? correct / q.p.length : 0;
+                return correct; // 1 poin untuk setiap pasangan yang benar
             }
             if (q.ty === 'fl') {
                 if (!ans || typeof ans !== 'object' || !Array.isArray(q.p)) return 0;
@@ -605,8 +639,19 @@
 
         let storageErrorShown = false;
 
+        // Migrasi: mapel lama "Agama" -> "Pendidikan Agama Kristen" (soal, token, hasil, data induk)
+        const MAPEL_LAMA = { 'Agama': 'Pendidikan Agama Kristen' };
+        const fixMapelName = (m) => MAPEL_LAMA[m] || m;
+        function fixMapelCfg(c) {
+            if (!c || typeof c !== 'object') return c;
+            (c.questions || []).forEach(q => { if (q && MAPEL_LAMA[q.mp]) q.mp = MAPEL_LAMA[q.mp]; });
+            if (c.tokens) Object.keys(c.tokens).forEach(k => { const [m, u] = k.split('||'); if (MAPEL_LAMA[m]) { c.tokens[MAPEL_LAMA[m] + '||' + u] = c.tokens[k]; delete c.tokens[k]; } });
+            return c;
+        }
+        const fixMapelRes = (rs) => (rs || []).map(r => (r && MAPEL_LAMA[r.mapel]) ? { ...r, mapel: MAPEL_LAMA[r.mapel] } : r);
+
         const Storage = {
-            loadConfig: (tid) => { const fresh = () => JSON.parse(JSON.stringify(DEF)); if (!tid) return fresh(); try { const d = localStorage.getItem('ujian_cfg_' + tid); return d ? JSON.parse(d) : fresh(); } catch(e) { return fresh(); } },
+            loadConfig: (tid) => { const fresh = () => JSON.parse(JSON.stringify(DEF)); if (!tid) return fresh(); try { const d = localStorage.getItem('ujian_cfg_' + tid); return d ? fixMapelCfg(JSON.parse(d)) : fresh(); } catch(e) { return fresh(); } },
             loadTeachers: () => { if (CLOUD.on) return CLOUD.teachers; try { return JSON.parse(localStorage.getItem('ujian_teachers') || '[]'); } catch(e) { return []; } },
             saveTeachers: (list) => { try { localStorage.setItem('ujian_teachers', JSON.stringify(list)); } catch(e) {} },
             saveConfig: (c) => { 
@@ -614,7 +659,7 @@
                 catch(e) { if (!storageErrorShown) { toast("⚠️ Memori penuh! Pengaturan mungkin tidak tersimpan."); storageErrorShown = true; } } 
                 cloudSaveConfig(c);
             },
-            loadResults: () => { if (CLOUD.on && CLOUD.isTeacher) return CLOUD.results; try { const d = localStorage.getItem('ujian_res'); return d ? JSON.parse(d) : []; } catch(e) { return []; } },
+            loadResults: () => { if (CLOUD.on && CLOUD.isTeacher) return fixMapelRes(CLOUD.results); try { const d = localStorage.getItem('ujian_res'); return d ? fixMapelRes(JSON.parse(d)) : []; } catch(e) { return []; } },
             saveResult: (r) => {
                 try {
                     let rs = Storage.loadResults();
@@ -933,39 +978,53 @@
             if (state.page === 'home') render();
         }
 
+        function pickMapel(m) { saveHomeInputs(); state.studentMapel = m; render(); }
+
         function home(app) {
             initTid();
             const teachers = Storage.loadTeachers();
             app.innerHTML = `
-                <div class="card text-center" style="margin-top: 20px;">
-                    <div style="display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <button onclick="state.page='master-auth'; render();" style="width: auto; padding: 8px 16px; background: var(--bg); color: var(--text-main); font-size: 0.85rem; border: 1px solid var(--border); border-radius: 999px; margin-bottom: 0;">🏫 Admin / Guru Mapel</button>
-                        <button onclick="openAdminAuth()" style="width: auto; padding: 8px 16px; background: var(--bg); color: var(--text-main); font-size: 0.85rem; border: 1px solid var(--border); border-radius: 999px; margin-bottom: 0;">⚙️ Guru</button>
+                <div class="home-wrap">
+                    <div class="home-top">
+                        <button class="chip" onclick="state.page='master-auth'; render();">🏫 Admin / Guru Mapel</button>
+                        <button class="chip" onclick="openAdminAuth()">⚙️ Guru</button>
                     </div>
-                    <div style="font-size: 3.5rem; margin-bottom: 8px;">🎓</div>
-                    <h2>${esc(config.title || "Ujian Sekolah Dasar")}</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 24px;">📝 Lengkapi data berikut untuk memulai ujian.</p>
+                    <div class="card home-card">
+                        <div class="home-hero">
+                            <div class="home-emoji">🎓</div>
+                            <h2>${esc(config.title || "Ujian Sekolah Dasar")}</h2>
+                            <p>Ikuti 3 langkah mudah untuk memulai ulangan.</p>
+                        </div>
 
-                    <div style="text-align: left;">
-                        <label>👩‍🏫 Pendidik</label>
-                        <select id="input-teacher" onchange="selectTeacher(this.value)">
-                            ${teachers.length === 0 ? '<option value="">(Belum ada pendidik)</option>' : ''}
-                            ${teachers.map(t => `<option value="${esc(t.id)}" ${t.id === state.tid ? 'selected' : ''}>${esc(teacherLabel(t))}</option>`).join('')}
-                        </select>
+                        <section class="step">
+                            <div class="step-head"><span class="step-no">1</span><h3>Pilih pelajaran</h3></div>
+                            <label for="input-teacher">👩‍🏫 Pendidik</label>
+                            <select id="input-teacher" onchange="selectTeacher(this.value)">
+                                ${teachers.length === 0 ? '<option value="">(Belum ada pendidik)</option>' : ''}
+                                ${teachers.map(t => `<option value="${esc(t.id)}" ${t.id === state.tid ? 'selected' : ''}>${esc(teacherLabel(t))}</option>`).join('')}
+                            </select>
+                            <label>📚 Mata Pelajaran <small style="font-weight:500;color:var(--text-muted)">(ketuk salah satu)</small></label>
+                            <div class="mapel-grid">
+                                ${MAPEL.map(m => `<button type="button" class="mapel-tile ${state.studentMapel === m ? 'on' : ''}" aria-pressed="${state.studentMapel === m}" onclick="pickMapel('${esc(m)}')"><span class="mt-ic">${MAPEL_ICON[m] || '📘'}</span><span>${esc(m)}</span></button>`).join('')}
+                            </div>
+                            <input type="hidden" id="input-mapel" value="${esc(state.studentMapel || '')}">
+                        </section>
 
-                        <label>📚 Mata Pelajaran</label>
-                        <select id="input-mapel">${MAPEL.map(m => `<option ${state.studentMapel === m ? 'selected' : ''}>${m}</option>`).join('')}</select>
+                        <section class="step">
+                            <div class="step-head"><span class="step-no">2</span><h3>Ulangan &amp; token</h3></div>
+                            <label for="input-uh">📝 Ulangan Harian ke-</label>
+                            <input type="number" id="input-uh" min="1" inputmode="numeric" placeholder="Contoh: 1" value="${esc(state.studentUH || '')}">
+                            <label for="input-token">🔑 Token Ulangan <small style="font-weight:500;color:var(--text-muted)">(minta ke guru)</small></label>
+                            <input type="text" id="input-token" placeholder="Contoh: AB3K9" autocomplete="off" autocapitalize="characters" style="text-transform: uppercase;" value="${esc(state.studentToken || '')}">
+                        </section>
 
-                        <label>📝 Ulangan Harian ke-</label>
-                        <input type="number" id="input-uh" min="1" placeholder="Contoh: 1" value="${esc(state.studentUH || '')}">
+                        <section class="step">
+                            <div class="step-head"><span class="step-no">3</span><h3>Siapa kamu?</h3></div>
+                            ${nameFields()}
+                        </section>
 
-                        <label>🔑 Token Ulangan (minta ke guru)</label>
-                        <input type="text" id="input-token" placeholder="Contoh: AB3K9" autocomplete="off" style="text-transform: uppercase;" value="${esc(state.studentToken || '')}">
-
-                        ${nameFields()}
+                        <button class="success btn-start" onclick="prepareExam()">🚀 Mulai Ujian</button>
                     </div>
-
-                    <button class="success" onclick="prepareExam()">🚀 Mulai Ujian</button>
                 </div>
             `;
         }
@@ -1250,12 +1309,13 @@
             state.isExamActive = false;
             state.showConfirmModal = false;
 
-            let totalPts = 0;
+            let totalPts = 0, totalMax = 0;
             state.questions.forEach((q, idx) => {
                 totalPts += pts(q, state.result.ans[idx]);
+                totalMax += maxPts(q);
             });
 
-            const finalScore = Math.round((totalPts / state.questions.length) * 100);
+            const finalScore = totalMax > 0 ? Math.round((totalPts / totalMax) * 100) : 0;
             state.result.score = finalScore;
             Object.assign(state.result, computeStats(state.questions, state.result.ans));
             state.result.status = 'done';
@@ -1560,29 +1620,68 @@
                 setTimeout(() => URL.revokeObjectURL(url), 5000);
             } catch (e) { toast('⚠️ File tidak dapat disimpan.'); }
         }
-        const MAPEL = ['Agama', 'Pendidikan Pancasila', 'Bahasa Indonesia', 'Matematika', 'IPAS', 'Seni Budaya', 'PJOK', 'Bahasa Inggris', 'Budaya Daerah'];
+        const MAPEL = ['Pendidikan Agama Kristen', 'Pendidikan Pancasila', 'Bahasa Indonesia', 'Matematika', 'IPAS', 'Seni Budaya', 'PJOK', 'Bahasa Inggris', 'Koding', 'Budaya Daerah'];
+        const MAPEL_ICON = { 'Pendidikan Agama Kristen': '✝️', 'Pendidikan Pancasila': '🦅', 'Bahasa Indonesia': '📖', 'Matematika': '🔢', 'IPAS': '🔬', 'Seni Budaya': '🎨', 'PJOK': '⚽', 'Bahasa Inggris': '🔤', 'Koding': '💻', 'Budaya Daerah': '🏠' };
         const smallBtn = 'width:auto;padding:6px 12px;font-size:0.8rem;margin:0;';
         const tblWrap = (h, rows) => `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr>${h.map(x => `<th style="text-align:left;padding:6px;border-bottom:2px solid var(--border)">${x}</th>`).join('')}</tr></thead><tbody>${rows || `<tr><td colspan="${h.length}" style="padding:12px;color:var(--text-muted)">Belum ada data.</td></tr>`}</tbody></table></div>`;
         const td = (v) => `<td style="padding:6px;border-bottom:1px solid var(--border)">${v}</td>`;
 
         // --- Hasil per mapel ---
+        // Unduh hasil sesuai pilihan di tab "Hasil Mapel": mata pelajaran + ulangan harian + kelas
+        function downloadMapelCSV() {
+            const sel = state.mapelSel || 'Matematika';
+            const uhSel = state.mapelUH === undefined || state.mapelUH === 'all' ? 'all' : String(state.mapelUH);
+            const clsOf = (r) => String(r.cls || '-').trim();
+            const clsSel = state.mapelCls || 'all';
+            let rs = teacherResults().filter(r => r.status === 'done' && r.mapel === sel);
+            if (uhSel !== 'all') rs = rs.filter(r => String(r.uh) === uhSel);
+            if (clsSel !== 'all') rs = rs.filter(r => clsOf(r) === clsSel);
+            rs.sort((a, b) => clsOf(a).localeCompare(clsOf(b), 'id', { numeric: true }) || (Number(a.uh) || 0) - (Number(b.uh) || 0) || (b.score || 0) - (a.score || 0));
+            if (!rs.length) { toast('⚠️ Belum ada hasil untuk pilihan ini!'); return; }
+            const t = Storage.loadTeachers().find(x => x.id === state.tid) || {};
+            const q = (x) => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"';
+            const fmt = (num) => String(num).replace('.', ',');
+            const sm = summarize(rs), sv = (v) => v === null || v === undefined ? '-' : fmt(v);
+            const uhTxt = uhSel === 'all' ? 'Semua Ulangan Harian' : 'Ulangan Harian ke-' + uhSel;
+            const clsTxt = clsSel === 'all' ? 'Semua Kelas' : 'Kelas ' + clsSel;
+            let csv = '\uFEFF' + q('Hasil ' + sel + ' - ' + uhTxt + ' - ' + clsTxt) + '\n' + q('Pendidik: ' + (t.name || '-')) + '\n';
+            csv += q('Jumlah siswa: ' + rs.length) + ';' + q('Rata-rata: ' + sv(sm.avg)) + ';' + q('Tertinggi: ' + sv(sm.max)) + ';' + q('Terendah: ' + sv(sm.min)) + '\n\n';
+            csv += '"No";"Nama";"Kelas";"Mata Pelajaran";"UH ke-";"Nilai";"Benar";"Salah";"Tidak Menjawab";"Jumlah Soal";"Pelanggaran";"Waktu"\n';
+            rs.forEach((r, i) => {
+                const st = getStats(r);
+                const dur = r.finishTime && r.startTime ? mmss(new Date(r.finishTime).getTime() - new Date(r.startTime).getTime()) : '-';
+                csv += [i + 1, q(r.name), q(clsOf(r)), q(r.mapel), q(r.uh), q(fmt(r.score || 0)), st ? st.benar : '-', st ? st.salah : '-', st ? st.kosong : '-', st ? st.total : '-', r.cheat || 0, q(dur)].join(';') + '\n';
+            });
+            const nama = ['Hasil', sel, uhSel === 'all' ? 'Semua_UH' : 'UH' + uhSel, clsSel === 'all' ? 'Semua_Kelas' : 'Kelas_' + clsSel].join('_').replace(/[^\w\-]+/g, '_');
+            saveFile(nama + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+        }
+
         function renderMapelTab() {
             const all = teacherResults().filter(r => r.status === 'done'), sel = state.mapelSel || 'Matematika';
             const inMapel = all.filter(r => r.mapel === sel);
             // Daftar UH: gabungan UH yang ada soalnya dan UH yang sudah ada hasilnya
             const uhs = [...new Set([...uhList(sel).map(Number), ...inMapel.map(r => Number(r.uh) || 1)])].sort((a, b) => a - b);
             const uhSel = state.mapelUH === undefined || state.mapelUH === 'all' ? 'all' : String(state.mapelUH);
-            const rs = (uhSel === 'all' ? inMapel : inMapel.filter(r => String(r.uh) === uhSel)).sort((a, b) => (Number(a.uh) || 0) - (Number(b.uh) || 0) || b.score - a.score);
+            const rsUH = uhSel === 'all' ? inMapel : inMapel.filter(r => String(r.uh) === uhSel);
+            const clsOf = (r) => String(r.cls || '-').trim();
+            const clsList = [...new Set(inMapel.map(clsOf))].sort((a, b) => a.localeCompare(b, 'id', { numeric: true }));
+            const clsSel = state.mapelCls && state.mapelCls !== 'all' && clsList.includes(state.mapelCls) ? state.mapelCls : 'all';
+            const rs = (clsSel === 'all' ? rsUH : rsUH.filter(r => clsOf(r) === clsSel)).sort((a, b) => (Number(a.uh) || 0) - (Number(b.uh) || 0) || (b.score || 0) - (a.score || 0));
             const sc = rs.map(r => r.score || 0);
             const avg = rs.length ? Math.round(sc.reduce((a, b) => a + b, 0) / rs.length * 10) / 10 : '-';
             const hi = rs.length ? Math.max(...sc) : '-', lo = rs.length ? Math.min(...sc) : '-';
-            const label = uhSel === 'all' ? 'Semua Ulangan Harian' : 'Ulangan Harian ke-' + uhSel;
+            const label = (uhSel === 'all' ? 'Semua Ulangan Harian' : 'Ulangan Harian ke-' + uhSel) + (clsSel === 'all' ? ' · Semua Kelas' : ' · Kelas ' + clsSel);
             return `<h3>Hasil per Mata Pelajaran</h3>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${MAPEL.map(m => `<button class="${m === sel ? '' : 'secondary'}" onclick="state.mapelSel='${m}';state.mapelUH='all';render()" style="${smallBtn}">${m} (${all.filter(r => r.mapel === m).length})</button>`).join('')}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${MAPEL.map(m => `<button class="${m === sel ? '' : 'secondary'}" onclick="state.mapelSel='${m}';state.mapelUH='all';state.mapelCls='all';render()" style="${smallBtn}">${m} (${all.filter(r => r.mapel === m).length})</button>`).join('')}</div>
                 <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center"><b>📝 Per Ulangan Harian:</b>
                     <button class="${uhSel === 'all' ? 'success' : 'secondary'}" onclick="state.mapelUH='all';render()" style="${smallBtn}">Semua (${inMapel.length})</button>
                     ${uhs.map(u => `<button class="${String(u) === uhSel ? 'success' : 'secondary'}" onclick="state.mapelUH='${u}';render()" style="${smallBtn}">UH ${u} (${inMapel.filter(r => (Number(r.uh) || 1) === u).length})</button>`).join('')}
                 </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center"><b>🏫 Per Kelas:</b>
+                    <button class="${clsSel === 'all' ? 'success' : 'secondary'}" onclick="state.mapelCls='all';render()" style="${smallBtn}">Semua (${rsUH.length})</button>
+                    ${clsList.map(c => `<button class="${c === clsSel ? 'success' : 'secondary'}" onclick="state.mapelCls='${esc(c).replace(/'/g, "\\'")}';render()" style="${smallBtn}">${esc(c)} (${rsUH.filter(r => clsOf(r) === c).length})</button>`).join('')}
+                </div>
+                <button class="success" onclick="downloadMapelCSV()" ${rs.length ? '' : 'disabled'} style="width:100%;margin-bottom:12px">📥 Unduh Hasil: ${esc(sel)} · ${esc(uhSel === 'all' ? 'Semua UH' : 'UH ' + uhSel)} · ${esc(clsSel === 'all' ? 'Semua Kelas' : 'Kelas ' + clsSel)} (${rs.length} siswa)</button>
                 <p style="color:var(--text-muted)"><b>${esc(sel)}</b> — ${label}: ${rs.length} siswa · rata-rata ${avg} · tertinggi ${hi} · terendah ${lo}</p>
                 ${tblWrap(['#', 'Nama', 'Kelas', 'UH', 'Nilai', 'Pelanggaran', 'Aksi'], rs.map((r, i) => `<tr>${td(i + 1)}${td(esc(r.name))}${td(esc(r.cls))}${td(esc(r.uh))}${td('<b>' + r.score + '</b>')}${td(r.cheat || 0)}${td(`<button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button>`)}</tr>`).join(''))}`;
         }
@@ -1788,7 +1887,7 @@
         }
 
         // --- Generator gambar (SVG offline berbasis kata kunci) ---
-        const IMG_HINT = { 'Agama': 'masjid / gereja / pura', 'Pendidikan Pancasila': 'bendera / garuda / padi', 'Bahasa Indonesia': 'kucing / buku / rumah', 'Matematika': 'persegi panjang 8 x 5 / pecahan 3/4 / garis bilangan 0 sampai 10 / 5 apel / balok 6 4 3', 'IPAS': 'siklus air / rantai makanan / metamorfosis / tata surya', 'Seni Budaya': 'musik / gitar / lukis', 'PJOK': 'lari / renang / bola', 'Bahasa Inggris': '3 cat / apple / book', 'Budaya Daerah': 'rumah / padi / bunga' };
+        const IMG_HINT = { 'Pendidikan Agama Kristen': 'gereja / salib / Alkitab', 'Koding': 'robot / laptop / komputer', 'Pendidikan Pancasila': 'bendera / garuda / padi', 'Bahasa Indonesia': 'kucing / buku / rumah', 'Matematika': 'persegi panjang 8 x 5 / pecahan 3/4 / garis bilangan 0 sampai 10 / 5 apel / balok 6 4 3', 'IPAS': 'siklus air / rantai makanan / metamorfosis / tata surya', 'Seni Budaya': 'musik / gitar / lukis', 'PJOK': 'lari / renang / bola', 'Bahasa Inggris': '3 cat / apple / book', 'Budaya Daerah': 'rumah / padi / bunga' };
         const EMO = { apel: '🍎', apple: '🍎', jeruk: '🍊', pisang: '🍌', anggur: '🍇', semangka: '🍉', kucing: '🐱', cat: '🐱', anjing: '🐶', dog: '🐶', ikan: '🐟', fish: '🐟', burung: '🐦', bird: '🐦', sapi: '🐄', ayam: '🐔', buku: '📚', book: '📚', pensil: '✏️', tas: '🎒', bola: '⚽', ball: '⚽', sepeda: '🚲', mobil: '🚗', car: '🚗', rumah: '🏠', house: '🏠', pohon: '🌳', tree: '🌳', bunga: '🌸', flower: '🌸', matahari: '☀️', bulan: '🌙', bintang: '⭐', star: '⭐', kue: '🍰', permen: '🍬', masjid: '🕌', gereja: '⛪', pura: '🛕', lari: '🏃', renang: '🏊', musik: '🎵', gitar: '🎸', lukis: '🎨', bendera: '🇮🇩', garuda: '🦅', padi: '🌾', air: '💧', api: '🔥' };
         const FLOW = { 'siklus air': [['☀️', 'Penguapan'], ['☁️', 'Awan'], ['🌧️', 'Hujan'], ['🌊', 'Air kembali']], 'rantai makanan': [['🌱', 'Produsen'], ['🐛', 'Konsumen I'], ['🐦', 'Konsumen II'], ['🦅', 'Konsumen III']], 'metamorfosis': [['🥚', 'Telur'], ['🐛', 'Ulat'], ['🛡️', 'Kepompong'], ['🦋', 'Kupu-kupu']], 'bagian tumbuhan': [['🌸', 'Bunga'], ['🍃', 'Daun'], ['🌿', 'Batang'], ['🌱', 'Akar']], 'tata surya': [['☀️', 'Matahari'], ['🌍', 'Bumi'], ['🌙', 'Bulan'], ['🪐', 'Planet']] };
         const SV = (b) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" font-family="Arial,sans-serif"><rect width="400" height="300" fill="#fff"/>${b}</svg>`;
@@ -2233,7 +2332,7 @@
             pg: { n: 'Pilihan Ganda (PG)', d: 'Siswa memilih satu jawaban benar dari beberapa opsi.', s: ['Tulis pertanyaan di kolom Teks Pertanyaan.', 'Isi opsi jawaban (minimal 2). Pakai tombol + Tambah Opsi atau X untuk mengatur jumlahnya.', 'Pilih Kunci Jawaban Benar dari daftar.'], e: 'Pertanyaan: Berapa hasil 5 + 7? Opsi: 10, 11, 12, 13. Kunci: Opsi 3.', t: 'Benar = 1 poin, salah = 0. Gambar dan teks sisipan boleh ditambahkan.' },
             is: { n: 'Isian Singkat (IS)', d: 'Siswa mengetik jawaban singkat sendiri.', s: ['Tulis pertanyaan.', 'Isi Kunci Jawaban. Beri tanda | atau kata "atau" untuk beberapa variasi jawaban yang dianggap benar.'], e: 'Pertanyaan: Ibukota Indonesia adalah... Kunci: jakarta|dki jakarta', t: 'Huruf besar/kecil, spasi (ganda maupun tanpa spasi), tanda baca di ujung, dan format angka (3,5 = 3.5) tidak dibedakan. Jika jawaban siswa atau kunci memakai kata "atau", cukup satu bagian yang cocok dianggap benar. Ejaan huruf tetap harus sama. Benar = 1 poin.' },
             pk: { n: 'Pilihan Kompleks (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Nilai penuh hanya jika pilihan siswa sama persis dengan kunci (tidak ada nilai sebagian).' },
-            mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.', 'Tambahkan Jawaban Pengecoh bila perlu; tombol Hapus Soal menghapus item kiri tetapi jawabannya tetap ada sebagai pengecoh.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Nilai sebagian: tiap pasangan benar dihitung proporsional. Tulis item kanan dengan jelas dan tidak kembar.' },
+            mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.', 'Tambahkan Jawaban Pengecoh bila perlu; tombol Hapus Soal menghapus item kiri tetapi jawabannya tetap ada sebagai pengecoh.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Setiap pasangan yang benar bernilai 1 poin (soal dengan 4 pasangan bernilai maksimal 4 poin). Tulis item kanan dengan jelas.' },
             fl: { n: 'Flashcard (FL)', d: 'Permainan kartu terbalik: siswa mencari pasangan kartu yang sama.', s: ['Tulis instruksi singkat.', 'Isi Pasangan Data: tiap pasangan menjadi dua kartu yang harus dicocokkan.'], e: 'Kiri: 3 + 4, kanan: 7. Kiri: 2 x 5, kanan: 10.', t: 'Nilai = jumlah pasangan yang ditemukan dibagi total pasangan. Pakai 4 sampai 8 pasangan agar layar tidak penuh.' },
             dd: { n: 'Melengkapi Kalimat Seret & Lepas (DD)', d: 'Siswa menyeret kata ke kotak kosong di dalam kalimat.', s: ['Tulis kalimat di Teks Pertanyaan, lalu beri tanda kurung kurawal { } pada kata yang harus diisi siswa.', 'Isi Kata Pengecoh (opsional) dipisah koma agar pilihan lebih beragam.', 'Gambar dan teks sisipan (opsional) tampil di atas kalimat, sama seperti tipe PG, PK, dan IS.'], e: 'Ibu pergi ke {pasar} membeli {sayur}. Pengecoh: sekolah, buku.', t: 'Kalimat itu sendiri tampil ke siswa dengan kotak kosong, jadi jawaban di dalam { } tidak terlihat. Nilai sebagian: tiap kotak benar dihitung proporsional. Di HP, ketuk kata lalu ketuk kotaknya.' }
         };
@@ -2791,7 +2890,7 @@
                 CLOUD.configExists = true;
                 if (r.same || state.page === 'exam') return; // jangan ubah soal saat ujian berjalan
                 CLOUD.cfgTid = tid; CLOUD.cfgVer = r.ver;
-                config = { ...r.config };
+                config = fixMapelCfg({ ...r.config });
                 if (!Array.isArray(config.questions)) config.questions = [];
                 try { localStorage.setItem('ujian_cfg_' + tid, JSON.stringify(config)); } catch (e) {}
                 refreshHome();
@@ -2900,7 +2999,7 @@
                 state.tid = r.tid; state.rankFilter = 'all';
                 const c = await gs('getConfig', r.tid, '');
                 if (c.exists) {
-                    config = { ...c.config };
+                    config = fixMapelCfg({ ...c.config });
                     if (!Array.isArray(config.questions)) config.questions = [];
                     CLOUD.cfgVer = c.ver; CLOUD.configExists = true;
                     try { localStorage.setItem('ujian_cfg_' + r.tid, JSON.stringify(config)); } catch (e) {}
@@ -2935,7 +3034,8 @@
         const msCls = (c) => String(c || '').trim().toUpperCase();
         const msNum = (v) => { const n = Number(String(v).replace(',', '.')); return isFinite(n) ? n : NaN; };
         const msSort = (a, b) => String(a).localeCompare(String(b), 'id', { numeric: true });
-        const msNorm = (d) => ({ admin: (d && d.admin) || {}, students: (d && d.students) || [], teachers: ((d && d.teachers) || []).map(t => ({ ...t, assigns: t.assigns || [] })), grades: (d && d.grades) || {} });
+        const msFixGrades = (g) => { Object.keys(g).forEach(k => { const i = k.indexOf('||'); if (i > 0 && MAPEL_LAMA[k.slice(i + 2)]) { g[k.slice(0, i + 2) + MAPEL_LAMA[k.slice(i + 2)]] = g[k]; delete g[k]; } }); return g; };
+        const msNorm = (d) => ({ admin: (d && d.admin) || {}, students: (d && d.students) || [], teachers: ((d && d.teachers) || []).map(t => ({ ...t, assigns: (t.assigns || []).map(a => a && MAPEL_LAMA[a.mapel] ? { ...a, mapel: MAPEL_LAMA[a.mapel] } : a) })), grades: msFixGrades((d && d.grades) || {}) });
 
         // --- Sinkron ke daftar pendidik ujian (mode lokal) ---
         function msSyncPendidik(d) {
