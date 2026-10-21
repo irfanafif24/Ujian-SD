@@ -1704,6 +1704,9 @@
                         <div style="font-size:0.82rem;color:var(--text-muted)">Template untuk semua jenis soal (PG, PK, IS, DD, MJ, FL). Unduh, isi di Word, lalu klik “Impor File”.</div>
                     </div>
                     <button class="success" onclick="wordTemplate()" style="width:auto;margin:0;padding:10px 16px">⬇️ Unduh Format Word</button>
+                    <details style="flex-basis:100%"><summary style="cursor:pointer;font-weight:700">Lihat cara mengisi</summary>
+                        <ul style="margin:8px 0 0 18px;font-size:0.85rem">${IMP_GUIDE.slice(1).map(g => `<li style="margin-bottom:4px"><b>${esc(g[0])}${g[1] !== '-' ? ' (' + esc(g[1]) + ')' : ''}</b>: ${esc(g[2])}</li>`).join('')}</ul>
+                    </details>
                 </div>
 
                 <div class="qm-actions">
@@ -2626,7 +2629,6 @@
                     <div class="modal-card">
                         <h3>${state.editingQIndex !== null ? 'Edit Soal' : 'Tambah Soal Baru'}</h3>
                         <button class="secondary" onclick="openGenModal(true)" style="margin-bottom: 16px;">🤖 ${state.editingQIndex === null ? 'Buat' : 'Ganti'} dengan Mesin Soal</button>
-                        ${impPanelHtml()}
                         
                         <label>Mata Pelajaran</label>
                         <select onchange="state.formQuestion.mp=this.value">
