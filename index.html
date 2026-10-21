@@ -554,8 +554,10 @@
             }
             if (q.ty === 'mj') {
                 if (!Array.isArray(ans) || !Array.isArray(q.p)) return 0;
+                // Setiap item kiri dinilai dari jodohnya: benar bila pasangan yang dipilih = pasangan kuncinya
+                const nm = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase();
                 let correct = 0;
-                q.p.forEach((p, i) => { if (ans[i] === p.r) correct++; });
+                q.p.forEach((p, i) => { if (ans[i] != null && nm(ans[i]) === nm(p.r)) correct++; });
                 return q.p.length > 0 ? correct / q.p.length : 0;
             }
             if (q.ty === 'fl') {
@@ -683,7 +685,7 @@
                         <label>📝 Jawaban Kamu:</label>
                         <input type="text" placeholder="Tulis jawaban singkat di sini..." 
                             value="${esc(currentAns || '')}" 
-                            oninput="handleISDebounce(${idx}, this.value)">
+                            oninput="handleISDebounce(${idx}, this.value)" autocomplete="off" autocapitalize="off" spellcheck="false">
                     </div>
                 `;
             } else if (q.ty === 'pk') {
@@ -740,7 +742,7 @@
                         <div style="display: flex; flex-direction: column; gap: 10px;">
                             <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 2px;">PASANGAN KANAN</div>
                             ${rightOptions.map((rVal) => {
-                                const isUsed = userAnswers.indexOf(rVal) !== -1;
+                                const isUsed = userAnswers.filter(a => a === rVal).length >= rightOptions.filter(x => x === rVal).length;
                                 return `
                                     <div class="opt-card" onclick="pairMjRight(${idx}, '${esc(rVal).replace(/'/g, "\\'")}')" 
                                         style="opacity: ${isUsed ? '0.45' : '1'}; background-color: ${isUsed ? 'var(--bg)' : 'var(--card)'}; border-style: ${isUsed ? 'dashed' : 'solid'}; padding: 12px 14px; min-height: 44px;">
@@ -862,18 +864,35 @@
             if (state.selectedMjLeft === null || state.selectedMjLeft === undefined) { toast("⚠️ Ketuk item sebelah KIRI terlebih dahulu!"); return; }
             const q = state.questions[qIdx];
             let ans = Array.isArray(state.result.ans[qIdx]) ? [...state.result.ans[qIdx]] : Array((q.p || []).length).fill(null);
-            const oldIndex = ans.indexOf(rightVal);
-            if (oldIndex !== -1) ans[oldIndex] = null;
+            const total = (q._om || []).filter(x => x === rightVal).length;
+            const usedAt = ans.map((a, i) => a === rightVal ? i : -1).filter(i => i !== -1 && i !== state.selectedMjLeft);
+            if (usedAt.length >= total && usedAt.length) ans[usedAt[0]] = null;
             ans[state.selectedMjLeft] = rightVal;
             state.selectedMjLeft = null;
             saveAnswer(qIdx, ans);
         }
 
+        // Isian singkat: simpan diam-diam tanpa render ulang supaya kolom ketik & keyboard tidak hilang
         let debounceTimer = null;
+        function isSaveSilent(idx) {
+            const res = state.result;
+            res.answered = Object.keys(res.ans).filter(k => has(state.questions[k], res.ans[k])).length;
+            Storage.saveResult(res);
+            // perbarui progres & penanda nomor soal di tempat (tanpa render ulang)
+            const fill = document.querySelector('.progress-fill');
+            if (fill) fill.style.width = Math.round(res.answered / state.questions.length * 100) + '%';
+            const btn = document.querySelectorAll('.q-num-btn')[idx];
+            if (btn && !(res.doubt && res.doubt[idx])) btn.classList.toggle('answered', has(state.questions[idx], res.ans[idx]));
+        }
         function handleISDebounce(idx, value) {
             state.result.ans[idx] = value;
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => saveAnswer(idx, value), 500);
+            debounceTimer = setTimeout(() => { try { isSaveSilent(idx); } catch (e) { console.error(e); } }, 1200);
+        }
+        function flushIS() {
+            if (!debounceTimer) return;
+            clearTimeout(debounceTimer); debounceTimer = null;
+            try { if (state.page === 'exam' && state.result) isSaveSilent(state.currentQ); } catch (e) {}
         }
 
         function saveAnswer(idx, value) {
@@ -1214,9 +1233,9 @@
             `;
         }
 
-        function prevQuestion() { if (state.currentQ > 0) { state.currentQ--; persistProgress(); render(); } }
-        function nextQuestion() { if (state.currentQ < state.questions.length - 1) { state.currentQ++; persistProgress(); render(); } }
-        function goToQuestion(idx) { state.currentQ = idx; persistProgress(); render(); }
+        function prevQuestion() { flushIS(); if (state.currentQ > 0) { state.currentQ--; persistProgress(); render(); } }
+        function nextQuestion() { flushIS(); if (state.currentQ < state.questions.length - 1) { state.currentQ++; persistProgress(); render(); } }
+        function goToQuestion(idx) { flushIS(); state.currentQ = idx; persistProgress(); render(); }
         function toggleDoubt(idx) {
             if (!state.result.doubt) state.result.doubt = {};
             if (state.result.doubt[idx]) delete state.result.doubt[idx];
@@ -1225,7 +1244,7 @@
             render();
         }
 
-        function finishExam(autoSubmit = false) {
+        function finishExam(autoSubmit = false) { flushIS();
             try { localStorage.removeItem('ujian_active'); } catch (e) {}
             if (state.timerInterval) clearInterval(state.timerInterval);
             state.isExamActive = false;
