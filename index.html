@@ -1195,7 +1195,7 @@
                 }
             } else {
                 state.questions = generateStudentQuestions();
-                const durationMs = (config.minutes || 30) * 60 * 1000;
+                const durationMs = examMinutes(state.studentMapel, state.studentUH, state.studentClass) * 60 * 1000;
                 const newAns = {};
                 state.questions.forEach((q, idx) => { newAns[idx] = initAns(q); });
 
@@ -2994,14 +2994,76 @@
             render();
         }
 
+        // ===== Pengaturan waktu: per mata pelajaran, per ulangan harian, per kelas =====
+        // Aturan disimpan di config.timeRules = [{ mp, uh, kl, min }]. Nilai kosong = berlaku untuk semua.
+        // Jika beberapa aturan cocok, yang paling spesifik dipakai (mapel > ulangan harian > kelas).
+        // Jika tidak ada yang cocok, dipakai durasi standar (config.minutes).
+        const clsGrade = (c) => { const m = /^\s*(\d+)/.exec(String(c || '')); return m ? m[1] : ''; };
+        const clsMatch = (rk, cls) => {
+            rk = String(rk || '').trim().toLowerCase(); cls = String(cls || '').trim().toLowerCase();
+            if (!rk) return true;
+            return rk === cls || (/^\d+$/.test(rk) && clsGrade(cls) === rk);
+        };
+        function timeRuleFor(mp, uh, cls) {
+            let best = null, bs = -1;
+            (config.timeRules || []).forEach(r => {
+                if (r.mp && r.mp !== mp) return;
+                if (r.uh && String(r.uh) !== String(uh)) return;
+                if (r.kl && !clsMatch(r.kl, cls)) return;
+                const sc = (r.mp ? 4 : 0) + (r.uh ? 2 : 0) + (r.kl ? (/^\d+$/.test(String(r.kl)) ? 1 : 1.5) : 0);
+                if (sc > bs) { bs = sc; best = r; }
+            });
+            return best;
+        }
+        function examMinutes(mp, uh, cls) {
+            const r = timeRuleFor(mp, uh, cls);
+            const m = r ? parseInt(r.min) : parseInt(config.minutes);
+            return m > 0 ? m : 30;
+        }
+        function addTimeRule() {
+            const g = (id) => (document.getElementById(id) || {}).value || '';
+            const rule = { mp: g('tr-mp'), uh: g('tr-uh'), kl: g('tr-kl'), min: parseInt(g('tr-min')) };
+            if (!(rule.min > 0 && rule.min <= 600)) { toast("⚠️ Isi durasi 1–600 menit."); return; }
+            config.timeRules = (config.timeRules || []).filter(r => !(String(r.mp || '') === rule.mp && String(r.uh || '') === rule.uh && String(r.kl || '') === rule.kl));
+            config.timeRules.push(rule);
+            saveSettings(true); toast("✅ Aturan waktu ditambahkan.");
+        }
+        function delTimeRule(i) {
+            (config.timeRules || []).splice(i, 1);
+            saveSettings(true); toast("🗑️ Aturan waktu dihapus.");
+        }
+        function renderTimeRules() {
+            const R = config.timeRules || [];
+            const clsOpts = [...new Set(['1', '2', '3', '4', '5', '6'].concat(typeof teacherClassOptions === 'function' ? teacherClassOptions() : []))];
+            const label = (r) => `${r.mp ? esc(r.mp) : 'Semua mapel'} · ${r.uh ? 'UH ke-' + esc(r.uh) : 'Semua UH'} · ${r.kl ? (/^\d+$/.test(String(r.kl)) ? 'Kelas ' + esc(r.kl) : 'Kelas ' + esc(r.kl)) : 'Semua kelas'}`;
+            return `
+                <div style="border-top: 1px solid var(--border); margin: 8px 0 20px; padding-top: 16px;">
+                    <h3>⏱️ Waktu per Mapel, UH &amp; Kelas</h3>
+                    <p style="color:var(--text-muted);font-size:0.9rem">Atur durasi khusus. Kosongkan pilihan (“Semua”) agar berlaku umum. Bila ada beberapa aturan yang cocok, yang paling spesifik dipakai (mapel lebih diutamakan, lalu UH, lalu kelas). Jika tidak ada yang cocok, dipakai durasi standar di atas.</p>
+                    <label>Mata Pelajaran</label>
+                    <select id="tr-mp"><option value="">Semua mapel</option>${MAPEL.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')}</select>
+                    <label>Ulangan Harian ke-</label>
+                    <select id="tr-uh"><option value="">Semua UH</option>${[...Array(10)].map((_, i) => `<option value="${i + 1}">UH ke-${i + 1}</option>`).join('')}</select>
+                    <label>Kelas</label>
+                    <select id="tr-kl"><option value="">Semua kelas</option>${clsOpts.map(c => `<option value="${esc(c)}">${/^\d+$/.test(c) ? 'Semua kelas ' + esc(c) + ' (mis. ' + esc(c) + 'A, ' + esc(c) + 'B)' : 'Kelas ' + esc(c)}</option>`).join('')}</select>
+                    <label>Durasi (menit)</label>
+                    <input type="number" id="tr-min" min="1" max="600" inputmode="numeric" placeholder="Contoh: 45">
+                    <button onclick="addTimeRule()">➕ Tambah Aturan Waktu</button>
+                    ${tblWrap(['Berlaku untuk', 'Durasi', ''], R.map((r, i) => `<tr>${td(label(r))}${td('<b>' + esc(r.min) + ' menit</b>')}${td(`<button class="danger" style="${smallBtn}" onclick="delTimeRule(${i})">🗑️</button>`)}</tr>`).join(''))}
+                </div>`;
+        }
+
         function renderSettingsTab() {
             return `
                 <h3>Pengaturan Ujian</h3>
                 <label>Judul Ujian</label>
                 <input type="text" id="cfg-title" value="${esc(config.title || '')}">
 
-                <label>Durasi Ujian (Menit)</label>
+                <label>Durasi Standar (Menit)</label>
                 <input type="number" id="cfg-minutes" value="${config.minutes || 30}">
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-top:-8px">Dipakai bila tidak ada aturan waktu khusus di bawah.</p>
+
+                ${renderTimeRules()}
 
                 ${CLOUD.on ? '' : `<label>PIN Pendidik Ini</label>
                 ${pinField('cfg-pin', 'PIN', ((Storage.loadTeachers().find(t => t.id === state.tid)) || {}).pin || '1234')}`}
@@ -3022,7 +3084,7 @@
             `;
         }
 
-        function saveSettings() {
+        function saveSettings(quiet) {
             config.title = document.getElementById('cfg-title').value.trim() || "Ujian Sekolah Dasar";
             config.minutes = parseInt(document.getElementById('cfg-minutes').value) || 30;
             if (!CLOUD.on) {
@@ -3033,7 +3095,7 @@
             config.shuffleO = document.getElementById('cfg-shuffle-o').checked;
 
             Storage.saveConfig(config);
-            toast("✅ Pengaturan berhasil disimpan!");
+            if (quiet !== true) toast("✅ Pengaturan berhasil disimpan!");
             render();
         }
 
