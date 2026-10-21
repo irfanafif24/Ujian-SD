@@ -437,6 +437,66 @@
         @media (max-width: 480px) { .card { padding: 18px; border-radius: 20px; } .home-card { padding: 18px 14px; } .step { padding: 12px; } .mapel-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (prefers-color-scheme: dark) { .mapel-tile.on { background: #78350f; color: #fde68a; box-shadow: 0 0 0 3px #b45309; } .step { background: #0f172a; } }
         @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+        /* ===== Halaman Edit Soal: tampilan ceria untuk anak & guru ===== */
+        .qm-hero { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 26px; color: #fff; background: linear-gradient(135deg, #6366f1 0%, #ec4899 60%, #f59e0b 100%); box-shadow: 0 6px 0 #4338ca55; margin-bottom: 16px; }
+        .qm-hero-ic { font-size: 2.4rem; line-height: 1; flex: none; animation: sdBounce 1.8s ease-in-out infinite; }
+        .qm-hero-tx { flex: 1; min-width: 0; }
+        .qm-hero h3 { margin: 0; text-align: left; color: #fff !important; font-size: 1.4rem; }
+        .qm-hero p { margin: 2px 0 0; font-weight: 700; font-size: .95rem; opacity: .96; overflow-wrap: anywhere; }
+        .qm-hero-n { flex: none; background: rgba(255,255,255,.25); border: 3px solid rgba(255,255,255,.65); border-radius: 20px; padding: 6px 14px; text-align: center; line-height: 1.1; }
+        .qm-hero-n b { display: block; font-size: 1.8rem; font-weight: 800; }
+        .qm-hero-n span { font-size: .75rem; font-weight: 700; }
+        .qm-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 10px; margin-bottom: 16px; }
+        .qm-actions button { margin: 0; }
+        .qm-step { background: var(--bg); border: 3px solid var(--border); border-radius: 22px; padding: 12px 14px; margin-bottom: 12px; }
+        .qm-step-h { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; margin-bottom: 10px; color: #4338ca; }
+        .qm-sn { width: 30px; height: 30px; border-radius: 50%; background: #f59e0b; color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
+        .qm-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        button.qm-chip { width: auto; margin: 0; min-height: 46px; padding: 8px 16px; font-size: .98rem; border-radius: 999px; background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: 0 4px 0 #c7d2fe; }
+        button.qm-chip:active { transform: translateY(3px); box-shadow: 0 1px 0 #c7d2fe; }
+        button.qm-chip small { background: rgba(99,102,241,.16); border-radius: 999px; padding: 0 8px; font-size: .8rem; font-weight: 800; }
+        button.qm-chip.on { background: linear-gradient(180deg, #fbbf24, #f59e0b); color: #fff; border-color: #f59e0b; box-shadow: 0 4px 0 #b45309; }
+        button.qm-chip.on small { background: rgba(255,255,255,.32); }
+        button.qm-chip.add { border-style: dashed; color: #059669; border-color: #6ee7b7; box-shadow: 0 4px 0 #a7f3d0; }
+        .qm-listhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 18px 0 12px; font-size: 1.1rem; }
+        button.qm-delall { width: auto; margin: 0; min-height: 44px; padding: 8px 16px; font-size: .9rem; }
+        .qm-list { display: flex; flex-direction: column; gap: 12px; }
+        .qm-card { display: flex; align-items: center; gap: 12px; background: var(--ql); border: 3px solid var(--qc); border-left-width: 10px; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 rgba(0,0,0,.06); }
+        .qm-no { width: 40px; height: 40px; border-radius: 50%; background: var(--qc); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
+        .qm-body { flex: 1; min-width: 0; }
+        .qm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+        .qm-type { display: inline-block; background: var(--qc); color: #fff; font-weight: 800; font-size: .8rem; padding: 2px 10px; border-radius: 999px; }
+        .qm-kls { display: inline-block; background: #fff; color: #475569; border: 2px solid #e2e8f0; font-weight: 700; font-size: .78rem; padding: 0 8px; border-radius: 999px; }
+        .qm-text { font-weight: 700; color: #1e293b; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+        .qm-act { display: flex; gap: 8px; flex: none; }
+        button.qm-ic { width: 46px; height: 46px; min-height: 0; padding: 0; margin: 0; border-radius: 16px; font-size: 1.2rem; background: #fff; color: #1e293b; border: 3px solid #c7d2fe; box-shadow: 0 3px 0 #c7d2fe; }
+        button.qm-ic.del { border-color: #fda4af; box-shadow: 0 3px 0 #fda4af; }
+        button.qm-ic:active { transform: translateY(2px); box-shadow: 0 1px 0 #c7d2fe; }
+        .qm-empty { text-align: center; padding: 28px 16px; border: 3px dashed #c7d2fe; border-radius: 24px; display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); }
+        .qm-empty div { font-size: 3rem; line-height: 1; }
+        .qm-empty b { color: #4338ca; font-size: 1.15rem; }
+        .qm-scope { text-align: left; background: #fff1f2; border: 3px solid #fda4af; border-radius: 18px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; color: #1e293b; }
+        .qm-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(6.2rem, 1fr)); gap: 10px; margin-bottom: 16px; }
+        button.qm-type-btn { flex-direction: column; gap: 0; margin: 0; padding: 8px 6px; min-height: 76px; line-height: 1.15; background: var(--ql); color: var(--qc); border: 3px solid var(--qc); box-shadow: 0 4px 0 var(--qc); }
+        button.qm-type-btn span { font-size: 1.5rem; }
+        button.qm-type-btn b { font-size: 1rem; }
+        button.qm-type-btn small { font-size: .7rem; font-weight: 700; }
+        button.qm-type-btn.on { background: var(--qc); color: #fff; }
+        button.qm-type-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--qc); }
+        @media (max-width: 520px) { .qm-card { flex-wrap: wrap; } .qm-act { width: 100%; justify-content: flex-end; } .qm-hero { padding: 12px 14px; } .qm-hero-ic { font-size: 1.8rem; } }
+        @media (prefers-color-scheme: dark) {
+            .qm-step { background: #0f172a; } .qm-step-h { color: #c7d2fe; }
+            button.qm-chip { background: #1e293b; color: #c7d2fe; border-color: #4338ca; box-shadow: 0 4px 0 #312e81; }
+            button.qm-chip.on { color: #fff; border-color: #f59e0b; box-shadow: 0 4px 0 #b45309; }
+            .qm-card { background: #1e293b; } .qm-text { color: #f8fafc; }
+            .qm-kls { background: #0f172a; color: #cbd5e1; border-color: #334155; }
+            button.qm-ic { background: #0f172a; color: #f8fafc; border-color: #4338ca; box-shadow: 0 3px 0 #312e81; }
+            button.qm-ic.del { border-color: #be123c; box-shadow: 0 3px 0 #9f1239; }
+            .qm-empty { border-color: #4338ca; } .qm-empty b { color: #c7d2fe; }
+            .qm-scope { background: #4c0519; border-color: #be123c; color: #ffe4e6; }
+            button.qm-type-btn { background: #1e293b; } button.qm-type-btn.on { background: var(--qc); }
+        }
     </style>
 </head>
 <body>
@@ -456,6 +516,7 @@
     <div id="toast"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer onerror="window.XLSX=undefined"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer onerror="window.JSZip=undefined"></script>
     <script>
         function esc(str) {
             if (!str && str !== 0) return '';
@@ -697,7 +758,7 @@
             page: 'home', studentName: '', studentClass: '', questions: [], currentQ: 0,
             result: null, timerInterval: null, adminTab: 'rank',
             endTime: 0, isExamActive: false, showConfirmModal: false, showQuestionModal: false, 
-            showClearModal: false, resetTarget: null, showDeleteModal: false, deleteTargetIdx: null,
+            showClearModal: false, resetTarget: null, showDeleteModal: false, deleteTargetIdx: null, showBulkDeleteModal: false, bulkConfirm: '',
             editingQIndex: null, formQuestion: { ty: 'pg', t: '', o: ['','','',''], a: 0, k: '', ks: [], p: [] },
             selectedMjLeft: null, _flFirstCard: null, _flLock: false
         };
@@ -1336,6 +1397,7 @@
                 ${state.showClearModal ? renderClearModal() : ''}
                 ${state.resetTarget ? renderResetModal() : ''}
                 ${state.showDeleteModal ? renderDeleteModal() : ''}
+                ${state.showBulkDeleteModal ? renderBulkDeleteModal() : ''}
                 
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
@@ -1549,38 +1611,140 @@
         const curQMapel = () => state.qMapel !== undefined ? state.qMapel : (qCount('') > 0 ? '' : MAPEL[0]);
         function setQMapel(m) { state.qMapel = m; render(); }
         function moveUntagged(m) { config.questions.forEach(q => { if (!q.mp) q.mp = m; }); Storage.saveConfig(config); state.qMapel = m; toast('✅ Soal dipindahkan ke ' + m); render(); }
-        function renderQuestionsTab() {
-            const sel = curQMapel(); let n = 0;
-            const items = (config.questions || []).map((q, idx) => (q.mp || '') === sel && (sel === '' || qUH(q) === curQUH()) && (curKelas() === '' || qKls(q) === curKelas()) ? `
-                <div style="border: 1px solid var(--border); background-color: var(--bg); border-radius: 16px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                    <div>
-                        <span class="q-badge" style="font-size: 0.75rem; padding: 2px 8px;">Soal ${++n} (${(q.ty || 'pg').toUpperCase()})</span>
-                        ${q.kl ? `<span class="q-badge" style="font-size: 0.75rem; padding: 2px 8px; background: var(--primary); color: #fff;">🏫 Kelas ${esc(q.kl)}</span>` : `<span class="q-badge" style="font-size: 0.75rem; padding: 2px 8px; opacity: 0.7;">Semua kelas</span>`}
-                        <div style="font-weight: 600; margin-top: 4px;">${esc(q.t)}</div>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button onclick="editQuestion(${idx})" style="width: auto; padding: 6px 12px; font-size: 0.8rem; margin-bottom: 0;" class="secondary">✏️ Edit</button>
-                        <button onclick="confirmDeleteQuestion(${idx})" style="width: auto; padding: 6px 12px; font-size: 0.8rem; margin-bottom: 0;" class="danger">🗑️</button>
-                    </div>
-                </div>` : '').join('');
+        // ===== Tampilan & hapus massal halaman Edit Soal =====
+        const QT = {
+            pg: { n: 'Pilihan Ganda', ic: '🔘', c: '#6366f1', l: '#eef2ff' },
+            pk: { n: 'Pilihan Kompleks', ic: '☑️', c: '#8b5cf6', l: '#f5f3ff' },
+            is: { n: 'Isian Singkat', ic: '✏️', c: '#f59e0b', l: '#fffbeb' },
+            dd: { n: 'Seret & Lepas', ic: '🧩', c: '#0ea5e9', l: '#f0f9ff' },
+            mj: { n: 'Menjodohkan', ic: '🔗', c: '#10b981', l: '#ecfdf5' },
+            fl: { n: 'Flashcard', ic: '🃏', c: '#ec4899', l: '#fdf2f8' }
+        };
+        // Soal yang sedang tampil = mapel + UH + kelas yang dipilih (dipakai juga untuk hapus massal)
+        const qInScope = (q) => (q.mp || '') === curQMapel() && (curQMapel() === '' || qUH(q) === curQUH()) && (curKelas() === '' || qKls(q) === curKelas());
+        const scopeParts = () => [curQMapel() || 'Tanpa Mapel'].concat(curQMapel() !== '' ? ['UH ke-' + curQUH()] : [], [curKelas() ? 'Kelas ' + curKelas() : 'Semua kelas']);
+        function openBulkDelete() { state.bulkConfirm = ''; state.showBulkDeleteModal = true; render(); }
+        function closeBulkDelete() { state.showBulkDeleteModal = false; state.bulkConfirm = ''; render(); }
+        function bulkTyped(el) {
+            state.bulkConfirm = el.value;
+            const go = document.getElementById('bulk-go');
+            if (go) go.disabled = el.value.trim().toUpperCase() !== 'HAPUS';
+        }
+        function renderBulkDeleteModal() {
+            const sel = curQMapel(), list = (config.questions || []).filter(qInScope), cnt = {};
+            list.forEach(q => { const k = q.ty || 'pg'; cnt[k] = (cnt[k] || 0) + 1; });
             return `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                    <h3 style="margin-bottom: 0;">Kelola Soal — ${esc(sel || 'Tanpa Mapel')}${sel ? ' · UH ke-' + curQUH() : ''}</h3>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button onclick="openGenModal(false)" style="width: auto; padding: 8px 16px; font-size: 0.85rem; margin-bottom: 0;">🤖 Mesin Soal</button>
-                        <button class="secondary" onclick="impTemplate()" style="width: auto; padding: 8px 16px; font-size: 0.85rem; margin-bottom: 0;">⬇️ Format</button>
-                        <button class="secondary" onclick="impPick()" style="width: auto; padding: 8px 16px; font-size: 0.85rem; margin-bottom: 0;">📥 Impor File</button>
-                        <button class="success" onclick="openAddQuestionModal()" style="width: auto; padding: 8px 16px; font-size: 0.85rem; margin-bottom: 0;">+ Tambah Soal</button>
+                <div class="modal-overlay">
+                    <div class="modal-card text-center">
+                        <div style="font-size:3rem;line-height:1">🗑️</div>
+                        <h3 style="color:#e11d48">Hapus Semua Soal?</h3>
+                        <div class="qm-scope">
+                            <div>📚 Mata pelajaran: <b>${esc(sel || 'Tanpa Mapel')}</b></div>
+                            ${sel !== '' ? `<div>📝 Ulangan harian: <b>UH ke-${esc(curQUH())}</b></div>` : ''}
+                            <div>🏫 Kelas: <b>${curKelas() ? 'Kelas ' + esc(curKelas()) : 'Semua kelas (termasuk soal khusus Kelas 1-6)'}</b></div>
+                        </div>
+                        <p style="margin:12px 0 6px"><b style="font-size:1.4rem;color:#e11d48">${list.length} soal</b> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">
+                            ${Object.keys(cnt).map(k => { const t = QT[k] || QT.pg; return `<span class="qm-type" style="--qc:${t.c}">${t.ic} ${t.n}: ${cnt[k]}</span>`; }).join('')}
+                        </div>
+                        <label for="bulk-confirm" style="text-align:center">Ketik <b>HAPUS</b> untuk melanjutkan</label>
+                        <input type="text" id="bulk-confirm" value="${esc(state.bulkConfirm || '')}" placeholder="HAPUS" autocomplete="off" autocapitalize="characters" oninput="bulkTyped(this)" style="text-align:center;font-weight:800;letter-spacing:2px">
+                        <div style="display:flex;gap:12px">
+                            <button class="secondary" onclick="closeBulkDelete()">Batal</button>
+                            <button class="danger" id="bulk-go" onclick="executeBulkDelete()" ${String(state.bulkConfirm || '').trim().toUpperCase() === 'HAPUS' ? '' : 'disabled'}>Ya, Hapus Semua</button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+        function executeBulkDelete() {
+            if (String(state.bulkConfirm || '').trim().toUpperCase() !== 'HAPUS') { toast('⚠️ Ketik HAPUS dulu untuk melanjutkan.'); return; }
+            const before = (config.questions || []).length;
+            config.questions = (config.questions || []).filter(q => !qInScope(q));
+            const n = before - config.questions.length;
+            Storage.saveConfig(config);
+            state.showBulkDeleteModal = false; state.bulkConfirm = '';
+            toast(n ? '🗑️ ' + n + ' soal berhasil dihapus!' : 'Tidak ada soal yang dihapus.');
+            render();
+        }
+        function renderQuestionsTab() {
+            const sel = curQMapel(), scoped = (config.questions || []).filter(qInScope);
+            let n = 0;
+            const items = (config.questions || []).map((q, idx) => {
+                if (!qInScope(q)) return '';
+                const t = QT[q.ty || 'pg'] || QT.pg;
+                return `
+                <div class="qm-card" style="--qc:${t.c};--ql:${t.l}">
+                    <div class="qm-no">${++n}</div>
+                    <div class="qm-body">
+                        <div class="qm-tags">
+                            <span class="qm-type">${t.ic} ${t.n}</span>
+                            <span class="qm-kls">🏫 ${q.kl ? 'Kelas ' + esc(q.kl) : 'Semua kelas'}</span>
+                            ${q.img ? '<span class="qm-kls">🖼️ Gambar</span>' : ''}
+                        </div>
+                        <div class="qm-text">${esc(q.t)}</div>
+                    </div>
+                    <div class="qm-act">
+                        <button class="qm-ic" onclick="editQuestion(${idx})" title="Edit soal" aria-label="Edit soal">✏️</button>
+                        <button class="qm-ic del" onclick="confirmDeleteQuestion(${idx})" title="Hapus soal" aria-label="Hapus soal">🗑️</button>
+                    </div>
+                </div>`;
+            }).join('');
+            let step = 0;
+            return `
+                <div class="qm-hero">
+                    <div class="qm-hero-ic">📝</div>
+                    <div class="qm-hero-tx"><h3>Kelola Soal</h3><p>${scopeParts().map(esc).join(' · ')}</p></div>
+                    <div class="qm-hero-n"><b>${scoped.length}</b><span>soal</span></div>
+                </div>
+
+                <div class="qm-dl" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;margin-bottom:14px;border:2px dashed #f59e0b;background:rgba(245,158,11,0.10);border-radius:14px">
+                    <div style="font-size:2rem;line-height:1">📄</div>
+                    <div style="flex:1;min-width:12rem">
+                        <b>Format Input Soal (Word)</b>
+                        <div style="font-size:0.82rem;color:var(--text-muted)">Template untuk semua jenis soal (PG, PK, IS, DD, MJ, FL). Unduh, isi di Word, lalu klik “Impor File”.</div>
+                    </div>
+                    <button class="success" onclick="wordTemplate()" style="width:auto;margin:0;padding:10px 16px">⬇️ Unduh Format Word</button>
+                </div>
+
+                <div class="qm-actions">
+                    <button class="success" onclick="openAddQuestionModal()">➕ Tambah Soal</button>
+                    <button onclick="openGenModal(false)">🤖 Mesin Soal</button>
+                    <button class="secondary" onclick="impPick()">📥 Impor File</button>
+                    <button class="secondary" onclick="wordTemplate()">📄 Format Word</button>
+                    <button class="secondary" onclick="impTemplate()">📊 Format Excel</button>
+                </div>
+
+                <div class="qm-step">
+                    <div class="qm-step-h"><span class="qm-sn">${++step}</span> Pilih Mata Pelajaran</div>
+                    <div class="qm-chips">
+                        ${qCount('') > 0 ? `<button class="qm-chip ${sel === '' ? 'on' : ''}" onclick="setQMapel('')">📦 Tanpa Mapel <small>${qCount('')}</small></button>` : ''}
+                        ${MAPEL.map(m => `<button class="qm-chip ${m === sel ? 'on' : ''}" onclick="setQMapel('${m}')">${MAPEL_ICON[m] || '📘'} ${esc(m)} <small>${qCount(m)}</small></button>`).join('')}
                     </div>
                 </div>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
-                    ${qCount('') > 0 ? `<button class="${sel === '' ? '' : 'secondary'}" onclick="setQMapel('')" style="${smallBtn}">Tanpa Mapel (${qCount('')})</button>` : ''}
-                    ${MAPEL.map(m => `<button class="${m === sel ? '' : 'secondary'}" onclick="setQMapel('${m}')" style="${smallBtn}">${m} (${qCount(m)})</button>`).join('')}
+
+                ${sel !== '' ? `<div class="qm-step">
+                    <div class="qm-step-h"><span class="qm-sn">${++step}</span> Pilih Ulangan Harian</div>
+                    <div class="qm-chips">
+                        ${uhList(sel).map(u => `<button class="qm-chip ${String(u) === curQUH() ? 'on' : ''}" onclick="setQUH(${u})">📝 UH ${u} <small>${qCountUH(sel, u)}</small></button>`).join('')}
+                        <button class="qm-chip add" onclick="addUH('${sel}')">➕ UH Baru</button>
+                    </div>
+                </div>` : ''}
+
+                <div class="qm-step">
+                    <div class="qm-step-h"><span class="qm-sn">${++step}</span> Pilih Kelas</div>
+                    <div class="qm-chips">
+                        <button class="qm-chip ${curKelas() === '' ? 'on' : ''}" onclick="setQKelas('')">🏫 Semua <small>${qCountKls(sel, curQUH(), '')}</small></button>
+                        ${[1, 2, 3, 4, 5, 6].map(k => `<button class="qm-chip ${curKelas() === String(k) ? 'on' : ''}" onclick="setQKelas('${k}')">Kelas ${k} <small>${qCountKls(sel, curQUH(), k)}</small></button>`).join('')}
+                    </div>
                 </div>
-                ${sel !== '' ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center"><b>📝 Ulangan Harian:</b>${uhList(sel).map(u => `<button class="${String(u) === curQUH() ? 'success' : 'secondary'}" onclick="setQUH(${u})" style="${smallBtn}">UH ${u} (${qCountUH(sel, u)})</button>`).join('')}<button class="secondary" onclick="addUH('${sel}')" style="${smallBtn}">➕ UH</button></div>` : ''}
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center"><b>🏫 Kelas:</b><button class="${curKelas() === '' ? 'success' : 'secondary'}" onclick="setQKelas('')" style="${smallBtn}">Semua (${qCountKls(sel, curQUH(), '')})</button>${[1, 2, 3, 4, 5, 6].map(k => `<button class="${curKelas() === String(k) ? 'success' : 'secondary'}" onclick="setQKelas('${k}')" style="${smallBtn}">Kelas ${k} (${qCountKls(sel, curQUH(), k)})</button>`).join('')}</div>
-                ${sel === '' ? `<div style="border:1px dashed var(--border);border-radius:16px;padding:12px;margin-bottom:12px"><p style="margin:0 0 8px;color:var(--text-muted)">Soal lama ini belum punya mapel dan tidak akan muncul di ulangan. Pindahkan semuanya ke satu mapel, atau edit satu per satu.</p><select id="mv-mapel">${MAPEL.map(m => `<option>${m}</option>`).join('')}</select><button class="secondary" onclick="moveUntagged(document.getElementById('mv-mapel').value)">Pindahkan semua ke mapel ini</button></div>` : ''}
-                <div style="display: flex; flex-direction: column; gap: 12px;">${items || '<p style="color:var(--text-muted)">Belum ada soal untuk mata pelajaran ini.</p>'}</div>
+
+                ${sel === '' ? `<div class="qm-step" style="border-style:dashed"><p style="margin:0 0 8px;color:var(--text-muted)">Soal lama ini belum punya mapel dan tidak akan muncul di ulangan. Pindahkan semuanya ke satu mapel, atau edit satu per satu.</p><select id="mv-mapel">${MAPEL.map(m => `<option>${m}</option>`).join('')}</select><button class="secondary" onclick="moveUntagged(document.getElementById('mv-mapel').value)">Pindahkan semua ke mapel ini</button></div>` : ''}
+
+                <div class="qm-listhead">
+                    <b>📋 Daftar Soal (${scoped.length})</b>
+                    <button class="danger qm-delall" onclick="openBulkDelete()" ${scoped.length ? '' : 'disabled'}>🗑️ Hapus Semua Soal (${scoped.length})</button>
+                </div>
+                <div class="qm-list">${items || `<div class="qm-empty"><div>📭</div><b>Belum ada soal di sini</b><span>Ketuk “Tambah Soal”, “Mesin Soal”, atau “Impor File” untuk mengisi.</span></div>`}</div>
             `;
         }
 
@@ -2480,14 +2644,9 @@
                         </div>
 
                         <label>Tipe Soal</label>
-                        <select onchange="changeFormType(this.value)">
-                            <option value="pg" ${fq.ty === 'pg' ? 'selected' : ''}>Pilihan Ganda (PG)</option>
-                            <option value="is" ${fq.ty === 'is' ? 'selected' : ''}>Isian Singkat (IS)</option>
-                            <option value="pk" ${fq.ty === 'pk' ? 'selected' : ''}>Pilihan Kompleks (PK)</option>
-                            <option value="mj" ${fq.ty === 'mj' ? 'selected' : ''}>Menjodohkan (MJ)</option>
-                            <option value="fl" ${fq.ty === 'fl' ? 'selected' : ''}>Flashcard (FL)</option>
-                            <option value="dd" ${fq.ty === 'dd' ? 'selected' : ''}>Melengkapi Kalimat Seret &amp; Lepas (DD)</option>
-                        </select>
+                        <div class="qm-types">
+                            ${['pg', 'pk', 'is', 'dd', 'mj', 'fl'].map(t => `<button type="button" class="qm-type-btn ${fq.ty === t ? 'on' : ''}" style="--qc:${QT[t].c};--ql:${QT[t].l}" onclick="changeFormType('${t}')"><span>${QT[t].ic}</span><b>${t.toUpperCase()}</b><small>${QT[t].n}</small></button>`).join('')}
+                        </div>
 
                         <label>Teks Pertanyaan / Instruksi</label>
                         <textarea rows="3" oninput="state.formQuestion.t=this.value">${esc(fq.t)}</textarea>
@@ -2622,12 +2781,14 @@
             return rows;
         }
         function impPick() {
-            const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.xlsx,.xls,.csv';
+            const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.docx,.xlsx,.xls,.csv';
             inp.onchange = () => impRead(inp.files[0]); inp.click();
         }
         function impRead(f) {
             if (!f) return;
             const rd = new FileReader();
+            if (/\.docx$/i.test(f.name)) { rd.onload = () => wordRead(rd.result); rd.readAsArrayBuffer(f); return; }
+            if (/\.doc$/i.test(f.name)) { toast('⚠️ Simpan dulu sebagai .docx (Word 2007 atau lebih baru), lalu impor lagi.'); return; }
             if (/\.csv$/i.test(f.name)) { rd.onload = () => impRun(impCsv(String(rd.result))); rd.readAsText(f); }
             else if (window.XLSX) {
                 rd.onload = () => {
@@ -2642,7 +2803,7 @@
             const hi = rows.findIndex(r => r.some(c => norm(c) === 'tipe'));
             if (hi < 0) return { fatal: 'Baris judul kolom (Tipe, Mapel, UH, Pertanyaan, ...) tidak ditemukan. Gunakan file dari tombol Unduh Format.' };
             const H = rows[hi].map(norm), col = n => H.indexOf(n);
-            const ci = { ty: col('tipe'), mp: col('mapel'), uh: col('uh'), t: col('pertanyaan'), k: col('kunci'), d: col('pengecoh'), o: [1, 2, 3, 4, 5, 6].map(n => col('opsi' + n)) };
+            const ci = { ty: col('tipe'), mp: col('mapel'), uh: col('uh'), t: col('pertanyaan'), k: col('kunci'), d: col('pengecoh'), o: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => col('opsi' + n)), kl: col('kelas'), tx: col('bacaan') };
             if (ci.t < 0) return { fatal: 'Kolom "Pertanyaan" tidak ditemukan. Gunakan file dari tombol Unduh Format.' };
             const get = (r, i) => i < 0 ? '' : String(r[i] == null ? '' : r[i]).trim();
             const TY = { pg: 'pg', pilihanganda: 'pg', is: 'is', isian: 'is', isiansingkat: 'is', pk: 'pk', pilihankompleks: 'pk', mj: 'mj', menjodohkan: 'mj', fl: 'fl', flashcard: 'fl', dd: 'dd', seretlepas: 'dd', melengkapikalimat: 'dd' };
@@ -2650,11 +2811,11 @@
             const out = { qs: [], errs: [], sample: 0, dup: 0 };
             const seen = new Set((config.questions || []).map(q => JSON.stringify([q.ty || 'pg', q.mp || '', qUH(q), q.t])));
             for (let i = hi + 1; i < rows.length; i++) {
-                const r = rows[i], no = i + 1;
+                const r = rows[i], no = rows.names ? rows.names[i] : 'Baris ' + (i + 1);
                 if (!r || !r.some(c => String(c == null ? '' : c).trim() !== '')) continue;
                 const t = get(r, ci.t);
                 if (/^contoh\s*:/i.test(t)) { out.sample++; continue; }
-                const err = (m) => out.errs.push('Baris ' + no + ': ' + m);
+                const err = (m) => out.errs.push(no + ': ' + m);
                 const rawTy = get(r, ci.ty), ty = TY[norm(rawTy)];
                 if (!ty) { err(rawTy ? 'Tipe "' + rawTy + '" tidak dikenal (pakai PG, PK, IS, DD, MJ, atau FL)' : 'Tipe kosong'); continue; }
                 if (!t) { err('Pertanyaan kosong'); continue; }
@@ -2666,6 +2827,9 @@
                 const opts = ci.o.map(j => get(r, j)), filled = opts.map((v, j) => ({ v, j })).filter(x => x.v);
                 const q = { ty, t, o: [], a: 0, k: '', ks: [], p: [], mp, uh };
                 if (curKelas()) q.kl = +curKelas();
+                const rawKl = get(r, ci.kl);
+                if (rawKl && !/^semua/i.test(rawKl)) { const kn = parseInt(rawKl.replace(/\D/g, ''), 10); if (kn >= 1 && kn <= 6) q.kl = kn; else { err('Kelas "' + rawKl + '" tidak valid (isi angka 1 sampai 6, atau kosongkan)'); continue; } }
+                const rawTx = get(r, ci.tx); if (rawTx) q.tx = rawTx;
                 const kunci = get(r, ci.k);
                 if (ty === 'pg') {
                     if (filled.length < 2) { err('PG butuh minimal 2 opsi'); continue; }
@@ -2689,6 +2853,7 @@
                     if (!pairs.length || pairs.some(p => !p || !p.l || !p.r)) { err('Opsi ' + ty.toUpperCase() + ' harus berformat kiri => kanan'); continue; }
                     if (ty === 'mj' && pairs.length < 2) { err('MJ butuh minimal 2 pasangan'); continue; }
                     q.p = pairs;
+                    if (ty === 'mj') { const used = new Set(pairs.map(p => p.r)); const dc = [...new Set(get(r, ci.d).split(/[,;]/).map(s => s.trim()).filter(s => s && !used.has(s)))]; if (dc.length) q.dc = dc; }
                 }
                 const key = JSON.stringify([ty, mp, String(uh), t]);
                 if (seen.has(key)) { out.dup++; continue; }
@@ -2700,6 +2865,7 @@
             const dm = (state.showQuestionModal && state.formQuestion.mp) || curQMapel() || '';
             const du = Number(state.showQuestionModal && state.formQuestion.uh) || Number(curQUH()) || 1;
             const r = impParse(rows, dm, du);
+            if (!r.fatal && rows.sampleCount) r.sample = (r.sample || 0) + rows.sampleCount;
             if (r.fatal) { alert('⚠️ ' + r.fatal); return; }
             const n = r.qs.length;
             const notes = (r.sample ? '\n' + r.sample + ' baris contoh dilewati.' : '') + (r.dup ? '\n' + r.dup + ' soal sama persis (sudah ada) dilewati.' : '')
@@ -2717,15 +2883,88 @@
             const b = 'width:auto;padding:8px 14px;font-size:0.85rem;margin-bottom:0';
             return `<div class="imp-box">
                 <b>📥 Impor Banyak Soal dari File</b>
-                <p style="margin:4px 0 8px;font-size:0.85rem;color:var(--text-muted)">Isi soal di Excel/CSV memakai format yang disediakan (semua jenis: PG, PK, IS, DD, MJ, FL), lalu impor sekaligus.${state.editingQIndex !== null ? ' Hasil impor ditambahkan sebagai soal baru; soal yang sedang diedit tidak berubah.' : ''}</p>
+                <p style="margin:4px 0 8px;font-size:0.85rem;color:var(--text-muted)">Isi soal di Word, Excel, atau CSV memakai format yang disediakan (semua jenis: PG, PK, IS, DD, MJ, FL), lalu impor sekaligus.${state.editingQIndex !== null ? ' Hasil impor ditambahkan sebagai soal baru; soal yang sedang diedit tidak berubah.' : ''}</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
-                    <button class="secondary" onclick="impTemplate()" style="${b}">⬇️ Unduh Format</button>
+                    <button class="secondary" onclick="wordTemplate()" style="${b}">📄 Format Word</button>
+                    <button class="secondary" onclick="impTemplate()" style="${b}">📊 Format Excel</button>
                     <button class="success" onclick="impPick()" style="${b}">📂 Pilih File &amp; Impor</button>
                 </div>
                 <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Lihat cara mengisi</summary>
                     <ul style="margin:8px 0 0 18px;font-size:0.85rem">${IMP_GUIDE.slice(1).map(g => `<li style="margin-bottom:4px"><b>${esc(g[0])}${g[1] !== '-' ? ' (' + esc(g[1]) + ')' : ''}</b>: ${esc(g[2])}</li>`).join('')}</ul>
                 </details>
             </div>`;
+        }
+
+        // ===== IMPOR SOAL DARI WORD (.docx) =====
+        const WORD_TPL_B64 = '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';
+        function wordTemplate() {
+            try {
+                const bin = atob(WORD_TPL_B64), u = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([u], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
+                a.download = 'Format_Input_Soal.docx'; document.body.appendChild(a); a.click(); a.remove();
+                toast('📄 Format Word diunduh. Isi di Word lalu impor lagi.');
+            } catch (e) { toast('⚠️ Format Word gagal diunduh.'); }
+        }
+        function wordRead(buf) {
+            if (!window.JSZip) { toast('⚠️ Pembaca Word butuh internet. Sambungkan internet lalu coba lagi.'); return; }
+            JSZip.loadAsync(buf).then(z => { const f = z.file('word/document.xml'); if (!f) throw new Error('x'); return f.async('string'); })
+                .then(xml => impRun(wordRows(xml)))
+                .catch(() => toast('⚠️ File Word tidak bisa dibaca. Pakai file .docx dari tombol Format Word.'));
+        }
+        function wordParas(xml) {
+            const doc = new DOMParser().parseFromString(xml, 'application/xml'), W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+            const tx = (n) => { let s = ''; for (const c of n.childNodes) { if (c.nodeType !== 1) continue; const ln = c.localName; if (ln === 't') s += c.textContent; else if (ln === 'tab') s += ' '; else if (ln === 'br' || ln === 'cr') s += '\n'; else if (ln !== 'pPr') s += tx(c); } return s; };
+            return [...doc.getElementsByTagNameNS(W, 'p')].map(p => {
+                const st = p.getElementsByTagNameNS(W, 'pStyle')[0], sv = st ? (st.getAttribute('w:val') || '') : '';
+                return { h: /^(heading|title)/i.test(sv), text: tx(p) };
+            });
+        }
+        // Ubah isi Word menjadi baris tabel yang sama dengan format Excel, lalu dicek oleh impParse
+        function wordRows(xml) {
+            const rows = [['Tipe', 'Mapel', 'UH', 'Kelas', 'Bacaan', 'Pertanyaan'].concat([...Array(12)].map((_, i) => 'Opsi ' + (i + 1)), ['Kunci', 'Pengecoh'])];
+            rows.names = ['']; rows.sampleCount = 0;
+            let mp = '', uh = '', kl = '', cur = null, field = null, cnt = 0;
+            const flush = () => {
+                const c = cur; cur = null; field = null;
+                if (!c) return;
+                const has = c.t.trim() || c.k.trim() || c.d.trim() || c.o.some(x => x && x.trim()) || c.pr.length;
+                if (!has) return;
+                if (c.sample) { rows.sampleCount++; return; }
+                const opts = (c.ty === 'MJ' || c.ty === 'FL') ? c.pr : [...Array(12)].map((_, i) => c.o[i] || '');
+                rows.push([c.ty, mp, uh, kl, c.tx.trim(), c.t.trim()].concat([...Array(12)].map((_, i) => opts[i] || ''), [c.k.trim(), c.d.trim()]));
+                rows.names.push('Soal ke-' + (++cnt) + ' [' + c.ty + ']');
+            };
+            wordParas(xml).forEach(p => {
+                if (p.h) { flush(); return; }
+                p.text.split('\n').forEach(raw => {
+                    const s = raw.replace(/\u00a0/g, ' ').trim();
+                    if (!s) return;
+                    let m;
+                    if ((m = s.match(/^\[\s*(contoh\s+)?(pg|pk|is|dd|mj|fl)\s*\]/i))) { flush(); cur = { ty: m[2].toUpperCase(), sample: !!m[1], t: '', tx: '', o: [], pr: [], k: '', d: '' }; return; }
+                    if ((m = s.match(/^(mapel|uh|kelas)\s*[:：]\s*(.*)$/i))) {
+                        flush(); const key = m[1].toLowerCase(), v = m[2].trim(), d = v.match(/\d+/);
+                        if (key === 'mapel') mp = v; else if (key === 'uh') uh = d ? d[0] : v; else kl = d ? d[0] : v;
+                        return;
+                    }
+                    if (!cur) return;
+                    if ((m = s.match(/^soal\s*[:：]\s*(.*)$/i))) { cur.t = m[1]; field = 't'; return; }
+                    if ((m = s.match(/^bacaan\s*[:：]\s*(.*)$/i))) { cur.tx = m[1]; field = 'tx'; return; }
+                    if ((m = s.match(/^kunci\s*[:：]\s*(.*)$/i))) { cur.k = m[1]; field = 'k'; return; }
+                    if ((m = s.match(/^pengecoh\s*[:：]\s*(.*)$/i))) { cur.d = m[1]; field = 'd'; return; }
+                    if (cur.ty === 'PG' || cur.ty === 'PK') {
+                        if ((m = s.match(/^([A-Fa-f])\s*[.)]\s*(.*)$/))) { cur.o[m[1].toUpperCase().charCodeAt(0) - 65] = m[2].trim(); field = 'o'; return; }
+                    } else if (cur.ty === 'MJ' || cur.ty === 'FL') {
+                        const x = s.replace(/^\d+\s*[.)]\s*/, '');
+                        let k = x.indexOf('=>'), w = 2; if (k < 0) { k = x.indexOf('='); w = 1; }
+                        if (k >= 0) { const l = x.slice(0, k).trim(), r = x.slice(k + w).trim(); if (l || r) cur.pr.push(l + ' => ' + r); field = null; return; }
+                    }
+                    if (field === 't') cur.t += '\n' + s; else if (field === 'tx') cur.tx += '\n' + s;
+                });
+            });
+            flush();
+            return rows;
         }
 
         function saveQuestionForm() {
@@ -2964,7 +3203,7 @@
                 const r = await gs('getResults', CLOUD.token, force ? '' : (CLOUD.resSig || ''));
                 if (!r.same) {
                     CLOUD.resSig = r.sig; CLOUD.results = r.results || [];
-                    const modalOpen = state.showQuestionModal || state.showGenModal || state.showClearModal || state.showDeleteModal;
+                    const modalOpen = state.showQuestionModal || state.showGenModal || state.showClearModal || state.showDeleteModal || state.showBulkDeleteModal;
                     if (state.page === 'admin' && (state.adminTab || 'rank') === 'rank' && !modalOpen) render();
                 }
             } catch (e) { if (isAuthErr(e)) cloudSessionExpired(); }
