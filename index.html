@@ -497,7 +497,15 @@
             .qm-scope { background: #4c0519; border-color: #be123c; color: #ffe4e6; }
             button.qm-type-btn { background: #1e293b; } button.qm-type-btn.on { background: var(--qc); }
         }
-    </style>
+            .q-img-tap { cursor: zoom-in; -webkit-tap-highlight-color: transparent; }
+        .q-img-hint { font-size: .8rem; color: var(--text-muted); margin: -10px 0 14px; font-weight: 600; }
+        #img-viewer { position: fixed; inset: 0; z-index: 90000; background: rgba(0,0,0,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; touch-action: none; }
+        #img-viewer .iv-stage { flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        #img-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; will-change: transform; }
+        #img-viewer .iv-bar { display: flex; gap: 10px; padding: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+        #img-viewer .iv-bar button { min-width: 56px; min-height: 48px; font-size: 1.3rem; border-radius: 14px; background: #fff; color: #111; border: 0; font-weight: 800; }
+        #img-viewer .iv-close { position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; background: #ef4444 !important; color: #fff !important; }
+</style>
 </head>
 <body>
     <script>
@@ -1225,7 +1233,7 @@
             state.page = 'exam';
             state.isExamActive = true;
             try { localStorage.setItem('ujian_active', state.result.id); } catch (e) {}
-            alarmPrime();
+            alarmPrime(); cheatPause(CHEAT_GRACE_MS);
             render();
         }
 
@@ -1297,7 +1305,7 @@
                     
                     ${q.tx ? `<div class="q-passage">${esc(q.tx)}</div>` : ''}
                     ${q.ty === 'dd' ? '' : `<div class="q-text">${esc(q.t)}</div>`}
-                    ${q.img ? `<img src="${q.img}" class="q-img" alt="Gambar Soal">` : ''}
+                    ${q.img ? `<img src="${q.img}" class="q-img q-img-tap" alt="Gambar Soal" onclick="openImgViewer(this.src)" title="Sentuh untuk memperbesar"><div class="q-img-hint">🔍 Sentuh gambar untuk memperbesar</div>` : ''}
                     ${renderQuestionInput(q, state.currentQ)}
 
                     <label class="checkbox-container doubt-box" style="margin-bottom: 20px;">
@@ -1932,19 +1940,88 @@
             const old = document.getElementById('cheat-overlay'); if (old) old.remove();
             const d = document.createElement('div'); d.id = 'cheat-overlay';
             d.style.cssText = 'position:fixed;inset:0;background:rgba(185,28,28,.96);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:cheatBlink .6s infinite alternate';
-            d.innerHTML = `<style>@keyframes cheatBlink{from{background:rgba(185,28,28,.96)}to{background:rgba(69,10,10,.98)}}</style><div style="background:#fff;border-radius:24px;padding:28px;max-width:460px;text-align:center"><div style="font-size:4rem">🚨</div><h2 style="color:#b91c1c;margin:8px 0">PERINGATAN KECURANGAN!</h2><p style="font-size:1.1rem;font-weight:700">${esc(msg)}</p><p style="color:#555">Dilarang keluar atau berpindah tab saat ulangan.</p><button onclick="alarmStop();document.getElementById('cheat-overlay').remove()" style="background:#b91c1c;color:#fff">${final ? 'Tutup' : 'Saya mengerti, lanjut ulangan'}</button></div>`;
+            d.innerHTML = `<style>@keyframes cheatBlink{from{background:rgba(185,28,28,.96)}to{background:rgba(69,10,10,.98)}}</style><div style="background:#fff;border-radius:24px;padding:28px;max-width:460px;text-align:center"><div style="font-size:4rem">🚨</div><h2 style="color:#b91c1c;margin:8px 0">PERINGATAN KECURANGAN!</h2><p style="font-size:1.1rem;font-weight:700">${esc(msg)}</p><p style="color:#555">Dilarang keluar atau berpindah tab saat ulangan.</p><button onclick="alarmStop();document.getElementById('cheat-overlay').remove();cheatBack()" style="background:#b91c1c;color:#fff">${final ? 'Tutup' : 'Saya mengerti, lanjut ulangan'}</button></div>`;
             document.body.appendChild(d); alarmStart();
         }
+        // ===== Deteksi keluar halaman (anti false-positive) =====
+        // Prinsip: pelanggaran HANYA dihitung bila halaman benar-benar tersembunyi / kehilangan fokus
+        // terus-menerus (bukan sekadar kedipan blur akibat keyboard, notifikasi, dialog, zoom gambar, dsb).
+        const CHEAT_CONFIRM_MS = 1500;   // halaman harus tetap "pergi" selama ini sebelum dihitung
+        const CHEAT_GRACE_MS = 4000;     // masa tenang setelah ujian dimulai / kembali ke halaman
+        let _cheatTimer = null, _graceUntil = 0, _lastInteract = 0;
+        const cheatPause = (ms) => { _graceUntil = Math.max(_graceUntil, Date.now() + (ms || CHEAT_GRACE_MS)); };
+        ['touchstart', 'touchend', 'pointerdown', 'click', 'keydown', 'input', 'scroll'].forEach(ev =>
+            window.addEventListener(ev, () => { _lastInteract = Date.now(); }, { passive: true, capture: true }));
+        function cheatActive() { return state.page === 'exam' && state.isExamActive && state.result && !state._away; }
+        function isReallyAway() {
+            if (document.hidden) return true;                       // pindah tab / minimize / kunci layar
+            if (window._imgViewerOpen) return false;                // sedang memperbesar gambar
+            const ae = document.activeElement;
+            if (ae && ae.tagName === 'IFRAME') return false;        // fokus pindah ke iframe milik halaman sendiri
+            if (Date.now() - _lastInteract < 1200) return false;    // baru saja menyentuh layar / mengetik
+            return !document.hasFocus();                            // jendela lain di atas halaman (desktop)
+        }
+        function scheduleCheatCheck() {
+            if (!cheatActive() || _cheatTimer) return;
+            _cheatTimer = setTimeout(() => {
+                _cheatTimer = null;
+                if (!cheatActive()) return;
+                if (Date.now() < _graceUntil) return;
+                if (isReallyAway()) cheatStrike();
+            }, CHEAT_CONFIRM_MS);
+        }
         function cheatStrike() {
-            if (state.page !== 'exam' || !state.isExamActive || state._away) return;
+            if (!cheatActive()) return;
             state._away = true; const r = state.result; r.cheat = (r.cheat || 0) + 1; r.awayAt = Date.now(); r.endAt = state.endTime; Storage.saveResult(r);
             if (r.cheat > 5) { r.locked = true; finishExam(true); cheatOverlay('Pelanggaran ke-' + r.cheat + '. Ulangan dikumpulkan otomatis.', true); return; }
             cheatOverlay(`Kamu meninggalkan halaman ulangan (${r.cheat}/5). ${r.cheat === 5 ? 'Ini peringatan TERAKHIR! Keluar sekali lagi, ulangan otomatis dikumpulkan.' : 'Sisa kesempatan: ' + (5 - r.cheat) + '.'}`, false);
         }
-        function cheatBack() { state._away = false; const r = state.result; if (state.page === 'exam' && r && r.awayAt) { r.awayAt = null; Storage.saveResult(r); } }
-        document.addEventListener('visibilitychange', () => document.hidden ? cheatStrike() : cheatBack());
-        window.addEventListener('blur', cheatStrike);
+        function cheatBack() {
+            if (_cheatTimer) { clearTimeout(_cheatTimer); _cheatTimer = null; }
+            cheatPause(1500);
+            if (!state._away) return;
+            state._away = false; const r = state.result;
+            if (state.page === 'exam' && r && r.awayAt) { r.awayAt = null; Storage.saveResult(r); }
+        }
+        document.addEventListener('visibilitychange', () => document.hidden ? scheduleCheatCheck() : cheatBack());
+        window.addEventListener('blur', scheduleCheatCheck);
         window.addEventListener('focus', cheatBack);
+        window.addEventListener('pageshow', () => cheatPause(1500));
+        window.addEventListener('resize', () => cheatPause(1500));          // keyboard virtual / rotasi layar
+        window.addEventListener('orientationchange', () => cheatPause(2500));
+
+        // ===== Penampil gambar soal (sentuh untuk memperbesar, tidak memicu anti-curang) =====
+        function openImgViewer(src) {
+            if (document.getElementById('img-viewer')) return;
+            window._imgViewerOpen = true; cheatPause(CHEAT_GRACE_MS);
+            const v = document.createElement('div'); v.id = 'img-viewer';
+            v.innerHTML = '<button class="iv-close" aria-label="Tutup" style="position:absolute;min-width:56px;min-height:48px;font-size:1.3rem;border-radius:14px;border:0;font-weight:800">✕</button>' +
+                '<div class="iv-stage"><img alt="Gambar Soal" draggable="false"></div>' +
+                '<div class="iv-bar"><button data-z="-1" aria-label="Perkecil">➖</button><button data-z="0" aria-label="Reset">⟲</button><button data-z="1" aria-label="Perbesar">➕</button></div>';
+            document.body.appendChild(v);
+            const img = v.querySelector('img'); img.src = src;
+            let sc = 1, tx = 0, ty = 0;
+            const apply = () => { img.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`; };
+            const clamp = () => { if (sc <= 1) { tx = 0; ty = 0; } };
+            const zoom = (f) => { sc = Math.min(6, Math.max(1, sc * f)); clamp(); apply(); };
+            const close = () => { window._imgViewerOpen = false; cheatPause(CHEAT_GRACE_MS); v.remove(); document.removeEventListener('keydown', onKey); };
+            const onKey = (e) => { if (e.key === 'Escape') close(); };
+            document.addEventListener('keydown', onKey);
+            v.querySelector('.iv-close').onclick = close;
+            v.querySelectorAll('.iv-bar button').forEach(b => b.onclick = () => { const z = +b.dataset.z; if (z === 0) { sc = 1; tx = ty = 0; apply(); } else zoom(z > 0 ? 1.4 : 1 / 1.4); });
+            // Tutup bila menyentuh area gelap di luar gambar (saat belum di-zoom)
+            v.querySelector('.iv-stage').addEventListener('click', (e) => { if (e.target !== img && sc === 1) close(); });
+            // Gestur: cubit untuk zoom, geser, dan ketuk dua kali
+            const pts = new Map(); let pinch0 = 0, sc0 = 1, last = 0;
+            img.addEventListener('pointerdown', (e) => { img.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); sc0 = sc; }
+                const now = Date.now(); if (pts.size === 1 && now - last < 300) { sc = sc > 1 ? 1 : 2.5; clamp(); apply(); } last = now; });
+            img.addEventListener('pointermove', (e) => { const p = pts.get(e.pointerId); if (!p) return;
+                if (pts.size === 2) { p.x = e.clientX; p.y = e.clientY; const [a, b] = [...pts.values()]; sc = Math.min(6, Math.max(1, sc0 * Math.hypot(a.x - b.x, a.y - b.y) / (pinch0 || 1))); clamp(); apply(); }
+                else if (sc > 1) { tx += e.clientX - p.x; ty += e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; apply(); } });
+            const up = (e) => pts.delete(e.pointerId);
+            img.addEventListener('pointerup', up); img.addEventListener('pointercancel', up);
+            img.addEventListener('wheel', (e) => { e.preventDefault(); zoom(e.deltaY < 0 ? 1.15 : 1 / 1.15); }, { passive: false });
+        }
 
         // --- Data siswa (Excel/CSV), rapor & sertifikat ---
         const loadSiswa = () => { if (CLOUD.on && CLOUD.isTeacher && CLOUD.roster && CLOUD.roster.length) return CLOUD.roster; try { return JSON.parse(localStorage.getItem('ujian_siswa_' + state.tid) || '[]'); } catch (e) { return []; } };
@@ -3814,7 +3891,7 @@
                 state.endTime = resumeEnd(r);
                 state.currentQ = Math.min(Math.max(+r.cq || 0, 0), state.questions.length - 1);
                 state.page = 'exam'; state.isExamActive = true;
-                startTimer(); persistProgress();
+                startTimer(); persistProgress(); cheatPause(CHEAT_GRACE_MS);
                 return true;
             } catch (e) { return false; }
         }
