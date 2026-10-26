@@ -296,6 +296,18 @@
         .q-passage { background-color: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.05rem; }
         input[type="file"] { width: 100%; margin-bottom: 12px; font-size: 1rem; }
         .media-preview { max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); display: block; margin-bottom: 8px; }
+
+        /* Peringkat dipisah per kelas / mapel / UH */
+        .rk-filter { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 4px; }
+        .rk-class { margin-bottom: 28px; border: 2px solid var(--primary); border-radius: 20px; overflow: hidden; background: var(--card); }
+        .rk-class-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: var(--primary); color: #fff; padding: 12px 18px; font-weight: 800; font-size: 1.15rem; }
+        .rk-class-head small { font-weight: 600; opacity: 0.9; font-size: 0.8rem; }
+        .rk-group { padding: 14px 14px 6px; border-top: 1px solid var(--border); }
+        .rk-group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .rk-chip { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; }
+        .rk-mp { background: var(--warning-light); color: var(--warning); }
+        .rk-uh { background: var(--success-light); color: var(--success); }
+        .rk-meta { margin-left: auto; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
         .pill-hi, .pill-lo { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-left: 6px; }
         .pill-hi { background-color: var(--success-light); color: var(--success); }
         .pill-lo { background-color: var(--error-light); color: var(--error); }
@@ -1152,7 +1164,7 @@
             const t = Storage.loadTeachers().find(x => x.id === tid);
             if (t && pinEl && pinEl.value === String(t.pin)) {
                 state.tid = t.id; config = Storage.loadConfig(t.id);
-                state.rankFilter = 'all';
+                state.rankFilter = 'all'; state.rankKelas = state.rankMapel = state.rankUH = 'all';
                 state.page = 'admin';
                 render();
             } else {
@@ -1168,7 +1180,9 @@
             if (!name || !cls || !state.studentMapel || !state.studentUH) { toast("⚠️ Nama, Kelas, Mata Pelajaran, dan Ulangan Harian wajib diisi!"); return; }
             if (CLOUD.on && !CLOUD.uid) { toast("⏳ Menghubungkan ke server, coba lagi sebentar."); return; }
             if (CLOUD.on && !CLOUD.configExists) { toast("⚠️ Ujian belum disiapkan oleh guru."); return; }
-            if (!(config.questions || []).some(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH))) { toast("⚠️ Belum ada soal untuk mapel dan ulangan harian ini!"); return; }
+            const _qMU = (config.questions || []).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH));
+            if (!_qMU.length) { toast("⚠️ Belum ada soal untuk mapel dan ulangan harian ini!"); return; }
+            if (!_qMU.some(q => clsMatch(q.kl, cls))) { toast("⚠️ Belum ada soal untuk Kelas " + cls + " pada mapel dan ulangan harian ini!"); return; }
             const tk = (config.tokens || {})[state.studentMapel + '||' + state.studentUH];
             if (!tk) { toast("⚠️ Token untuk ulangan ini belum dibuat guru."); return; }
             if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast("❌ Token salah. Minta token ke guru."); return; }
@@ -1238,7 +1252,8 @@
         }
 
         function generateStudentQuestions() {
-            let qList = config.questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH));
+            // Soal dipisah per kelas: soal bertanda Kelas N hanya muncul untuk siswa kelas N; soal "Semua kelas" muncul di semua kelas
+            let qList = config.questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH) && clsMatch(q.kl, state.studentClass));
             if (config.shuffleQ) qList = fisherYatesShuffle(qList);
             qList.forEach(q => {
                 if (q.ty === 'pg' || q.ty === 'pk' || !q.ty) {
@@ -1436,19 +1451,49 @@
 
         const sessKey = (r) => `${r.mapel || '-'}||${r.uh || '-'}`;
         const sessLabel = (r) => `${r.mapel || '-'} — UH ke-${r.uh || '-'}`;
+        const grpKey = (r) => `${r.cls || '-'}||${r.mapel || '-'}||${r.uh || '-'}`;
+        const natCmp = (a, b) => String(a || '').localeCompare(String(b || ''), 'id', { numeric: true });
+        const grpCmp = (a, b) => natCmp(a.cls, b.cls) || natCmp(a.mapel, b.mapel) || (Number(a.uh) || 0) - (Number(b.uh) || 0);
         function teacherResults() { return Storage.loadResults().filter(r => r.tid === state.tid); }
-        function rankResults() {
-            const f = state.rankFilter || 'all';
-            const all = teacherResults();
-            return (f === 'all' ? all : all.filter(r => sessKey(r) === f)).sort((a, b) => (b.score || 0) - (a.score || 0));
-        }
 
-        function sessionList() {
-            const list = [];
-            teacherResults().forEach(r => { if (!list.some(x => sessKey(x) === sessKey(r))) list.push(r); });
-            return list.sort((a, b) => String(a.mapel || '').localeCompare(String(b.mapel || '')) || (Number(a.uh) || 0) - (Number(b.uh) || 0));
+        // Filter peringkat bertingkat: Kelas -> Mata Pelajaran -> Ulangan Harian (nilai tidak valid otomatis jadi "Semua")
+        function rankSel() {
+            const all = teacherResults();
+            const vals = (arr, f) => [...new Set(arr.map(f))].sort(natCmp);
+            const kelasOpts = vals(all, r => String(r.cls || '-'));
+            const kelas = kelasOpts.includes(state.rankKelas) ? state.rankKelas : 'all';
+            const byK = kelas === 'all' ? all : all.filter(r => String(r.cls || '-') === kelas);
+            const mapelOpts = vals(byK, r => String(r.mapel || '-'));
+            const mapel = mapelOpts.includes(state.rankMapel) ? state.rankMapel : 'all';
+            const byM = mapel === 'all' ? byK : byK.filter(r => String(r.mapel || '-') === mapel);
+            const uhOpts = vals(byM, r => String(r.uh || '-'));
+            const uh = uhOpts.includes(state.rankUH) ? state.rankUH : 'all';
+            return { kelas, mapel, uh, kelasOpts, mapelOpts, uhOpts };
         }
-        function setRankSession(i) { const l = sessionList(); state.rankFilter = l[i] ? sessKey(l[i]) : 'all'; render(); }
+        function rankResults() {
+            const f = rankSel();
+            return teacherResults().filter(r =>
+                (f.kelas === 'all' || String(r.cls || '-') === f.kelas) &&
+                (f.mapel === 'all' || String(r.mapel || '-') === f.mapel) &&
+                (f.uh === 'all' || String(r.uh || '-') === f.uh)
+            ).sort((a, b) => (b.score || 0) - (a.score || 0));
+        }
+        // Daftar kelompok unik (kelas + mapel + UH) dari data yang sedang difilter
+        function groupList(list) {
+            const g = [];
+            list.forEach(r => { if (!g.some(x => grpKey(x) === grpKey(r))) g.push(r); });
+            return g.sort(grpCmp);
+        }
+        function setRankF(k, v) {
+            state[k === 'kelas' ? 'rankKelas' : k === 'mapel' ? 'rankMapel' : 'rankUH'] = v;
+            render();
+        }
+        function setRankGroup(i) {
+            const g = groupList(teacherResults())[i];
+            if (g) { state.rankKelas = String(g.cls || '-'); state.rankMapel = String(g.mapel || '-'); state.rankUH = String(g.uh || '-'); }
+            render();
+        }
+        function resetRankFilter() { state.rankKelas = state.rankMapel = state.rankUH = 'all'; render(); }
 
         function summarize(list) {
             const done = list.filter(r => r.status === 'done');
@@ -1464,41 +1509,110 @@
 
         function renderRankTab() {
             const results = rankResults();
-            const sessions = sessionList();
-            const f = state.rankFilter || 'all';
+            const f = rankSel();
+            const allGroups = groupList(teacherResults());
+            const groups = groupList(results);
             const sm = summarize(results);
             const show = (v) => v === null ? '-' : v;
             const nm = (n) => n ? `<div style="font-size:0.7rem; color: var(--text-muted); font-weight:600;">${esc(n)}</div>` : '';
+            const opt = (v, cur, label) => `<option value="${esc(v)}" ${cur === v ? 'selected' : ''}>${esc(label)}</option>`;
+            const filtered = f.kelas !== 'all' || f.mapel !== 'all' || f.uh !== 'all';
+
+            // ---- Ringkasan: satu baris per Kelas + Mapel + UH ----
+            const summaryRows = allGroups.map((r, i) => {
+                const m = summarize(teacherResults().filter(x => grpKey(x) === grpKey(r)));
+                const on = f.kelas === String(r.cls || '-') && f.mapel === String(r.mapel || '-') && f.uh === String(r.uh || '-');
+                return `<tr ${on ? 'style="background-color: var(--primary-light);"' : ''}>
+                    <td><b>${esc(r.cls || '-')}</b></td>
+                    <td><b>${esc(r.mapel || '-')}</b></td>
+                    <td>${esc(r.uh || '-')}</td>
+                    <td>${m.n}</td>
+                    <td>${m.done}</td>
+                    <td><b>${show(m.avg)}</b></td>
+                    <td class="wrap-cell"><b style="color: var(--success);">${show(m.max)}</b>${nm(m.maxN)}</td>
+                    <td class="wrap-cell"><b style="color: var(--error);">${show(m.min)}</b>${nm(m.minN)}</td>
+                    <td><button onclick="setRankGroup(${i})" style="width:auto; padding:6px 12px; font-size:0.8rem; margin-bottom:0;">Lihat</button></td>
+                </tr>`;
+            }).join('');
+
+            // ---- Daftar hasil: dipisah per Kelas, lalu per Mapel + UH, peringkat dihitung sendiri-sendiri ----
+            const classes = [...new Set(groups.map(g => String(g.cls || '-')))];
+            const blocks = classes.map(c => {
+                const gs = groups.filter(g => String(g.cls || '-') === c);
+                const classTotal = results.filter(r => String(r.cls || '-') === c).length;
+                const inner = gs.map(g => {
+                    const rows = results.filter(r => grpKey(r) === grpKey(g));   // sudah terurut nilai tertinggi -> terendah
+                    const gsm = summarize(rows);
+                    return `
+                    <div class="rk-group">
+                        <div class="rk-group-head">
+                            <span class="rk-chip rk-mp">📚 ${esc(g.mapel || '-')}</span>
+                            <span class="rk-chip rk-uh">📝 UH ke-${esc(g.uh || '-')}</span>
+                            <span class="rk-meta">${gsm.n} siswa · selesai ${gsm.done} · rata-rata <b>${show(gsm.avg)}</b></span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead><tr><th>Peringkat</th><th>Nama</th><th>Nilai</th><th>Benar</th><th>Salah</th><th>Tidak Menjawab</th><th>Status</th><th>Aksi</th></tr></thead>
+                                <tbody>
+                                ${rows.map((r, i) => {
+                                    const st = getStats(r);
+                                    const isDone = r.status === 'done';
+                                    const tag = isDone && gsm.done > 1 ? ((r.score || 0) === gsm.max ? '<span class="pill-hi">Tertinggi</span>' : ((r.score || 0) === gsm.min ? '<span class="pill-lo">Terendah</span>' : '')) : '';
+                                    return `<tr>
+                                        <td>${i + 1}</td>
+                                        <td><b>${esc(r.name)}</b>${tag}</td>
+                                        <td><b style="color: var(--primary); font-size: 1.05rem;">${r.score || 0}</b></td>
+                                        <td style="color: var(--success); font-weight:700;">${st ? st.benar : '-'}</td>
+                                        <td style="color: var(--error); font-weight:700;">${st ? st.salah : '-'}</td>
+                                        <td style="color: var(--text-muted); font-weight:700;">${st ? st.kosong : '-'}</td>
+                                        <td><span class="status-pill ${isDone ? 'done' : 'progress'}">${isDone ? 'Selesai' : 'Mengerjakan'}</span></td>
+                                        <td><button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button></td>
+                                    </tr>`;
+                                }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>`;
+                }).join('');
+                return `
+                <section class="rk-class">
+                    <div class="rk-class-head"><span>🏫 Kelas ${esc(c)}</span><small>${classTotal} data · ${gs.length} ulangan</small></div>
+                    ${inner}
+                </section>`;
+            }).join('');
 
             return `
-                <h3>Ringkasan per Mata Pelajaran & Ulangan Harian</h3>
+                <h3>Ringkasan per Kelas, Mata Pelajaran & Ulangan Harian</h3>
                 <div class="table-responsive">
                     <table class="data-table">
-                        <thead><tr><th>Mapel</th><th>UH ke-</th><th>Peserta</th><th>Selesai</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th><th></th></tr></thead>
+                        <thead><tr><th>Kelas</th><th>Mapel</th><th>UH ke-</th><th>Peserta</th><th>Selesai</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th><th></th></tr></thead>
                         <tbody>
-                            ${sessions.length === 0 ? '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Belum ada data siswa.</td></tr>' : ''}
-                            ${sessions.map((r, i) => {
-                                const m = summarize(teacherResults().filter(x => sessKey(x) === sessKey(r)));
-                                return `<tr ${f === sessKey(r) ? 'style="background-color: var(--primary-light);"' : ''}>
-                                    <td><b>${esc(r.mapel || '-')}</b></td>
-                                    <td>${esc(r.uh || '-')}</td>
-                                    <td>${m.n}</td>
-                                    <td>${m.done}</td>
-                                    <td><b>${show(m.avg)}</b></td>
-                                    <td class="wrap-cell"><b style="color: var(--success);">${show(m.max)}</b>${nm(m.maxN)}</td>
-                                    <td class="wrap-cell"><b style="color: var(--error);">${show(m.min)}</b>${nm(m.minN)}</td>
-                                    <td><button onclick="setRankSession(${i})" style="width:auto; padding:6px 12px; font-size:0.8rem; margin-bottom:0;">Lihat</button></td>
-                                </tr>`;
-                            }).join('')}
+                            ${allGroups.length === 0 ? '<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">Belum ada data siswa.</td></tr>' : summaryRows}
                         </tbody>
                     </table>
                 </div>
 
-                <label>📚 Tampilkan Data</label>
-                <select onchange="state.rankFilter=this.value; render();">
-                    <option value="all">Semua Mapel / UH</option>
-                    ${sessions.map(r => `<option value="${esc(sessKey(r))}" ${f === sessKey(r) ? 'selected' : ''}>${esc(sessLabel(r))}</option>`).join('')}
-                </select>
+                <div class="rk-filter">
+                    <div>
+                        <label>🏫 Kelas</label>
+                        <select onchange="setRankF('kelas', this.value)">
+                            ${opt('all', f.kelas, 'Semua Kelas')}${f.kelasOpts.map(c => opt(c, f.kelas, 'Kelas ' + c)).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label>📚 Mata Pelajaran</label>
+                        <select onchange="setRankF('mapel', this.value)">
+                            ${opt('all', f.mapel, 'Semua Mapel')}${f.mapelOpts.map(m => opt(m, f.mapel, m)).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label>📝 Ulangan Harian</label>
+                        <select onchange="setRankF('uh', this.value)">
+                            ${opt('all', f.uh, 'Semua UH')}${f.uhOpts.map(u => opt(u, f.uh, 'UH ke-' + u)).join('')}
+                        </select>
+                    </div>
+                </div>
+                ${filtered ? `<button class="secondary" onclick="resetRankFilter()" style="width:auto; padding:6px 14px; font-size:0.8rem;">✖ Hapus filter</button>` : ''}
 
                 <div class="stats-grid">
                     <div class="stat-card"><div class="stat-label">TOTAL SISWA</div><div class="stat-val">${sm.n}</div></div>
@@ -1516,60 +1630,26 @@
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>#</th><th>Nama</th><th>Kelas</th><th>Mapel / UH</th><th>Nilai</th>
-                                <th>Benar</th><th>Salah</th><th>Tidak Menjawab</th><th>Status</th><th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${results.length === 0 ? '<tr><td colspan="10" style="text-align: center; color: var(--text-muted);">Belum ada data siswa.</td></tr>' : ''}
-                            ${results.map((r, i) => {
-                                const st = getStats(r);
-                                const isDone = r.status === 'done';
-                                const tag = isDone && sm.done > 1 ? ((r.score || 0) === sm.max ? '<span class="pill-hi">Tertinggi</span>' : ((r.score || 0) === sm.min ? '<span class="pill-lo">Terendah</span>' : '')) : '';
-                                const kosongLive = !st && !isDone && state.questions ? '-' : '-';
-                                return `
-                                <tr>
-                                    <td>${i + 1}</td>
-                                    <td><b>${esc(r.name)}</b>${tag}</td>
-                                    <td>${esc(r.cls)}</td>
-                                    <td>${esc(sessLabel(r))}</td>
-                                    <td><b style="color: var(--primary); font-size: 1.05rem;">${r.score || 0}</b></td>
-                                    <td style="color: var(--success); font-weight:700;">${st ? st.benar : kosongLive}</td>
-                                    <td style="color: var(--error); font-weight:700;">${st ? st.salah : kosongLive}</td>
-                                    <td style="color: var(--text-muted); font-weight:700;">${st ? st.kosong : kosongLive}</td>
-                                    <td>
-                                        <span class="status-pill ${isDone ? 'done' : 'progress'}">${isDone ? 'Selesai' : 'Mengerjakan'}</span>
-                                    </td>
-                                    <td><button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button></td>
-                                </tr>`;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
+                ${results.length === 0 ? '<p style="text-align: center; color: var(--text-muted);">Belum ada data siswa.</p>' : blocks}
             `;
         }
 
         function downloadCSV() {
             const all = teacherResults();
             if (all.length === 0) { toast("⚠️ Belum ada data untuk diunduh!"); return; }
-            const keys = [...new Set(all.map(sessKey))];
-            if ((state.rankFilter || 'all') === 'all' && keys.length > 1) { toast("⚠️ Pilih Mata Pelajaran / Ulangan Harian terlebih dahulu!"); return; }
             const results = rankResults();
             if (results.length === 0) { toast("⚠️ Belum ada data untuk diunduh!"); return; }
+            if (groupList(results).length > 1) { toast("⚠️ Pilih Kelas, Mata Pelajaran, dan Ulangan Harian terlebih dahulu!"); return; }
 
             const first = results[0];
             const t = Storage.loadTeachers().find(x => x.id === state.tid) || {};
-            const judul = `Nilai ${first.mapel || '-'} - Ulangan Harian ke-${first.uh || '-'}`;
+            const judul = `Nilai ${first.mapel || '-'} - Ulangan Harian ke-${first.uh || '-'} - Kelas ${first.cls || '-'}`;
             const q = (x) => '"' + String(x).replace(/"/g, '""') + '"';
             const fmt = (num) => String(num).replace('.', ',');
             const sm = summarize(results);
             const sv = (v) => v === null ? '-' : fmt(v);
 
-            let csv = '\uFEFF' + q(judul) + '\n' + q('Pendidik: ' + (t.name || '-')) + ';' + q('Kelas: ' + (t.cls || '-')) + '\n';
+            let csv = '\uFEFF' + q(judul) + '\n' + q('Pendidik: ' + (t.name || '-')) + ';' + q('Kelas: ' + (first.cls || t.cls || '-')) + '\n';
             csv += q('Rata-rata: ' + sv(sm.avg)) + ';' + q('Tertinggi: ' + sv(sm.max) + (sm.maxN ? ' (' + sm.maxN + ')' : '')) + ';' + q('Terendah: ' + sv(sm.min) + (sm.minN ? ' (' + sm.minN + ')' : '')) + '\n\n';
             csv += '"Peringkat";"Nama";"Kelas";"Nilai";"Benar";"Salah";"Tidak Menjawab";"Jumlah Soal";"Waktu"\n';
             results.forEach((r, idx) => {
@@ -3376,7 +3456,7 @@
                 const r = await gs('login', tid, pin);
                 if (!r.ok) { toast(r.error === 'locked' ? "🚫 Terlalu banyak percobaan. Coba lagi 10 menit lagi." : "❌ PIN Salah!"); if (pinEl) pinEl.value = ''; return; }
                 CLOUD.token = r.token; CLOUD.tid = r.tid; CLOUD.isTeacher = true;
-                state.tid = r.tid; state.rankFilter = 'all';
+                state.tid = r.tid; state.rankFilter = 'all'; state.rankKelas = state.rankMapel = state.rankUH = 'all';
                 const c = await gs('getConfig', r.tid, '');
                 if (c.exists) {
                     config = fixMapelCfg({ ...c.config });
@@ -3555,7 +3635,7 @@
                 </div>`;
         }
         function msOpenExamDash() {
-            state.tid = MS.user.id; config = Storage.loadConfig(state.tid); state.rankFilter = 'all'; state.adminTab = 'rank'; state.page = 'admin'; render();
+            state.tid = MS.user.id; config = Storage.loadConfig(state.tid); state.rankFilter = 'all'; state.rankKelas = state.rankMapel = state.rankUH = 'all'; state.adminTab = 'rank'; state.page = 'admin'; render();
         }
 
         // --- Tab Siswa (admin) ---
