@@ -1931,7 +1931,8 @@
             const qs = r && r.savedQuestionsOrder;
             if (!Array.isArray(qs) || !qs.length || !qs[0]) return null;
             if (qs[0].oi === undefined) return qs;
-            const src = /^TKA/.test(String(r.uh)) ? ((typeof tkaCfg === 'function' && tkaCfg().questions) || []) : (config.questions || []);
+            const cfg = (!r.tid || r.tid === state.tid) ? config : Storage.loadConfig(r.tid);
+            const src = /^TKA/.test(String(r.uh)) ? ((typeof tkaCfg === 'function' && tkaCfg().questions) || []) : ((cfg && cfg.questions) || []);
             const out = qs.map(e => { const q = e && src[e.oi]; return q ? Object.assign({}, q, { _optOrder: e.oo || undefined }) : null; });
             return out.every(Boolean) ? out : null;
         }
@@ -1984,12 +1985,12 @@
         function goDetailQ(i) { const e = document.getElementById('dt-q-' + i); if (e) { if (state.detailFilter !== 'all' && e.style.display === 'none') return; e.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }
 
         function renderDetailModal() {
-            const r = teacherResults().find(x => x.id === state.detailTarget);
+            const r = Storage.loadResults().find(x => x.id === state.detailTarget);
             const qs = r && resQuestions(r);
             if (!r || !qs) { state.detailTarget = null; return ''; }
             const items = qs.map((q, i) => qaDetail(q, (r.ans || {})[i], i));
             const cnt = (k) => items.filter(x => x.st === k).length;
-            const grp = teacherResults().filter(x => grpKey(x) === grpKey(r)).sort((a, b) => (b.score || 0) - (a.score || 0));
+            const grp = Storage.loadResults().filter(x => x.tid === r.tid && grpKey(x) === grpKey(r)).sort((a, b) => (b.score || 0) - (a.score || 0));
             const rank = grp.findIndex(x => x.id === r.id) + 1;
             const f = state.detailFilter || 'all';
             const stale = r.benar !== undefined && (cnt('benar') !== r.benar || cnt('salah') !== r.salah);
@@ -4310,7 +4311,7 @@
             const adm = MS.role === 'admin';
             const tabs = adm ? [['siswa', '🎓 Siswa'], ['guru', '👩‍🏫 Guru'], ['nilai', '📝 Input Nilai'], ['rekap', '📈 Rekap'], ['akun', '🔐 Akun']] : [['nilai', '📝 Input Nilai'], ['rekap', '📈 Rekap']];
             const body = MSUI.tab === 'siswa' ? msSiswaTab() : MSUI.tab === 'guru' ? msGuruTab() : MSUI.tab === 'rekap' ? msRekapTab() : MSUI.tab === 'akun' ? msAkunTab() : msNilaiTab();
-            app.innerHTML = `${MSUI.modal === 'siswa' ? msSiswaModal() : ''}${MSUI.modal === 'guru' ? msGuruModal() : ''}
+            app.innerHTML = `${MSUI.modal === 'siswa' ? msSiswaModal() : ''}${MSUI.modal === 'guru' ? msGuruModal() : ''}${state.detailTarget ? renderDetailModal() : ''}
                 <div class="card">
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px">
                         <h2 style="margin-bottom:0">🏫 ${adm ? 'Admin Sekolah' : 'Guru Mapel'}</h2>
@@ -4490,6 +4491,16 @@
         const msStudents = (cls) => MS.data.students.filter(s => s.cls === cls).sort((a, b) => msSort(a.name, b.name));
         function msAvg(g) { const v = Object.values(g || {}).filter(x => typeof x === 'number'); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length * 10) / 10 : null; }
         function msFilled(cls, mapel) { const g = MS.data.grades[msKey(cls, mapel)] || {}; return msStudents(cls).filter(s => g[s.id] && Object.keys(g[s.id]).length).length; }
+        // Cari hasil ulangan online (selesai) per siswa + UH untuk kelas & mapel yang sedang dipilih (satu kali per render)
+        function ulIndex(cls, mapel) {
+            let all = []; try { all = Storage.loadResults(); } catch (e) {}
+            const idx = {};
+            all.filter(r => r.status === 'done' && r.mapel === mapel && msCls(r.cls) === cls && /^\d+$/.test(String(r.uh))).forEach(r => {
+                const k = String(r.name).trim().toLowerCase() + '|UH' + r.uh;
+                if (!idx[k] || String(r.finishTime || '') > String(idx[k].finishTime || '')) idx[k] = r;
+            });
+            return (name, col) => { const r = idx[String(name).trim().toLowerCase() + '|' + col]; return r && canDetail(r) ? r : null; };
+        }
         function msNilaiTab() {
             const A = msAssigns(), { cls, mapel } = msSel();
             let head = '';
@@ -4501,7 +4512,7 @@
                     <select onchange="msPick(MSUI.cls,this.value)" style="width:auto;margin:0">${MAPEL.map(m => `<option ${m === mapel ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>`;
             }
             if (!cls) return `<h3>Input Nilai</h3>${head}<p style="color:var(--text-muted)">Belum ada kelas atau siswa. ${MS.role === 'admin' ? 'Isi dulu di tab Siswa.' : ''}</p>`;
-            const S = msStudents(cls), cols = msCols(), g = MS.data.grades[msKey(cls, mapel)] || {};
+            const S = msStudents(cls), cols = msCols(), g = MS.data.grades[msKey(cls, mapel)] || {}, ulf = ulIndex(cls, mapel);
             return `<h3>Input Nilai</h3>${head}
                 <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px">
                     <b>${esc(cls)} · ${esc(mapel)}</b><span style="color:var(--text-muted)" id="ms-stat">${msStat(cls, mapel)}</span><span id="ms-status" style="font-weight:700;color:var(--success)">${esc(MSUI.status)}</span>
@@ -4511,9 +4522,9 @@
                     <button class="secondary" style="${smallBtn}" onclick="msFetchOnline()">📥 Ambil nilai ulangan online</button>
                     <button class="secondary" style="${smallBtn}" onclick="msExportNilai()">📤 Ekspor CSV</button>
                 </div>
-                <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0">Isi nilai 0–100. Tekan Enter atau panah bawah untuk pindah ke siswa berikutnya. Nilai tersimpan otomatis.</p>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0">Isi nilai 0–100. Tekan Enter atau panah bawah untuk pindah ke siswa berikutnya. Nilai tersimpan otomatis. Tombol 🔍 di samping nilai UH menampilkan soal mana yang benar dan salah (muncul bila siswa mengerjakan ulangan online).</p>
                 <div class="table-responsive"><table class="data-table"><thead><tr><th>#</th><th>Nama</th>${cols.map(c => `<th style="text-align:center">${asLabel(c)}</th>`).join('')}<th style="text-align:center">Rata-rata</th></tr></thead><tbody>
-                    ${S.length ? S.map((s, i) => `<tr><td>${i + 1}</td><td><b>${esc(s.name)}</b></td>${cols.map(c => `<td><input class="ms-in" id="g-${i}-${c}" type="number" min="0" max="100" step="any" inputmode="decimal" value="${g[s.id] && g[s.id][c] !== undefined ? g[s.id][c] : ''}" style="width:78px;padding:8px;margin:0;text-align:center" onchange="msSet('${s.id}','${c}',this)" onkeydown="msKeyNav(event,${i},'${c}')"></td>`).join('')}<td style="text-align:center" id="avg-${s.id}"><b>${msAvg(g[s.id]) === null ? '-' : msAvg(g[s.id])}</b></td></tr>`).join('') : '<tr><td colspan="' + (cols.length + 3) + '" style="text-align:center;color:var(--text-muted)">Belum ada siswa di kelas ini.</td></tr>'}
+                    ${S.length ? S.map((s, i) => `<tr><td>${i + 1}</td><td><b>${esc(s.name)}</b></td>${cols.map(c => { const rr = ulf(s.name, c); return `<td><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input class="ms-in" id="g-${i}-${c}" type="number" min="0" max="100" step="any" inputmode="decimal" value="${g[s.id] && g[s.id][c] !== undefined ? g[s.id][c] : ''}" style="width:78px;padding:8px;margin:0;text-align:center" onchange="msSet('${s.id}','${c}',this)" onkeydown="msKeyNav(event,${i},'${c}')">${rr ? `<button type="button" title="Lihat soal benar / salah" aria-label="Keterangan soal ${esc(s.name)} ${asLabel(c)}" style="width:auto;margin:0;padding:4px 8px;min-height:36px;font-size:0.9rem" onclick="openDetail('${rr.id}')">🔍</button>` : ''}</div></td>`; }).join('')}<td style="text-align:center" id="avg-${s.id}"><b>${msAvg(g[s.id]) === null ? '-' : msAvg(g[s.id])}</b></td></tr>`).join('') : '<tr><td colspan="' + (cols.length + 3) + '" style="text-align:center;color:var(--text-muted)">Belum ada siswa di kelas ini.</td></tr>'}
                 </tbody></table></div>`;
         }
         function msStat(cls, mapel) {
