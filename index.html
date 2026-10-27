@@ -308,6 +308,13 @@
         .rk-mp { background: var(--warning-light); color: var(--warning); }
         .rk-uh { background: var(--success-light); color: var(--success); }
         .rk-meta { margin-left: auto; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        /* Tombol di tabel hasil */
+        button.rk-btn { width: auto; margin: 0; padding: 6px 12px; min-height: 36px; font-size: 0.8rem; border-radius: 12px; white-space: nowrap; box-shadow: none; gap: 6px; }
+        button.rk-btn.ket { background: var(--primary-light); color: var(--primary); border: 1.5px solid var(--primary); }
+        button.rk-btn.ket.off { background: var(--bg); color: var(--text-muted); border: 1.5px dashed var(--border); font-weight: 600; }
+        button.rk-btn.rst { background: transparent; color: var(--error); border: 1.5px solid var(--error); }
+        td.rk-act { text-align: center; }
+        .rk-kl { background: var(--primary-light); color: var(--primary); }
         /* Keterangan soal benar / salah per siswa */
         .dt-sum { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
         .dt-sum span { padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; }
@@ -1836,13 +1843,14 @@
                     return `
                     <div class="rk-group">
                         <div class="rk-group-head">
+                            <span class="rk-chip rk-kl">🏫 Kelas ${esc(g.cls || '-')}</span>
                             <span class="rk-chip rk-mp">📚 ${esc(g.mapel || '-')}</span>
                             <span class="rk-chip rk-uh">📝 ${esc(uhTxt(g.uh))}</span>
                             <span class="rk-meta">${gsm.n} siswa · selesai ${gsm.done} · rata-rata <b>${show(gsm.avg)}</b></span>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table">
-                                <thead><tr><th>Peringkat</th><th>Nama</th><th>Nilai</th><th>Benar</th><th>Salah</th><th>Tidak Menjawab</th><th>Status</th><th>Aksi</th></tr></thead>
+                                <thead><tr><th>Peringkat</th><th>Nama</th><th>Nilai</th><th>Benar</th><th>Salah</th><th>Tidak Menjawab</th><th>Status</th><th>Keterangan</th><th>Aksi</th></tr></thead>
                                 <tbody>
                                 ${rows.map((r, i) => {
                                     const st = getStats(r);
@@ -1856,7 +1864,8 @@
                                         <td style="color: var(--error); font-weight:700;">${st ? st.salah : '-'}</td>
                                         <td style="color: var(--text-muted); font-weight:700;">${st ? st.kosong : '-'}</td>
                                         <td><span class="status-pill ${isDone ? 'done' : 'progress'}">${isDone ? 'Selesai' : 'Mengerjakan'}</span></td>
-                                        <td><div style="display:flex;gap:6px;flex-wrap:wrap">${canDetail(r) ? `<button style="${smallBtn}" onclick="openDetail('${r.id}')">🔍 Detail</button>` : ''}<button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button></div></td>
+                                        <td class="rk-act">${!isDone ? '<span style="color:var(--text-muted)">-</span>' : (canDetail(r) ? `<button class="rk-btn ket" onclick="openDetail('${r.id}')" title="Lihat soal yang benar dan salah">📋 Lihat Jawaban</button>` : `<button class="rk-btn ket off" onclick="toast('ℹ️ Data jawaban rinci siswa ini tidak tersedia.')" title="Data jawaban rinci tidak tersedia">Tidak tersedia</button>`)}</td>
+                                        <td class="rk-act"><button class="rk-btn rst" onclick="resetResult('${r.id}')" title="Hapus hasil agar siswa bisa mengulang">🔄 Reset</button></td>
                                     </tr>`;
                                 }).join('')}
                                 </tbody>
@@ -1987,7 +1996,11 @@
         function renderDetailModal() {
             const r = Storage.loadResults().find(x => x.id === state.detailTarget);
             const qs = r && resQuestions(r);
-            if (!r || !qs) { state.detailTarget = null; return ''; }
+            if (!r) { state.detailTarget = null; return ''; }
+            if (!qs) return `<div class="modal-overlay"><div class="modal-card text-center"><h3>📋 Keterangan Hasil</h3>
+                <p><b>${esc(r.name)}</b> · Kelas ${esc(r.cls)}<br>${esc(sessLabel(r))}</p>
+                <p style="color:var(--text-muted)">Data jawaban rinci siswa ini tidak tersedia (soal sudah dihapus atau berubah, atau hasil dikirim sebelum fitur ini ada).</p>
+                <button class="secondary" onclick="closeDetail()" style="margin-bottom:0">Tutup</button></div></div>`;
             const items = qs.map((q, i) => qaDetail(q, (r.ans || {})[i], i));
             const cnt = (k) => items.filter(x => x.st === k).length;
             const grp = Storage.loadResults().filter(x => x.tid === r.tid && grpKey(x) === grpKey(r)).sort((a, b) => (b.score || 0) - (a.score || 0));
