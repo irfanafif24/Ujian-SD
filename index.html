@@ -517,6 +517,67 @@
         #img-viewer .iv-bar { display: flex; gap: 10px; padding: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
         #img-viewer .iv-bar button { min-width: 56px; min-height: 48px; font-size: 1.3rem; border-radius: 14px; background: #fff; color: #111; border: 0; font-weight: 800; }
         #img-viewer .iv-close { position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; background: #ef4444 !important; color: #fff !important; }
+
+        /* ===== Mode Exam Browser ===== */
+        body.exam-mode { -webkit-touch-callout: none; overscroll-behavior: none; }
+        body.exam-mode img { -webkit-user-drag: none; user-drag: none; }
+        @media print { body.exam-mode { display: none !important; } }
+        .kiosk-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; background: #0f172a; color: #e2e8f0; padding: 8px 14px; border-radius: 14px; margin-bottom: 10px; font-size: 0.85rem; font-weight: 700; }
+        .kiosk-bar .kb-lock { color: #86efac; }
+        .kiosk-bar .kb-tools { display: flex; gap: 6px; }
+        body.exam-mode .kiosk-bar button { width: auto; min-height: 40px; min-width: 44px; margin: 0; padding: 4px 12px; border-radius: 10px; background: rgba(255,255,255,.14); color: #fff; border: 0; box-shadow: none; font-size: 1rem; }
+        body.exam-mode .exam-header { position: sticky; top: 6px; z-index: 50; background: linear-gradient(90deg, #1e3a8a, #4338ca); border: 0; color: #fff; box-shadow: 0 6px 18px rgba(30,58,138,.35); }
+        body.exam-mode .exam-header .student-info, body.exam-mode .exam-header .student-info small { color: #fff; }
+        body.exam-mode .exam-header .student-info small { color: #bfdbfe; }
+        body.exam-mode .q-text { font-size: calc(1.4rem * var(--exam-fs, 1)); }
+        body.exam-mode .opt-card { font-size: calc(1.15rem * var(--exam-fs, 1)); min-height: 60px; }
+        body.exam-mode .q-passage { font-size: calc(1.05rem * var(--exam-fs, 1)); }
+        body.exam-mode .nav-actions button { min-height: 56px; font-size: 1.1rem; }
+        .exam-progress-text { text-align: center; font-weight: 700; color: var(--text-muted); margin: -6px 0 12px; font-size: 0.95rem; }
+        #fs-overlay { position: fixed; inset: 0; z-index: 99990; background: rgba(15,23,42,.97); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        #fs-overlay .fs-card { background: #fff; color: #111; border-radius: 24px; padding: 28px; max-width: 440px; text-align: center; }
+        #fs-overlay .fs-card button { margin-top: 10px; min-height: 56px; font-size: 1.1rem; }
+
+        /* ===== v3: Tampilan Exam Browser yang ramah anak ===== */
+        body.exam-mode { background: #eef2ff; }
+        body.exam-mode::after, body.exam-mode #net-badge { display: none !important; }
+        body.exam-mode .card { background: var(--card); border: 3px solid #c7d2fe; box-shadow: 0 6px 0 #c7d2fe88; }
+        body.exam-mode .kiosk-bar { position: sticky; top: 0; z-index: 60; margin-bottom: 8px; }
+        body.exam-mode .exam-header { top: 52px; }
+        .exam-title { font-weight: 800; font-size: .95rem; color: #fff; opacity: .95; }
+        .exam-card { padding: 1.25rem; }
+        .q-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .q-type-tag { font-size: .85rem; font-weight: 800; color: #4338ca; background: #e0e7ff; border-radius: 999px; padding: 4px 12px; }
+        .btn-tts { width: auto; margin: 0 0 14px; min-height: 44px; padding: 6px 16px; font-size: 1rem; background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: 0 4px 0 #c7d2fe; }
+        .btn-tts.on { background: #fef9c3; border-color: #f59e0b; color: #92400e; box-shadow: 0 4px 0 #f59e0b; }
+        .exam-dock { position: sticky; bottom: max(8px, env(safe-area-inset-bottom)); z-index: 40; display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; background: var(--card); border: 3px solid #c4b5fd; border-radius: 28px; padding: 10px; box-shadow: 0 -8px 26px rgba(76,29,149,.2); margin: 14px 0 12px; }
+        .exam-dock button { margin: 0; min-height: 60px; font-size: 1.1rem; }
+        .exam-dock .btn-ragu { width: auto; padding: 8px 18px; background: #fff; color: #854d0e; border: 3px solid #fde047; box-shadow: 0 5px 0 #fde047; }
+        .exam-dock .btn-ragu.on { background: linear-gradient(180deg, #fde047, #facc15); color: #422006; border-color: #eab308; box-shadow: 0 5px 0 #a16207; }
+        @media (max-width: 520px) { .exam-dock { grid-template-columns: 1fr 1fr; } .exam-dock .btn-ragu { grid-column: 1 / -1; order: -1; min-height: 52px; } .exam-dock button { font-size: 1rem; } }
+        .tips-bar { background: #fff7ed; border: 2px dashed #fdba74; color: #9a3412; border-radius: 16px; padding: 8px 14px; font-weight: 700; font-size: .9rem; margin-bottom: 12px; text-align: center; }
+        .miss-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 16px; }
+        .miss-chips button { width: auto; min-width: 48px; min-height: 48px; margin: 0; padding: 4px 12px; font-size: 1.05rem; border-radius: 14px; }
+        .done-wrap { text-align: center; margin-top: 24px; }
+        .done-emoji { font-size: 5rem; line-height: 1; animation: sdBounce 1.6s ease-in-out infinite; }
+        .done-stats { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+        .done-stat { background: #e0e7ff; border: 3px solid #c7d2fe; border-radius: 20px; padding: 10px 22px; font-weight: 800; color: #3730a3; }
+        .done-stat b { display: block; font-size: 1.8rem; }
+        .send-ok { color: #047857; font-weight: 800; } .send-wait { color: #b45309; font-weight: 800; }
+        .need { border-color: #f43f5e !important; box-shadow: 0 0 0 4px #fecdd3 !important; animation: shake .35s; }
+        @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+        .help-list { text-align: left; margin: 0 0 16px 20px; line-height: 1.8; font-weight: 600; }
+        @media (prefers-color-scheme: dark) {
+            body.exam-mode { background: #0f172a; }
+            body.exam-mode .card { border-color: #4338ca; box-shadow: 0 6px 0 #0006; }
+            .q-type-tag { background: #312e81; color: #c7d2fe; }
+            .btn-tts { background: #1e293b; color: #c7d2fe; border-color: #4338ca; box-shadow: 0 4px 0 #312e81; }
+            .exam-dock { border-color: #6d28d9; }
+            .exam-dock .btn-ragu { background: #1e293b; color: #fde68a; }
+            .tips-bar { background: #431407; color: #fed7aa; border-color: #c2410c; }
+            .done-stat { background: #312e81; border-color: #4338ca; color: #e0e7ff; }
+        }
+        @media (prefers-reduced-motion: reduce) { .done-emoji { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -645,8 +706,12 @@
             return isParts(ans).some(a => [...isVariants(a)].some(v => v && keyV.has(v)));
         }
 
-        // Poin maksimal soal: menjodohkan = jumlah pasangan, jenis lain = 1
-        function maxPts(q) { return (q && q.ty === 'mj') ? Math.max(1, (q.p || []).length) : 1; }
+        // Poin maksimal soal: menjodohkan = jumlah pasangan, pilihan kompleks = jumlah kunci benar, jenis lain = 1
+        function maxPts(q) {
+            if (q && q.ty === 'mj') return Math.max(1, (q.p || []).length);
+            if (q && q.ty === 'pk') return Math.max(1, new Set((q.ks || []).map(Number)).size);
+            return 1;
+        }
 
         function pts(q, ans) {
             if (!has(q, ans)) return 0;
@@ -657,11 +722,13 @@
             }
             if (q.ty === 'pk') {
                 if (!Array.isArray(ans) || !Array.isArray(q.ks)) return 0;
+                // 1 poin untuk setiap jawaban benar yang dipilih (soal dengan 3 kunci bernilai maksimal 3).
+                // Setiap pilihan yang salah mengurangi 1 poin (minimal 0) agar tidak bisa menang dengan mencentang semua opsi.
                 const setAns = new Set(ans.map(Number));
                 const setKeys = new Set(q.ks.map(Number));
-                if (setAns.size !== setKeys.size) return 0;
-                for (let k of setKeys) if (!setAns.has(k)) return 0;
-                return 1;
+                let benarDipilih = 0, salahDipilih = 0;
+                setAns.forEach(a => { if (setKeys.has(a)) benarDipilih++; else salahDipilih++; });
+                return Math.max(0, benarDipilih - salahDipilih);
             }
             if (q.ty === 'dd') {
                 const A = ddParse(q.t || '').ans; if (!Array.isArray(ans) || !A.length) return 0;
@@ -1038,6 +1105,8 @@
             else if (state.page === 'admin') admin(app);
             else if (state.page === 'master-auth') masterAuth(app);
             else if (state.page === 'master') masterApp(app);
+            else if (state.page === 'done') doneScreen(app);
+            if (state.page === 'exam') examAfterRender(); else examLeave();
         }
 
         function saveHomeInputs() {
@@ -1177,7 +1246,17 @@
             saveHomeInputs();
             const name = state.studentName, cls = state.studentClass;
             if (!state.tid) { toast("⚠️ Pilih pendidik terlebih dahulu!"); return; }
-            if (!name || !cls || !state.studentMapel || !state.studentUH) { toast("⚠️ Nama, Kelas, Mata Pelajaran, dan Ulangan Harian wajib diisi!"); return; }
+            if (!name || !cls || !state.studentMapel || !state.studentUH) {
+                const miss = [];
+                if (!state.studentMapel) miss.push('.mapel-grid');
+                if (!state.studentUH) miss.push('#input-uh');
+                if (!cls) miss.push('#input-class-sel', '#input-class');
+                if (!name) miss.push('.step select:not(#input-teacher):not(#input-class-sel)', '.step input#input-name');
+                let first = null;
+                miss.forEach(sel => document.querySelectorAll(sel).forEach(el => { if (el.type === 'hidden') return; el.classList.add('need'); if (!first) first = el; setTimeout(() => el.classList.remove('need'), 2500); }));
+                if (first && first.scrollIntoView) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                toast("⚠️ Lengkapi dulu bagian yang berwarna merah ya!"); return;
+            }
             if (CLOUD.on && !CLOUD.uid) { toast("⏳ Menghubungkan ke server, coba lagi sebentar."); return; }
             if (CLOUD.on && !CLOUD.configExists) { toast("⚠️ Ujian belum disiapkan oleh guru."); return; }
             const _qMU = (config.questions || []).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH));
@@ -1186,6 +1265,7 @@
             const tk = (config.tokens || {})[state.studentMapel + '||' + state.studentUH];
             if (!tk) { toast("⚠️ Token untuk ulangan ini belum dibuat guru."); return; }
             if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast("❌ Token salah. Minta token ke guru."); return; }
+            examEnterFs();
             const dn = Storage.loadResults().find(r => r.tid === state.tid && r.status === 'done' && r.name.toLowerCase() === name.toLowerCase() && r.cls.toLowerCase() === cls.toLowerCase() && r.mapel === state.studentMapel && String(r.uh) === String(state.studentUH));
             if (dn) {
                 const msg = "ℹ️ Ulangan ini sudah dikumpulkan. Minta guru mereset jika perlu mengulang.";
@@ -1275,6 +1355,8 @@
                     finishExam(true);
                 } else {
                     state.result.remainingMs = rem;
+                    state._warn = state._warn || {};
+                    [[600000, '⏰ Sisa waktu 10 menit lagi!'], [300000, '⏰ Sisa waktu 5 menit lagi. Periksa jawabanmu ya!'], [60000, '⏰ Sisa 1 menit! Segera kumpulkan.']].forEach(([t, m]) => { if (rem <= t && rem > t - 5000 && !state._warn[t]) { state._warn[t] = 1; toast(m); } });
                     try { localStorage.setItem('ujian_rem', JSON.stringify({ id: state.result.id, rem })); } catch (e) {}
                     const timerBadge = document.getElementById('timer-badge-el');
                     if (timerBadge) {
@@ -1284,6 +1366,67 @@
                 }
             }, 1000);
         }
+
+        // ===== MODE EXAM BROWSER =====
+        const EXB = { fs: 1, skip: false, trap: false };
+        try { EXB.fs = parseFloat(localStorage.getItem('exb_fs')) || 1; } catch (e) {}
+        document.documentElement.style.setProperty('--exam-fs', EXB.fs);
+        const examOn = () => state.page === 'exam' && state.isExamActive;
+        const examFsSupported = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled) && !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+        const examInFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+        function examEnterFs() {
+            try { cheatPause(3000); const d = document.documentElement; const pr = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (pr && pr.catch) pr.catch(() => {}); } catch (e) {}
+            setTimeout(() => { if (state.page !== 'exam') examExitFs(); }, 6000);
+        }
+        function examExitFs() { try { if (examInFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
+        function examToggleFs() { if (examInFs()) { EXB.skip = true; examExitFs(); } else { EXB.skip = false; examEnterFs(); } }
+        function examSetFont(d) {
+            EXB.fs = Math.min(1.5, Math.max(0.85, Math.round((EXB.fs + d) * 100) / 100));
+            document.documentElement.style.setProperty('--exam-fs', EXB.fs);
+            try { localStorage.setItem('exb_fs', EXB.fs); } catch (e) {}
+        }
+        function examCheckFs() {
+            const old = document.getElementById('fs-overlay');
+            if (!(examOn() && examFsSupported() && !examInFs() && !EXB.skip)) { if (old) old.remove(); return; }
+            if (old) return;
+            const d = document.createElement('div'); d.id = 'fs-overlay';
+            d.innerHTML = '<div class="fs-card"><div style="font-size:3.5rem">🔒</div><h2>Mode Ujian Aman</h2><p>Ujian berjalan dalam layar penuh. Ketuk tombol di bawah untuk melanjutkan.</p><button id="fs-go">⛶ Masuk Layar Penuh</button><button id="fs-skip" class="secondary" style="display:none">Layar penuh tidak bisa? Lanjutkan saja</button></div>';
+            document.body.appendChild(d);
+            d.querySelector('#fs-go').onclick = () => { examEnterFs(); setTimeout(() => { if (!examInFs()) { const b = document.getElementById('fs-skip'); if (b) b.style.display = 'block'; } }, 800); };
+            d.querySelector('#fs-skip').onclick = () => { EXB.skip = true; d.remove(); cheatPause(2000); };
+        }
+        function examAfterRender() {
+            if (state._lastQ !== state.currentQ) { state._lastQ = state.currentQ; window.scrollTo(0, 0); stopSpeech(); }
+            if (!EXB.trap) { EXB.trap = true; try { history.pushState({ exam: 1 }, ''); } catch (e) {} }
+            examTick(); examCheckFs();
+        }
+        function examLeave() {
+            const o = document.getElementById('fs-overlay'); if (o) o.remove();
+            examExitFs(); EXB.skip = false; state._warn = {}; state._lastQ = null; stopSpeech(); state.showHelp = false;
+        }
+        function examTick() {
+            const c = document.getElementById('kiosk-clock'); if (c) c.textContent = '🕒 ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            const n = document.getElementById('kiosk-net'); if (n) n.textContent = navigator.onLine ? '📶 Tersambung' : '⚠️ Offline: jawaban tersimpan di perangkat';
+        }
+        setInterval(examTick, 1000);
+        ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { cheatPause(2500); examCheckFs(); }));
+        const examField = (e) => { const t = e.target && e.target.nodeType === 1 ? e.target : (e.target && e.target.parentElement); return !!(t && t.closest && t.closest('input,textarea')); };
+        ['contextmenu', 'copy', 'cut', 'paste', 'dragstart', 'selectstart'].forEach(ev => document.addEventListener(ev, (e) => {
+            if (!examOn()) return;
+            if (ev === 'selectstart' && examField(e)) return;
+            e.preventDefault();
+        }, true));
+        document.addEventListener('keydown', (e) => {
+            if (!examOn()) return;
+            const k = (e.key || '').toLowerCase(), c = e.ctrlKey || e.metaKey, inF = examField(e);
+            if (k === 'f12' || k === 'printscreen' || (c && e.shiftKey && ['i', 'j', 'c', 's'].includes(k)) || (c && ['u', 's', 'p', 'c', 'x', 'v'].includes(k)) || (c && k === 'a' && !inF)) { e.preventDefault(); return; }
+            if (!inF && !state.showConfirmModal && !document.getElementById('fs-overlay') && !document.getElementById('cheat-overlay') && !document.getElementById('img-viewer')) {
+                if (k === 'arrowright') { e.preventDefault(); nextQuestion(); }
+                else if (k === 'arrowleft') { e.preventDefault(); prevQuestion(); }
+            }
+        }, true);
+        window.addEventListener('beforeunload', (e) => { if (examOn()) { e.preventDefault(); e.returnValue = ''; } });
+        window.addEventListener('popstate', () => { if (examOn()) { try { history.pushState({ exam: 1 }, ''); } catch (e) {} toast('ℹ️ Tombol kembali dinonaktifkan. Gunakan tombol Kumpulkan Ujian bila sudah selesai.'); } });
 
         function exam(app) {
             const q = state.questions[state.currentQ];
@@ -1296,6 +1439,17 @@
             app.className = 'container exam-wide';
 
             app.innerHTML = `
+                <div class="kiosk-bar">
+                    <span class="kb-lock">🔒 Mode Ujian Aman</span>
+                    <span id="kiosk-clock">🕒 --:--</span>
+                    <span id="kiosk-net">📶 Tersambung</span>
+                    <span class="kb-tools">
+                        <button onclick="state.showHelp=true;render()" aria-label="Bantuan">❓</button>
+                        <button onclick="examSetFont(-0.1);render()" aria-label="Kecilkan huruf">A−</button>
+                        <button onclick="examSetFont(0.1);render()" aria-label="Besarkan huruf">A+</button>
+                        <button onclick="examToggleFs()" aria-label="Layar penuh">⛶</button>
+                    </span>
+                </div>
                 <div class="exam-header">
                     <div class="student-info">
                         ${esc(state.studentName)}
@@ -1311,30 +1465,29 @@
                         <div class="progress-fill" style="width: ${progressPct}%;"></div>
                     </div>
                 </div>
+                <div class="exam-progress-text">✅ Terjawab ${answeredCount} dari ${totalQ} soal</div>
 
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span class="q-badge">Soal ${state.currentQ + 1} dari ${totalQ}</span>
-                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">${(q.ty || 'pg').toUpperCase()}</span>
+                <div class="card exam-card">
+                    <div class="q-meta">
+                        <span class="q-badge" style="margin-bottom:0">Soal ${state.currentQ + 1} dari ${totalQ}</span>
+                        <span class="q-type-tag">${esc(qTypeHelp(q.ty))}</span>
                     </div>
-                    
+                    ${config.noTts ? '' : `<button class="btn-tts ${state._speaking ? 'on' : ''}" onclick="readAloud()" aria-label="Dengarkan soal">${state._speaking ? '⏹️ Berhenti' : '🔊 Dengarkan soal'}</button>`}
                     ${q.tx ? `<div class="q-passage">${esc(q.tx)}</div>` : ''}
                     ${q.ty === 'dd' ? '' : `<div class="q-text">${esc(q.t)}</div>`}
                     ${q.img ? `<img src="${q.img}" class="q-img q-img-tap" alt="Gambar Soal" onclick="openImgViewer(this.src)" title="Sentuh untuk memperbesar"><div class="q-img-hint">🔍 Sentuh gambar untuk memperbesar</div>` : ''}
                     ${renderQuestionInput(q, state.currentQ)}
 
-                    <label class="checkbox-container doubt-box" style="margin-bottom: 20px;">
-                        <input type="checkbox" ${isDoubtNow ? 'checked' : ''} onchange="toggleDoubt(${state.currentQ})">
-                        <span>🤔 Ragu-ragu</span>
-                    </label>
-
-                    <div class="nav-actions">
-                        <button class="secondary" onclick="prevQuestion()" ${state.currentQ === 0 ? 'disabled' : ''}>← Sblm</button>
-                        <button onclick="nextQuestion()" ${state.currentQ === totalQ - 1 ? 'disabled' : ''}>Slanjut →</button>
-                    </div>
-
-                    <button class="success" onclick="state.showConfirmModal=true; render();">🌟 Kumpulkan Ujian</button>
                 </div>
+
+                <div class="exam-dock">
+                    <button class="secondary" onclick="prevQuestion()" ${state.currentQ === 0 ? 'disabled' : ''}>← Sebelumnya</button>
+                    <button class="btn-ragu ${isDoubtNow ? 'on' : ''}" onclick="toggleDoubt(${state.currentQ})" aria-pressed="${isDoubtNow}">🤔 ${isDoubtNow ? 'Ragu ✓' : 'Ragu-ragu'}</button>
+                    ${state.currentQ === totalQ - 1
+                        ? `<button class="success" onclick="state.showConfirmModal=true; render();">🌟 Kumpulkan</button>`
+                        : `<button onclick="nextQuestion()">Selanjutnya →</button>`}
+                </div>
+                <div style="text-align:center;margin-bottom:8px"><button class="secondary" style="width:auto;display:inline-flex;margin:0;min-height:48px" onclick="state.showConfirmModal=true; render();">🌟 Selesai &amp; Kumpulkan Ujian</button></div>
 
                 <div class="q-nav-panel">
                     <div class="q-nav-title">Soal</div>
@@ -1355,25 +1508,115 @@
                 </div>
 
                 ${state.showConfirmModal ? renderConfirmModal(answeredCount, totalQ, doubtCount) : ''}
+                ${state.showHelp ? renderHelpModal() : ''}
             `;
         }
 
+        function qTypeHelp(ty) {
+            return ({ pg: '🔘 Pilih satu jawaban', pk: '☑️ Pilih lebih dari satu', is: '✏️ Ketik jawaban', dd: '🧩 Seret kata', mj: '🔗 Pasangkan', fl: '🃏 Cari pasangan kartu' })[ty || 'pg'] || '';
+        }
+        function renderHelpModal() {
+            return `<div class="modal-overlay"><div class="modal-card text-center">
+                <div style="font-size:3rem;line-height:1">❓</div>
+                <h3>Cara Mengerjakan</h3>
+                <ul class="help-list">
+                    <li>Ketuk jawaban yang menurutmu benar.</li>
+                    <li>Tombol <b>Selanjutnya</b> dan <b>Sebelumnya</b> ada di bawah layar. Kamu juga bisa menggeser layar ke kiri atau kanan.</li>
+                    <li>Nomor <b style="color:#10b981">hijau</b> = sudah dijawab, <b style="color:#ca8a04">kuning</b> = ragu-ragu, putih = belum.</li>
+                    <li>Tombol <b>A+</b> membesarkan huruf. Tombol <b>🔊</b> membacakan soal.</li>
+                    <li>Jangan keluar dari halaman ujian ya. Jawabanmu tersimpan otomatis.</li>
+                </ul>
+                <button class="success" onclick="state.showHelp=false;render()">Mengerti 👍</button>
+            </div></div>`;
+        }
+        function jumpFromModal(i) { state.showConfirmModal = false; goToQuestion(i); }
         function renderConfirmModal(answeredCount, totalQ, doubtCount = 0) {
+            const res = state.result || { ans: {}, doubt: {} };
+            const empty = [], doubt = [];
+            state.questions.forEach((q, i) => { if (!has(q, res.ans[i])) empty.push(i); if (res.doubt && res.doubt[i]) doubt.push(i); });
+            const chips = (arr, bg, fg) => `<div class="miss-chips">${arr.map(i => `<button style="background:${bg};color:${fg};box-shadow:none;border:2px solid ${fg}" onclick="jumpFromModal(${i})">${i + 1}</button>`).join('')}</div>`;
             return `
                 <div class="modal-overlay">
                     <div class="modal-card text-center">
+                        <div style="font-size:3rem;line-height:1">📮</div>
                         <h3>Kumpulkan Ujian?</h3>
-                        <p style="color: var(--text-muted); margin-bottom: 20px;">
-                            💪 Kamu telah menjawab <b>${answeredCount}</b> dari <b>${totalQ}</b> soal. Pastikan semua soal telah terisi!
-                            ${doubtCount > 0 ? `<br>🟡 Masih ada <b>${doubtCount}</b> soal yang ditandai ragu-ragu.` : ''}
+                        <p style="color: var(--text-muted); margin-bottom: 8px;">
+                            💪 Kamu telah menjawab <b>${answeredCount}</b> dari <b>${totalQ}</b> soal.
                         </p>
+                        ${empty.length ? `<p style="margin-bottom:0"><b>⚪ Belum dijawab:</b> ketuk nomor untuk kembali ke soal itu.</p>${chips(empty, '#fff', '#4338ca')}` : '<p style="color:var(--success);font-weight:800">🎉 Semua soal sudah dijawab!</p>'}
+                        ${doubt.length ? `<p style="margin-bottom:0"><b>🟡 Ragu-ragu:</b></p>${chips(doubt, '#fde047', '#713f12')}` : ''}
+                        <p style="color: var(--text-muted); font-size:.9rem">Setelah dikumpulkan, jawaban tidak bisa diubah lagi.</p>
                         <div style="display: flex; gap: 12px;">
-                            <button class="secondary" onclick="state.showConfirmModal=false; render();">Batal</button>
+                            <button class="secondary" onclick="state.showConfirmModal=false; render();">Periksa lagi</button>
                             <button class="success" onclick="finishExam(false)">🌟 Ya, Kumpulkan</button>
                         </div>
                     </div>
                 </div>
             `;
+        }
+
+        // ===== Baca soal (suara), geser layar, pintasan huruf =====
+        function speechText() {
+            const q = state.questions[state.currentQ]; if (!q) return '';
+            const parts = [];
+            if (q.tx) parts.push(q.tx);
+            parts.push(q.ty === 'dd' ? String(q.t).replace(/\{[^}]*\}/g, ' titik titik ') : q.t);
+            if (q.ty === 'pg' || q.ty === 'pk') {
+                const ord = q._optOrder || (q.o || []).map((_, i) => i);
+                ord.forEach((oi, di) => parts.push(String.fromCharCode(65 + di) + '. ' + q.o[oi]));
+            }
+            return parts.join('. ');
+        }
+        function stopSpeech() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} state._speaking = false; }
+        function readAloud() {
+            if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { toast('⚠️ Perangkat ini belum mendukung suara.'); return; }
+            if (state._speaking) { stopSpeech(); render(); return; }
+            const u = new SpeechSynthesisUtterance(speechText());
+            u.lang = state.studentMapel === 'Bahasa Inggris' ? 'en-US' : 'id-ID'; u.rate = 0.9;
+            u.onend = u.onerror = () => { state._speaking = false; if (state.page === 'exam') render(); };
+            state._speaking = true; speechSynthesis.cancel(); speechSynthesis.speak(u); render();
+        }
+        (function swipeNav() {
+            let sx = 0, sy = 0, ok = false;
+            document.addEventListener('touchstart', (e) => {
+                const t = e.target, bad = t.closest && t.closest('input,textarea,select,.dd-chip,.dd-blank,.q-nav-panel,#img-viewer,.modal-overlay,#fs-overlay,#cheat-overlay,.exam-dock');
+                ok = examOn() && !bad && e.touches.length === 1; if (ok) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
+            }, { passive: true });
+            document.addEventListener('touchend', (e) => {
+                if (!ok) return; ok = false;
+                const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+                if (Math.abs(dx) > 110 && Math.abs(dy) < 45 && !state.showConfirmModal && !state.showHelp) { if (dx < 0) nextQuestion(); else prevQuestion(); }
+            }, { passive: true });
+        })();
+        document.addEventListener('keydown', (e) => {
+            if (!examOn() || examField(e) || e.ctrlKey || e.metaKey || e.altKey) return;
+            if (state.showConfirmModal || state.showHelp || document.getElementById('fs-overlay') || document.getElementById('cheat-overlay') || document.getElementById('img-viewer')) return;
+            const q = state.questions[state.currentQ], k = (e.key || '').toLowerCase();
+            if (!q || !/^[a-f]$/.test(k)) return;
+            const ord = q._optOrder || (q.o || []).map((_, i) => i), di = k.charCodeAt(0) - 97;
+            if (di >= ord.length) return;
+            if (q.ty === 'pg' || !q.ty) { e.preventDefault(); saveAnswer(state.currentQ, ord[di]); }
+            else if (q.ty === 'pk') { e.preventDefault(); togglePKAnswer(state.currentQ, ord[di]); }
+        }, true);
+
+        // ===== Layar selesai ramah anak =====
+        function doneScreen(app) {
+            const d = state.doneInfo || { name: '', answered: 0, total: 0, auto: false };
+            const pending = (typeof outboxRead === 'function' && CLOUD.on) ? outboxRead().length > 0 : false;
+            app.className = 'container';
+            app.innerHTML = `<div class="card done-wrap">
+                <div class="done-emoji">🎉</div>
+                <h2>${d.auto ? 'Waktu habis, ' : 'Hebat, '}${esc(d.name)}!</h2>
+                <p style="font-size:1.1rem">${d.auto ? 'Ulanganmu otomatis dikumpulkan.' : 'Kamu sudah selesai mengerjakan ulangan.'}</p>
+                <div class="done-stats">
+                    <div class="done-stat"><b>${d.answered}</b>soal dijawab</div>
+                    <div class="done-stat"><b>${d.total}</b>jumlah soal</div>
+                </div>
+                <p class="${pending ? 'send-wait' : 'send-ok'}">${pending ? '📡 Menunggu koneksi untuk mengirim. Jangan tutup halaman ini.' : '✅ Jawabanmu sudah terkirim ke gurumu.'}</p>
+                <button class="success btn-start" onclick="state.page='home';state.doneInfo=null;render()">🏠 Kembali ke Beranda</button>
+            </div>`;
+            clearTimeout(state._doneT);
+            if (pending) state._doneT = setTimeout(() => { if (state.page === 'done') render(); }, 3000);
         }
 
         function prevQuestion() { flushIS(); if (state.currentQ > 0) { state.currentQ--; persistProgress(); render(); } }
@@ -1409,8 +1652,11 @@
             if (autoSubmit) toast("⏰ Waktu habis! Ujian otomatis dikumpulkan.");
             else toast("✅ Ujian berhasil dikumpulkan! Hebat!");
 
-            state.page = 'home';
-            render();
+            const st = computeStats(state.questions, state.result.ans);
+            state.doneInfo = { name: state.studentName, answered: st.total - st.kosong, total: st.total, auto: !!autoSubmit };
+            state.studentToken = ''; state.showHelp = false; stopSpeech();
+            state.page = 'done';
+            render(); window.scrollTo(0, 0);
         }
 
         function admin(app) {
@@ -2655,7 +2901,7 @@
         const Q_GUIDE = {
             pg: { n: 'Pilihan Ganda (PG)', d: 'Siswa memilih satu jawaban benar dari beberapa opsi.', s: ['Tulis pertanyaan di kolom Teks Pertanyaan.', 'Isi opsi jawaban (minimal 2). Pakai tombol + Tambah Opsi atau X untuk mengatur jumlahnya.', 'Pilih Kunci Jawaban Benar dari daftar.'], e: 'Pertanyaan: Berapa hasil 5 + 7? Opsi: 10, 11, 12, 13. Kunci: Opsi 3.', t: 'Benar = 1 poin, salah = 0. Gambar dan teks sisipan boleh ditambahkan.' },
             is: { n: 'Isian Singkat (IS)', d: 'Siswa mengetik jawaban singkat sendiri.', s: ['Tulis pertanyaan.', 'Isi Kunci Jawaban. Beri tanda | atau kata "atau" untuk beberapa variasi jawaban yang dianggap benar.'], e: 'Pertanyaan: Ibukota Indonesia adalah... Kunci: jakarta|dki jakarta', t: 'Huruf besar/kecil, spasi (ganda maupun tanpa spasi), tanda baca di ujung, dan format angka (3,5 = 3.5) tidak dibedakan. Jika jawaban siswa atau kunci memakai kata "atau", cukup satu bagian yang cocok dianggap benar. Ejaan huruf tetap harus sama. Benar = 1 poin.' },
-            pk: { n: 'Pilihan Kompleks (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Nilai penuh hanya jika pilihan siswa sama persis dengan kunci (tidak ada nilai sebagian).' },
+            pk: { n: 'Pilihan Kompleks (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Setiap jawaban benar yang dicentang siswa bernilai 1 poin, jadi soal dengan 3 kunci bernilai maksimal 3 poin. Setiap pilihan yang salah mengurangi 1 poin (nilai soal tidak kurang dari 0).' },
             mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.', 'Tambahkan Jawaban Pengecoh bila perlu; tombol Hapus Soal menghapus item kiri tetapi jawabannya tetap ada sebagai pengecoh.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Setiap pasangan yang benar bernilai 1 poin (soal dengan 4 pasangan bernilai maksimal 4 poin). Tulis item kanan dengan jelas.' },
             fl: { n: 'Flashcard (FL)', d: 'Permainan kartu terbalik: siswa mencari pasangan kartu yang sama.', s: ['Tulis instruksi singkat.', 'Isi Pasangan Data: tiap pasangan menjadi dua kartu yang harus dicocokkan.'], e: 'Kiri: 3 + 4, kanan: 7. Kiri: 2 x 5, kanan: 10.', t: 'Nilai = jumlah pasangan yang ditemukan dibagi total pasangan. Pakai 4 sampai 8 pasangan agar layar tidak penuh.' },
             dd: { n: 'Melengkapi Kalimat Seret & Lepas (DD)', d: 'Siswa menyeret kata ke kotak kosong di dalam kalimat.', s: ['Tulis kalimat di Teks Pertanyaan, lalu beri tanda kurung kurawal { } pada kata yang harus diisi siswa.', 'Isi Kata Pengecoh (opsional) dipisah koma agar pilihan lebih beragam.', 'Gambar dan teks sisipan (opsional) tampil di atas kalimat, sama seperti tipe PG, PK, dan IS.'], e: 'Ibu pergi ke {pasar} membeli {sayur}. Pengecoh: sekolah, buku.', t: 'Kalimat itu sendiri tampil ke siswa dengan kotak kosong, jadi jawaban di dalam { } tidak terlihat. Nilai sebagian: tiap kotak benar dihitung proporsional. Di HP, ketuk kata lalu ketuk kotaknya.' }
@@ -2902,7 +3148,7 @@
         const IMP_GUIDE = [
             ['Jenis soal', 'Kode (kolom Tipe)', 'Cara mengisi'],
             ['Pilihan Ganda', 'PG', 'Isi Pertanyaan dan Opsi 1 sampai 6 (minimal 2 opsi). Kolom Kunci diisi satu huruf: A = Opsi 1, B = Opsi 2, dst.'],
-            ['Pilihan Kompleks', 'PK', 'Sama seperti PG, tetapi Kunci diisi semua huruf yang benar dipisah koma, misalnya A,C,E.'],
+            ['Pilihan Kompleks', 'PK', 'Sama seperti PG, tetapi Kunci diisi semua huruf yang benar dipisah koma, misalnya A,C,E. Tiap jawaban benar bernilai 1 poin (contoh A,C,E = maksimal 3 poin).'],
             ['Isian Singkat', 'IS', 'Kunci diisi jawaban yang benar. Beberapa variasi jawaban dipisah tanda |, misalnya jakarta|dki jakarta. Kolom Opsi dikosongkan.'],
             ['Melengkapi Kalimat (seret dan lepas)', 'DD', 'Tulis kalimat di Pertanyaan dan beri kurung kurawal pada kata jawaban, misalnya Ibu ke {pasar}. Kata pengecoh (opsional) ditulis di kolom Pengecoh, dipisah koma.'],
             ['Menjodohkan', 'MJ', 'Setiap kolom Opsi diisi satu pasangan dengan format kiri => kanan, misalnya Kucing => Ikan. Minimal 2 pasangan.'],
@@ -3235,6 +3481,10 @@
                         <input type="checkbox" id="cfg-shuffle-o" ${config.shuffleO ? 'checked' : ''}>
                         <span>Acak urutan pilihan jawaban per siswa</span>
                     </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="cfg-tts" ${config.noTts ? '' : 'checked'}>
+                        <span>Tampilkan tombol 🔊 "Dengarkan soal" untuk siswa</span>
+                    </label>
                 </div>
 
                 <button class="success" onclick="saveSettings()">Simpan Pengaturan</button>
@@ -3250,6 +3500,7 @@
             }
             config.shuffleQ = document.getElementById('cfg-shuffle-q').checked;
             config.shuffleO = document.getElementById('cfg-shuffle-o').checked;
+            config.noTts = !document.getElementById('cfg-tts').checked;
 
             Storage.saveConfig(config);
             if (quiet !== true) toast("✅ Pengaturan berhasil disimpan!");
