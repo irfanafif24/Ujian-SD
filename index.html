@@ -308,6 +308,33 @@
         .rk-mp { background: var(--warning-light); color: var(--warning); }
         .rk-uh { background: var(--success-light); color: var(--success); }
         .rk-meta { margin-left: auto; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        /* Keterangan soal benar / salah per siswa */
+        .dt-sum { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+        .dt-sum span { padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; }
+        .dt-s-benar { background: var(--success-light); color: var(--success); }
+        .dt-s-salah { background: var(--error-light); color: var(--error); }
+        .dt-s-kosong { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+        .dt-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .dt-chip { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; cursor: pointer; border: 2px solid transparent; }
+        .dt-chip.benar { background: var(--success-light); color: var(--success); border-color: var(--success); }
+        .dt-chip.salah { background: var(--error-light); color: var(--error); border-color: var(--error); }
+        .dt-chip.kosong { background: var(--bg); color: var(--text-muted); border-color: var(--border); }
+        .dt-filter { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .dt-filter button { width: auto; margin: 0; padding: 6px 12px; font-size: 0.8rem; min-height: 36px; }
+        .dt-filter button.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .dt-item { border: 1px solid var(--border); border-left-width: 6px; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; background: var(--card); }
+        .dt-item.benar { border-left-color: var(--success); }
+        .dt-item.salah { border-left-color: var(--error); }
+        .dt-item.kosong { border-left-color: var(--border); }
+        .dt-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+        .dt-no { font-weight: 800; color: var(--text-muted); }
+        .dt-badge { padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; }
+        .dt-note { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .dt-q { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; overflow-wrap: anywhere; }
+        .dt-line { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.88rem; margin-bottom: 3px; overflow-wrap: anywhere; }
+        .dt-line > span { color: var(--text-muted); min-width: 7.5rem; }
+        .dt-ok-t { color: var(--success); font-weight: 800; }
+        .dt-bad-t { color: var(--error); font-weight: 800; }
         .pill-hi, .pill-lo { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-left: 6px; }
         .pill-hi { background-color: var(--success-light); color: var(--success); }
         .pill-lo { background-color: var(--error-light); color: var(--error); }
@@ -1682,6 +1709,7 @@
                 ${state.resetTarget ? renderResetModal() : ''}
                 ${state.showDeleteModal ? renderDeleteModal() : ''}
                 ${state.showBulkDeleteModal ? renderBulkDeleteModal() : ''}
+                ${state.detailTarget ? renderDetailModal() : ''}
                 
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
@@ -1828,7 +1856,7 @@
                                         <td style="color: var(--error); font-weight:700;">${st ? st.salah : '-'}</td>
                                         <td style="color: var(--text-muted); font-weight:700;">${st ? st.kosong : '-'}</td>
                                         <td><span class="status-pill ${isDone ? 'done' : 'progress'}">${isDone ? 'Selesai' : 'Mengerjakan'}</span></td>
-                                        <td><button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button></td>
+                                        <td><div style="display:flex;gap:6px;flex-wrap:wrap">${canDetail(r) ? `<button style="${smallBtn}" onclick="openDetail('${r.id}')">🔍 Detail</button>` : ''}<button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button></div></td>
                                     </tr>`;
                                 }).join('')}
                                 </tbody>
@@ -1896,6 +1924,93 @@
             `;
         }
 
+        // ===== Keterangan soal benar / salah per siswa =====
+        // Mode lokal: soal tersimpan utuh di hasil. Mode online: hanya indeks soal asli (oi) + urutan opsi (oo),
+        // sehingga soal diambil dari bank soal guru.
+        function resQuestions(r) {
+            const qs = r && r.savedQuestionsOrder;
+            if (!Array.isArray(qs) || !qs.length || !qs[0]) return null;
+            if (qs[0].oi === undefined) return qs;
+            const src = /^TKA/.test(String(r.uh)) ? ((typeof tkaCfg === 'function' && tkaCfg().questions) || []) : (config.questions || []);
+            const out = qs.map(e => { const q = e && src[e.oi]; return q ? Object.assign({}, q, { _optOrder: e.oo || undefined }) : null; });
+            return out.every(Boolean) ? out : null;
+        }
+        function canDetail(r) { return !!(r && r.status === 'done' && r.ans && resQuestions(r)); }
+
+        function qaDetail(q, a, i) {
+            const ty = q.ty || 'pg', answered = has(q, a);
+            const mx = maxPts(q), got = answered ? pts(q, a) : 0;
+            const st = !answered ? 'kosong' : (got >= mx ? 'benar' : 'salah');
+            const partial = st === 'salah' && got > 0;
+            const mark = (b) => b ? '<span class="dt-ok-t">✓</span>' : '<span class="dt-bad-t">✗</span>';
+            const line = (label, val) => `<div class="dt-line"><span>${label}</span><b>${val}</b></div>`;
+            const none = '<i style="font-weight:400">(tidak dijawab)</i>';
+            const opt = (k) => (q.o && q.o[k] !== undefined) ? esc(q.o[k]) : '-';
+            const nm = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase();
+            let body = '';
+            if (ty === 'pg') {
+                body = line('Jawaban siswa', answered ? opt(a) : none);
+                if (st !== 'benar') body += line('Jawaban benar', opt(q.a));
+            } else if (ty === 'is') {
+                body = line('Jawaban siswa', answered ? esc(a) : none);
+                if (st !== 'benar') body += line('Kunci jawaban', esc(String(q.k || '').split('|').map(x => x.trim()).filter(Boolean).join(' / ')));
+            } else if (ty === 'pk') {
+                body = line('Jawaban siswa', answered ? (Array.isArray(a) ? a : []).map(opt).join(', ') : none);
+                if (st !== 'benar') body += line('Jawaban benar', [...new Set((q.ks || []).map(Number))].map(opt).join(', '));
+            } else if (ty === 'mj') {
+                (q.p || []).forEach((p, k) => {
+                    const u = Array.isArray(a) ? a[k] : null, okp = u != null && nm(u) === nm(p.r);
+                    body += line(esc(p.l), `${u != null ? esc(u) : '<i style="font-weight:400">kosong</i>'} ${mark(okp)}${okp ? '' : ' <span style="font-weight:400;color:var(--text-muted)">(seharusnya: ' + esc(p.r) + ')</span>'}`);
+                });
+            } else if (ty === 'dd') {
+                ddParse(q.t || '').ans.forEach((w, k) => {
+                    const u = Array.isArray(a) ? a[k] : null, okp = !!u && String(u).toLowerCase() === w.toLowerCase();
+                    body += line('Isian ' + (k + 1), `${u ? esc(u) : '<i style="font-weight:400">kosong</i>'} ${mark(okp)}${okp ? '' : ' <span style="font-weight:400;color:var(--text-muted)">(seharusnya: ' + esc(w) + ')</span>'}`);
+                });
+            } else if (ty === 'fl') {
+                const m = a && Array.isArray(a.m) ? a.m.length : 0;
+                body = line('Pasangan ditemukan', `${m} dari ${(q.p || []).length}`) + line('Percobaan', (a && a.t) || 0);
+            }
+            const text = ty === 'dd' ? String(q.t || '').replace(/\{[^}]+\}/g, '____') : (q.t || '');
+            const label = st === 'benar' ? 'Benar ✓' : st === 'salah' ? 'Salah ✗' : 'Tidak dijawab';
+            return { st, html: `<div class="dt-item ${st}" id="dt-q-${i}" data-st="${st}">
+                <div class="dt-top"><span class="dt-no">Soal ${i + 1}</span><span class="dt-badge dt-s-${st}">${label}</span>${partial ? '<span class="dt-note">sebagian benar (' + Math.round(got * 100) / 100 + ' dari ' + mx + ' poin)</span>' : ''}</div>
+                <div class="dt-q">${esc(text)}</div>${body}</div>` };
+        }
+
+        function openDetail(id) { state.detailTarget = id; state.detailFilter = 'all'; render(); }
+        function closeDetail() { state.detailTarget = null; render(); }
+        function setDetailFilter(f) { state.detailFilter = f; render(); }
+        function goDetailQ(i) { const e = document.getElementById('dt-q-' + i); if (e) { if (state.detailFilter !== 'all' && e.style.display === 'none') return; e.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }
+
+        function renderDetailModal() {
+            const r = teacherResults().find(x => x.id === state.detailTarget);
+            const qs = r && resQuestions(r);
+            if (!r || !qs) { state.detailTarget = null; return ''; }
+            const items = qs.map((q, i) => qaDetail(q, (r.ans || {})[i], i));
+            const cnt = (k) => items.filter(x => x.st === k).length;
+            const grp = teacherResults().filter(x => grpKey(x) === grpKey(r)).sort((a, b) => (b.score || 0) - (a.score || 0));
+            const rank = grp.findIndex(x => x.id === r.id) + 1;
+            const f = state.detailFilter || 'all';
+            const stale = r.benar !== undefined && (cnt('benar') !== r.benar || cnt('salah') !== r.salah);
+            const fb = (k, label) => `<button class="secondary ${f === k ? 'on' : ''}" onclick="setDetailFilter('${k}')">${label}</button>`;
+            return `<div class="modal-overlay"><div class="modal-card" style="max-width:640px">
+                <h3 style="margin-bottom:4px">🔍 Keterangan Hasil</h3>
+                <p style="text-align:center;margin-bottom:4px"><b>${esc(r.name)}</b> · Kelas ${esc(r.cls)}<br><span style="color:var(--text-muted);font-size:0.9rem">${esc(sessLabel(r))}</span></p>
+                <p style="text-align:center;margin-bottom:0">Nilai <b style="color:var(--primary);font-size:1.3rem">${r.score || 0}</b> · Peringkat <b>${rank}</b> dari ${grp.length} siswa</p>
+                <div class="dt-sum" style="justify-content:center">
+                    <span class="dt-s-benar">✓ Benar: ${cnt('benar')}</span>
+                    <span class="dt-s-salah">✗ Salah: ${cnt('salah')}</span>
+                    <span class="dt-s-kosong">○ Tidak dijawab: ${cnt('kosong')}</span>
+                </div>
+                ${stale ? '<p style="font-size:0.8rem;color:var(--warning);text-align:center">⚠️ Soal pernah diubah setelah ulangan ini, sehingga keterangan di bawah mungkin tidak sama persis dengan nilai tersimpan.</p>' : ''}
+                <div class="dt-nav">${items.map((x, i) => `<div class="dt-chip ${x.st}" role="button" title="Soal ${i + 1}" onclick="goDetailQ(${i})">${i + 1}</div>`).join('')}</div>
+                <div class="dt-filter">${fb('all', 'Semua (' + items.length + ')')}${fb('salah', 'Salah (' + cnt('salah') + ')')}${fb('benar', 'Benar (' + cnt('benar') + ')')}${fb('kosong', 'Tidak dijawab (' + cnt('kosong') + ')')}</div>
+                <div>${items.filter(x => f === 'all' || x.st === f).map(x => x.html).join('') || '<p style="text-align:center;color:var(--text-muted)">Tidak ada soal pada kategori ini.</p>'}</div>
+                <button class="secondary" onclick="closeDetail()" style="margin-top:8px;margin-bottom:0">Tutup</button>
+            </div></div>`;
+        }
+
         function downloadCSV() {
             const all = teacherResults();
             if (all.length === 0) { toast("⚠️ Belum ada data untuk diunduh!"); return; }
@@ -1913,12 +2028,18 @@
 
             let csv = '\uFEFF' + q(judul) + '\n' + q('Pendidik: ' + (t.name || '-')) + ';' + q('Kelas: ' + (first.cls || t.cls || '-')) + '\n';
             csv += q('Rata-rata: ' + sv(sm.avg)) + ';' + q('Tertinggi: ' + sv(sm.max) + (sm.maxN ? ' (' + sm.maxN + ')' : '')) + ';' + q('Terendah: ' + sv(sm.min) + (sm.minN ? ' (' + sm.minN + ')' : '')) + '\n\n';
-            csv += '"Peringkat";"Nama";"Kelas";"Nilai";"Benar";"Salah";"Tidak Menjawab";"Jumlah Soal";"Waktu"\n';
+            csv += '"Peringkat";"Nama";"Kelas";"Nilai";"Benar";"Salah";"Tidak Menjawab";"Jumlah Soal";"Waktu";"No. Soal Benar";"No. Soal Salah";"No. Soal Tidak Dijawab"\n';
             results.forEach((r, idx) => {
                 const st = getStats(r);
                 const totalQ = st ? st.total : (r.savedQuestionsOrder || config.questions || []).length;
                 const durationStr = r.finishTime && r.startTime ? mmss(new Date(r.finishTime).getTime() - new Date(r.startTime).getTime()) : '-';
-                csv += [idx + 1, q(r.name), q(r.cls), q(fmt(r.score || 0)), st ? st.benar : '-', st ? st.salah : '-', st ? st.kosong : '-', totalQ, q(durationStr)].join(';') + '\n';
+                let nb = '-', ns = '-', nk = '-';
+                if (canDetail(r)) {
+                    const qsx = resQuestions(r), g = { benar: [], salah: [], kosong: [] };
+                    qsx.forEach((qq, ii) => { const aa = (r.ans || {})[ii]; g[!has(qq, aa) ? 'kosong' : (pts(qq, aa) >= maxPts(qq) ? 'benar' : 'salah')].push(ii + 1); });
+                    nb = g.benar.join(', '); ns = g.salah.join(', '); nk = g.kosong.join(', ');
+                }
+                csv += [idx + 1, q(r.name), q(r.cls), q(fmt(r.score || 0)), st ? st.benar : '-', st ? st.salah : '-', st ? st.kosong : '-', totalQ, q(durationStr), q(nb), q(ns), q(nk)].join(';') + '\n';
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -3993,7 +4114,7 @@
                 const r = await gs('getResults', CLOUD.token, force ? '' : (CLOUD.resSig || ''));
                 if (!r.same) {
                     CLOUD.resSig = r.sig; CLOUD.results = r.results || [];
-                    const modalOpen = state.showQuestionModal || state.showGenModal || state.showClearModal || state.showDeleteModal || state.showBulkDeleteModal;
+                    const modalOpen = state.showQuestionModal || state.showGenModal || state.showClearModal || state.showDeleteModal || state.showBulkDeleteModal || state.detailTarget;
                     if (state.page === 'admin' && (state.adminTab || 'rank') === 'rank' && !modalOpen) render();
                 }
             } catch (e) { if (isAuthErr(e)) cloudSessionExpired(); }
