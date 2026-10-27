@@ -1339,7 +1339,7 @@
                 }
             } else {
                 state.questions = generateStudentQuestions();
-                const durationMs = (state.tkaMode ? tkaMinutes(state.tkaMapel, state.tkaPaket) : examMinutes(state.studentMapel, state.studentUH, state.studentClass)) * 60 * 1000;
+                const durationMs = (state.tkaMode ? tkaMinutes(state.tkaMapel) : examMinutes(state.studentMapel, state.studentUH, state.studentClass)) * 60 * 1000;
                 const newAns = {};
                 state.questions.forEach((q, idx) => { newAns[idx] = initAns(q); });
 
@@ -1375,8 +1375,9 @@
 
         function generateStudentQuestions() {
             if (state.tkaMode) {
-                let tl = tkaCfg().questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.tkaMapel && tkaPk(q) === Number(state.tkaPaket));
-                if (config.shuffleQ) tl = fisherYatesShuffle(tl);
+                // Sistem soal acak: ambil sejumlah soal secara acak dari bank soal mapel, urutannya juga acak
+                let tl = tkaCfg().questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.tkaMapel);
+                tl = fisherYatesShuffle(tl).slice(0, tkaDrawCount(state.tkaMapel));
                 tl.forEach(q => { const base = (q.o || []).map((_, i) => i); q._optOrder = config.shuffleO ? fisherYatesShuffle(base) : base; });
                 return tl;
             }
@@ -2092,6 +2093,21 @@
         const qCountKls = (m, u, k) => (config.questions || []).filter(q => (q.mp || '') === m && (m === '' || qUH(q) === String(u)) && (k === '' || qKls(q) === String(k))).length;
         function setQKelas(k) { state.qKelas = k; render(); }
         function setFormKelas(k) { if (k) state.formQuestion.kl = k; else delete state.formQuestion.kl; render(); }
+        // Hapus satu ulangan harian: semua soal (semua kelas), token, dan aturan waktunya. Hasil ujian siswa tidak ikut dihapus.
+        const uhHasData = (m, u) => qCountUH(m, u) > 0 || Object.keys(config.tokens || {}).some(k => { const p = k.split('||'); return p[0] === m && String(p[1]) === String(u); }) || (config.timeRules || []).some(r => String(r.mp || '') === m && String(r.uh || '') === String(u));
+        function delUH(m, u) {
+            const n = qCountUH(m, u);
+            if (!uhHasData(m, u)) return;
+            if (!confirm('Hapus UH ke-' + u + ' ' + m + '?\n\n' + n + ' soal (semua kelas), token, dan pengaturan waktunya akan dihapus permanen. Hasil ujian siswa tidak ikut terhapus.')) return;
+            config.questions = (config.questions || []).filter(q => !(q.mp === m && qUH(q) === String(u)));
+            Object.keys(config.tokens || {}).forEach(k => { const p = k.split('||'); if (p[0] === m && String(p[1]) === String(u)) delete config.tokens[k]; });
+            config.timeRules = (config.timeRules || []).filter(r => !(String(r.mp || '') === m && String(r.uh || '') === String(u)));
+            state.uhMax = state.uhMax || {};
+            const mx = Math.max(3, ...(config.questions || []).filter(q => q.mp === m).map(q => +q.uh || 1));
+            if (Number(u) >= uhList(m).length) state.uhMax[m] = mx;      // UH paling akhir ikut hilang dari daftar
+            state.qUH = 1;
+            Storage.saveConfig(config); toast('🗑️ UH ke-' + u + ' ' + m + ' dihapus.'); render();
+        }
         function addUH(m) { state.uhMax = state.uhMax || {}; state.uhMax[m] = uhList(m).length + 1; state.qUH = state.uhMax[m]; render(); }
         const curQMapel = () => state.qMapel !== undefined ? state.qMapel : (qCount('') > 0 ? '' : MAPEL[0]);
         function setQMapel(m) { state.qMapel = m; render(); }
@@ -2218,6 +2234,7 @@
                         ${uhList(sel).map(u => `<button class="qm-chip ${String(u) === curQUH() ? 'on' : ''}" onclick="setQUH(${u})">📝 UH ${u} <small>${qCountUH(sel, u)}</small></button>`).join('')}
                         <button class="qm-chip add" onclick="addUH('${sel}')">➕ UH Baru</button>
                     </div>
+                    <div style="margin-top:10px"><button class="danger" style="${smallBtn}" onclick="delUH('${sel}', ${curQUH()})" ${uhHasData(sel, curQUH()) ? '' : 'disabled'}>🗑️ Hapus UH ${esc(curQUH())} (${qCountUH(sel, curQUH())} soal)</button></div>
                 </div>` : ''}
 
                 <div class="qm-step">
@@ -2689,37 +2706,39 @@
         // ===== Akhir fitur tambahan =====
 
 
-        // ===== TKA (Tes Kemampuan Akademik) Kelas 6 dengan sistem PAKET =====
-        // Satu mata pelajaran punya beberapa paket soal (Paket 1, 2, 3, ...). Tiap paket punya soal, token, dan durasi sendiri.
-        // Hanya Pilihan Ganda (PG) dan Pilihan Kompleks (PK).
+        // ===== TKA (Tes Kemampuan Akademik) Kelas 6 dengan sistem SOAL ACAK =====
+        // Satu mata pelajaran punya satu bank soal. Tiap siswa mendapat soal yang diambil dan diurutkan secara acak dari bank itu.
+        // Token, durasi, dan jumlah soal per siswa diatur per mata pelajaran. Hanya Pilihan Ganda (PG) dan Pilihan Kompleks (PK).
         const TKA_MAPEL = ['Bahasa Indonesia', 'Matematika'];
         function tkaCfg() {
             if (!config.tka || typeof config.tka !== 'object') config.tka = {};
             const T = config.tka;
             if (!Array.isArray(T.questions)) T.questions = [];
             if (!T.tokens || typeof T.tokens !== 'object') T.tokens = {};
-            if (!T.pkMin || typeof T.pkMin !== 'object') T.pkMin = {};
+            if (!T.mMin || typeof T.mMin !== 'object') T.mMin = {};
+            if (!T.cnt || typeof T.cnt !== 'object') T.cnt = {};
             if (!(parseInt(T.minutes) > 0)) T.minutes = 60;
+            // Migrasi data lama (sistem paket): token dan durasi per paket digabung menjadi satu per mapel
+            Object.keys(T.tokens).forEach(k => { const i = k.indexOf('||'); if (i < 0) return; const m = k.slice(0, i); if (!T.tokens[m] && T.tokens[k]) T.tokens[m] = T.tokens[k]; delete T.tokens[k]; });
+            if (T.pkMin && typeof T.pkMin === 'object') {
+                Object.keys(T.pkMin).forEach(k => { const m = k.split('||')[0]; if (!(parseInt(T.mMin[m]) > 0) && parseInt(T.pkMin[k]) > 0) T.mMin[m] = parseInt(T.pkMin[k]); });
+                delete T.pkMin;
+            }
             return T;
         }
-        const tkaPk = (q) => Math.max(1, parseInt(q && q.pk) || 1);          // soal lama tanpa paket = Paket 1
-        const tkaKey = (m, p) => m + '||' + p;
-        const tkaCount = (m, p) => tkaCfg().questions.filter(q => q.mp === m && (p === undefined || tkaPk(q) === Number(p))).length;
-        function tkaPaketList(m) {
-            const mx = Math.max(3, (state.tkaPkMax || {})[m] || 0, ...tkaCfg().questions.filter(q => q.mp === m).map(tkaPk));
-            return [...Array(mx)].map((_, i) => i + 1);
-        }
-        function tkaToken(m, p) { const T = tkaCfg().tokens; return T[tkaKey(m, p)] || (Number(p) === 1 ? T[m] : '') || ''; }   // token lama (tanpa paket) dianggap Paket 1
-        function tkaMinutes(m, p) { const T = tkaCfg(), v = parseInt(T.pkMin[tkaKey(m, p)]); return v > 0 ? v : (parseInt(T.minutes) > 0 ? parseInt(T.minutes) : 60); }
+        const tkaCount = (m) => tkaCfg().questions.filter(q => q.mp === m).length;
+        const tkaToken = (m) => tkaCfg().tokens[m] || '';
+        function tkaMinutes(m) { const T = tkaCfg(), v = parseInt(T.mMin[m]); return v > 0 ? v : (parseInt(T.minutes) > 0 ? parseInt(T.minutes) : 60); }
+        // Jumlah soal yang diterima tiap siswa: nilai yang diatur guru, atau semua soal bila kosong atau melebihi bank soal
+        function tkaDrawCount(m) { const n = tkaCount(m), v = parseInt(tkaCfg().cnt[m]); return v > 0 ? Math.min(v, n) : n; }
         const tkaSelMapel = () => TKA_MAPEL.includes(state.tkaSel) ? state.tkaSel : TKA_MAPEL[0];
-        const tkaSelPaket = () => Math.max(1, parseInt(state.tkaPk) || 1);
 
         // --- Sisi guru ---
         function renderTkaManager() {
-            const T = tkaCfg(), sel = tkaSelMapel(), pk = tkaSelPaket(), tk = tkaToken(sel, pk);
+            const T = tkaCfg(), sel = tkaSelMapel(), tk = tkaToken(sel);
             let n = 0;
             const items = T.questions.map((q, idx) => {
-                if (q.mp !== sel || tkaPk(q) !== pk) return '';
+                if (q.mp !== sel) return '';
                 const t = QT[q.ty || 'pg'] || QT.pg;
                 return `<div class="qm-card" style="--qc:${t.c};--ql:${t.l}">
                     <div class="qm-no">${++n}</div>
@@ -2733,10 +2752,11 @@
                     </div>
                 </div>`;
             }).join('');
+            const draw = tkaDrawCount(sel), cfgCnt = parseInt(T.cnt[sel]) > 0 ? parseInt(T.cnt[sel]) : '';
             return `
                 <div class="qm-hero" style="background:linear-gradient(135deg,#f97316 0%,#ec4899 60%,#8b5cf6 100%)">
                     <div class="qm-hero-ic">🎯</div>
-                    <div class="qm-hero-tx"><h3>Soal TKA Kelas 6</h3><p>${esc(sel)} · Paket ${pk} · khusus PG &amp; PK</p></div>
+                    <div class="qm-hero-tx"><h3>Soal TKA Kelas 6</h3><p>${esc(sel)} · soal diacak per siswa · khusus PG &amp; PK</p></div>
                     <div class="qm-hero-n"><b>${n}</b><span>soal</span></div>
                 </div>
                 <button class="secondary" onclick="state.tkaView=false;render()" style="width:auto;display:inline-flex;margin-bottom:14px">← Kembali ke Soal Biasa</button>
@@ -2745,38 +2765,30 @@
                     <div class="qm-chips">${TKA_MAPEL.map(m => `<button class="qm-chip ${m === sel ? 'on' : ''}" onclick="state.tkaSel='${esc(m)}';render()">${MAPEL_ICON[m] || '📘'} ${esc(m)} <small>${tkaCount(m)}</small></button>`).join('')}</div>
                 </div>
                 <div class="qm-step">
-                    <div class="qm-step-h"><span class="qm-sn">2</span> Pilih Paket Soal</div>
-                    <div class="qm-chips">
-                        ${tkaPaketList(sel).map(p => `<button class="qm-chip ${p === pk ? 'on' : ''}" onclick="state.tkaPk=${p};render()">📦 Paket ${p} <small>${tkaCount(sel, p)}</small></button>`).join('')}
-                        <button class="qm-chip add" onclick="tkaAddPaket()">➕ Paket Baru</button>
-                    </div>
-                </div>
-                <div class="qm-step">
-                    <div class="qm-step-h"><span class="qm-sn">3</span> Token &amp; Waktu Paket ${pk}</div>
+                    <div class="qm-step-h"><span class="qm-sn">2</span> Token, Waktu &amp; Jumlah Soal Acak</div>
                     <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
                         <span>🔑 Token:</span>
                         <b style="font-size:1.4rem;letter-spacing:3px;color:#c2410c">${tk ? esc(tk) : '(belum dibuat)'}</b>
                         <button class="success" style="${smallBtn}" onclick="tkaGenToken()">${tk ? '🔄 Ganti Token' : '🎲 Buat Token'}</button>
                         ${tk ? `<button class="danger" style="${smallBtn}" onclick="tkaDelToken()">🗑️</button>` : ''}
                     </div>
-                    <label for="tka-min">⏱️ Durasi paket ini (menit)</label>
-                    <input type="number" id="tka-min" min="1" max="600" inputmode="numeric" value="${tkaMinutes(sel, pk)}" onchange="tkaSetMinutes(this.value)">
-                    <details><summary style="cursor:pointer;font-weight:700">Semua token paket ${esc(sel)}</summary>
-                        <div style="margin-top:8px">${tkaPaketList(sel).map(p => `<div>📦 Paket ${p}: <b style="letter-spacing:2px">${esc(tkaToken(sel, p) || '-')}</b> · ${tkaMinutes(sel, p)} menit · ${tkaCount(sel, p)} soal</div>`).join('')}</div>
-                    </details>
+                    <label for="tka-min">⏱️ Durasi ${esc(sel)} (menit)</label>
+                    <input type="number" id="tka-min" min="1" max="600" inputmode="numeric" value="${tkaMinutes(sel)}" onchange="tkaSetMinutes(this.value)">
+                    <label for="tka-cnt">🎲 Jumlah soal acak per siswa <small style="font-weight:500;color:var(--text-muted)">(kosongkan untuk memakai semua soal)</small></label>
+                    <input type="number" id="tka-cnt" min="1" max="${Math.max(n, 1)}" inputmode="numeric" placeholder="Semua (${n})" value="${cfgCnt}" onchange="tkaSetDraw(this.value)">
+                    <p style="margin:6px 0 0;font-size:0.85rem;color:var(--text-muted)">${n ? `Tiap siswa mendapat <b>${draw}</b> dari ${n} soal, dipilih dan diurutkan secara acak.` : 'Tambahkan soal dulu. Soal akan diacak otomatis untuk tiap siswa.'}</p>
                 </div>
                 ${tkaImpPanelHtml()}
                 <div class="qm-actions">
-                    <button class="success" onclick="tkaAdd()">➕ Tambah Soal ke Paket ${pk}</button>
-                    <button class="secondary" onclick="tkaCopyPaket()" ${n ? '' : 'disabled'}>📋 Salin Paket ${pk} ke Paket Baru</button>
-                    <button class="danger" onclick="tkaDelAll()" ${n ? '' : 'disabled'}>🗑️ Hapus Isi Paket (${n})</button>
+                    <button class="success" onclick="tkaAdd()">➕ Tambah Soal ${esc(sel)}</button>
+                    <button class="danger" onclick="tkaDelAll()" ${n ? '' : 'disabled'}>🗑️ Hapus Semua Soal (${n})</button>
                 </div>
-                <div class="qm-listhead"><b>📋 Daftar Soal: ${esc(sel)} · Paket ${pk} (${n})</b></div>
-                <div class="qm-list">${items || `<div class="qm-empty"><div>📭</div><b>Paket ini masih kosong</b><span>Ketuk “Tambah Soal ke Paket ${pk}” untuk mulai.</span></div>`}</div>`;
+                <div class="qm-listhead"><b>📋 Bank Soal: ${esc(sel)} (${n})</b></div>
+                <div class="qm-list">${items || `<div class="qm-empty"><div>📭</div><b>Bank soal masih kosong</b><span>Ketuk “Tambah Soal ${esc(sel)}” untuk mulai.</span></div>`}</div>`;
         }
         // ===== IMPOR SOAL TKA DARI WORD (.docx) =====
-        // Format: baris Mapel dan Paket, lalu tiap soal diawali [PG] atau [PK] (Soal, A-F, Kunci). Hanya PG dan PK.
-        const TKA_WORD_B64 = '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';
+        // Format: baris Mapel, lalu tiap soal diawali [PG] atau [PK] (Soal, A-F, Kunci). Hanya PG dan PK. Baris Paket di file lama diabaikan.
+        const TKA_WORD_B64 = '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';
         function tkaWordTemplate() {
             try {
                 const bin = atob(TKA_WORD_B64), u = new Uint8Array(bin.length);
@@ -2806,8 +2818,8 @@
         function tkaWordParse(xml) {
             const norm = s => String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]/g, '');
             const out = { qs: [], errs: [], sample: 0, dup: 0 };
-            let mp = tkaSelMapel(), pk = tkaSelPaket(), cur = null, field = null, n = 0;
-            const seen = new Set(tkaCfg().questions.map(q => JSON.stringify([q.ty || 'pg', q.mp, tkaPk(q), q.t])));
+            let mp = tkaSelMapel(), cur = null, field = null, n = 0;
+            const seen = new Set(tkaCfg().questions.map(q => JSON.stringify([q.ty || 'pg', q.mp, q.t])));
             const letter = v => { v = String(v || '').toUpperCase().replace(/[\s.,;|)]+/g, ''); return v; };
             const flush = () => {
                 const c = cur; cur = null; field = null;
@@ -2818,10 +2830,9 @@
                 const err = m => out.errs.push('Soal ke-' + n + ' [' + c.ty + ']: ' + m);
                 n++;
                 if (!mp) { err('Mapel belum valid (pilih ' + TKA_MAPEL.join(' atau ') + ')'); return; }
-                if (!pk) { err('Paket belum valid (isi angka 1 sampai 99)'); return; }
                 if (!c.t.trim()) { err('teks Soal kosong'); return; }
                 if (filled.length < 2) { err('butuh minimal 2 pilihan jawaban (A, B, ...)'); return; }
-                const q = { ty: c.ty.toLowerCase(), t: c.t.trim(), o: filled.map(x => x.v), mp, pk, kl: 6, tka: 1 };
+                const q = { ty: c.ty.toLowerCase(), t: c.t.trim(), o: filled.map(x => x.v), mp, kl: 6, tka: 1 };
                 const kunci = letter(c.k);
                 if (c.ty === 'PG') {
                     if (!/^[A-F]$/.test(kunci)) { err('Kunci PG harus satu huruf (A sampai F)'); return; }
@@ -2835,7 +2846,7 @@
                     q.ks = [...new Set(idx)].sort((a, b) => a - b);
                 }
                 if (c.tx.trim()) q.tx = c.tx.trim();
-                const key = JSON.stringify([q.ty, q.mp, q.pk, q.t]);
+                const key = JSON.stringify([q.ty, q.mp, q.t]);
                 if (seen.has(key)) { out.dup++; return; }
                 seen.add(key); out.qs.push(q);
             };
@@ -2847,15 +2858,11 @@
                     let m;
                     if ((m = s.match(/^\[\s*(contoh\s+)?(pg|pk)\s*\]/i))) { flush(); cur = { ty: m[2].toUpperCase(), sample: !!m[1], t: '', tx: '', o: [], k: '' }; return; }
                     if ((m = s.match(/^\[\s*(contoh\s+)?(is|dd|mj|fl)\s*\]/i))) { flush(); if (!m[1]) out.errs.push('Jenis [' + m[2].toUpperCase() + '] tidak didukung di TKA (hanya PG dan PK), dilewati'); return; }
-                    if ((m = s.match(/^(mapel|paket)\s*[:：]\s*(.*)$/i))) {
-                        flush(); const v = m[2].trim();
-                        if (m[1].toLowerCase() === 'mapel') {
-                            const f = TKA_MAPEL.find(x => norm(x) === norm(v));
-                            if (!f) { out.errs.push('Mapel "' + v + '" tidak valid untuk TKA (pilih ' + TKA_MAPEL.join(' atau ') + ')'); mp = null; } else mp = f;
-                        } else {
-                            const d = parseInt((v.match(/\d+/) || [])[0], 10);
-                            if (!(d >= 1 && d <= 99)) { out.errs.push('Paket "' + v + '" tidak valid (isi angka 1 sampai 99)'); pk = null; } else pk = d;
-                        }
+                    if ((m = s.match(/^paket\s*[:：]/i))) { flush(); return; }      // format lama: baris Paket diabaikan
+                    if ((m = s.match(/^mapel\s*[:：]\s*(.*)$/i))) {
+                        flush(); const v = m[1].trim();
+                        const f = TKA_MAPEL.find(x => norm(x) === norm(v));
+                        if (!f) { out.errs.push('Mapel "' + v + '" tidak valid untuk TKA (pilih ' + TKA_MAPEL.join(' atau ') + ')'); mp = null; } else mp = f;
                         return;
                     }
                     if (!cur) return;
@@ -2874,24 +2881,24 @@
             const notes = (r.sample ? '\n' + r.sample + ' soal contoh dilewati.' : '') + (r.dup ? '\n' + r.dup + ' soal sama persis (sudah ada) dilewati.' : '')
                 + (r.errs.length ? '\n\n' + r.errs.length + ' masalah, tidak diimpor:\n' + r.errs.slice(0, 8).map(e => '- ' + e).join('\n') + (r.errs.length > 8 ? '\n... dan ' + (r.errs.length - 8) + ' lainnya' : '') : '');
             if (!n) { alert('Tidak ada soal TKA yang bisa diimpor.' + notes + '\nIsi soal pada bagian "Isi Soal TKA Anda di Bawah Ini" lalu coba lagi.'); return; }
-            const cnt = {}; r.qs.forEach(q => { const k = q.mp + ' · Paket ' + q.pk; cnt[k] = (cnt[k] || 0) + 1; });
+            const cnt = {}; r.qs.forEach(q => { cnt[q.mp] = (cnt[q.mp] || 0) + 1; });
             if (!confirm('Ditemukan ' + n + ' soal TKA siap diimpor:\n' + Object.keys(cnt).map(k => '• ' + k + ': ' + cnt[k] + ' soal').join('\n') + notes + '\n\nImpor soal yang valid sekarang?')) return;
             const T = tkaCfg(); T.questions = T.questions.concat(r.qs);
-            state.tkaSel = r.qs[0].mp; state.tkaPk = r.qs[0].pk;
+            state.tkaSel = r.qs[0].mp;
             Storage.saveConfig(config); toast('✅ ' + n + ' soal TKA berhasil diimpor!'); render();
         }
         function tkaImpPanelHtml() {
             const b = 'width:auto;padding:8px 14px;font-size:0.85rem;margin-bottom:0';
             return `<div class="imp-box">
                 <b>📥 Input Soal TKA dari Word</b>
-                <p style="margin:4px 0 8px;font-size:0.85rem;color:var(--text-muted)">Unduh format Word, isi soal PG dan PK (boleh banyak paket sekaligus), lalu impor. Soal masuk sesuai Mapel dan Paket yang tertulis di file.</p>
+                <p style="margin:4px 0 8px;font-size:0.85rem;color:var(--text-muted)">Unduh format Word, isi soal PG dan PK, lalu impor. Soal masuk ke bank soal sesuai Mapel yang tertulis di file, dan diacak otomatis untuk tiap siswa.</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                     <button class="success" onclick="tkaWordTemplate()" style="${b}">⬇️ Unduh Format Word TKA</button>
                     <button class="secondary" onclick="tkaWordPick()" style="${b}">📂 Pilih File Word &amp; Impor</button>
                 </div>
                 <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Lihat cara mengisi</summary>
                     <ul style="margin:8px 0 0 18px;font-size:0.85rem">
-                        <li style="margin-bottom:4px"><b>Mapel dan Paket</b>: tulis pada baris <i>Mapel:</i> (${esc(TKA_MAPEL.join(' atau '))}) dan <i>Paket:</i> (angka). Ulangi kedua baris untuk paket lain di file yang sama.</li>
+                        <li style="margin-bottom:4px"><b>Mapel</b>: tulis pada baris <i>Mapel:</i> (${esc(TKA_MAPEL.join(' atau '))}). Ulangi baris ini bila file berisi soal mapel lain.</li>
                         <li style="margin-bottom:4px"><b>Pilihan Ganda [PG]</b>: tulis Soal, pilihan A sampai F, dan Kunci satu huruf (contoh C).</li>
                         <li style="margin-bottom:4px"><b>Pilihan Kompleks [PK]</b>: sama seperti PG, tetapi Kunci berisi semua huruf yang benar (contoh A,C). Tiap jawaban benar bernilai 1 poin.</li>
                         <li style="margin-bottom:4px"><b>Bacaan</b> (opsional): tulis setelah kata <i>Bacaan:</i> sebelum baris Soal.</li>
@@ -2901,22 +2908,27 @@
             </div>`;
         }
 
-        function tkaAddPaket() { const m = tkaSelMapel(); state.tkaPkMax = state.tkaPkMax || {}; state.tkaPkMax[m] = tkaPaketList(m).length + 1; state.tkaPk = state.tkaPkMax[m]; render(); }
         function tkaSetMinutes(v) {
             const m = parseInt(v); if (!(m > 0 && m <= 600)) { toast('⚠️ Isi durasi 1 sampai 600 menit.'); render(); return; }
-            tkaCfg().pkMin[tkaKey(tkaSelMapel(), tkaSelPaket())] = m; Storage.saveConfig(config); toast('✅ Durasi paket disimpan.');
+            tkaCfg().mMin[tkaSelMapel()] = m; Storage.saveConfig(config); toast('✅ Durasi disimpan.');
         }
-        function tkaGenToken() { const m = tkaSelMapel(), p = tkaSelPaket(), t = newTokenCode(); const T = tkaCfg(); T.tokens[tkaKey(m, p)] = t; if (p === 1) delete T.tokens[m]; Storage.saveConfig(config); toast('🔑 Token ' + m + ' Paket ' + p + ': ' + t); render(); }
-        function tkaDelToken() { const m = tkaSelMapel(), p = tkaSelPaket(), T = tkaCfg(); delete T.tokens[tkaKey(m, p)]; if (p === 1) delete T.tokens[m]; Storage.saveConfig(config); render(); }
+        function tkaSetDraw(v) {
+            const m = tkaSelMapel(), T = tkaCfg(), raw = String(v || '').trim();
+            if (!raw) { delete T.cnt[m]; Storage.saveConfig(config); toast('✅ Siswa akan mendapat semua soal (diacak).'); render(); return; }
+            const c = parseInt(raw); if (!(c > 0)) { toast('⚠️ Isi angka lebih dari 0, atau kosongkan.'); render(); return; }
+            T.cnt[m] = c; Storage.saveConfig(config);
+            toast(c > tkaCount(m) ? '✅ Disimpan. Jumlah melebihi bank soal, jadi semua soal dipakai.' : '✅ Tiap siswa akan mendapat ' + c + ' soal acak.'); render();
+        }
+        function tkaGenToken() { const m = tkaSelMapel(), t = newTokenCode(); tkaCfg().tokens[m] = t; Storage.saveConfig(config); toast('🔑 Token ' + m + ': ' + t); render(); }
+        function tkaDelToken() { const m = tkaSelMapel(); delete tkaCfg().tokens[m]; Storage.saveConfig(config); render(); }
         function tkaAdd() {
             state.tkaEditIdx = null;
-            state.formQuestion = { ty: 'pg', t: '', o: ['', '', '', ''], a: 0, ks: [], mp: tkaSelMapel(), pk: tkaSelPaket() };
+            state.formQuestion = { ty: 'pg', t: '', o: ['', '', '', ''], a: 0, ks: [], mp: tkaSelMapel() };
             state.showTkaModal = true; render();
         }
         function tkaEdit(idx) {
             state.tkaEditIdx = idx;
             state.formQuestion = JSON.parse(JSON.stringify(tkaCfg().questions[idx]));
-            state.formQuestion.pk = tkaPk(state.formQuestion);
             if (!Array.isArray(state.formQuestion.ks)) state.formQuestion.ks = [];
             state.showTkaModal = true; render();
         }
@@ -2925,27 +2937,17 @@
             tkaCfg().questions.splice(idx, 1); Storage.saveConfig(config); toast('🗑️ Soal dihapus.'); render();
         }
         function tkaDelAll() {
-            const m = tkaSelMapel(), p = tkaSelPaket(), n = tkaCount(m, p);
-            if (!n || !confirm('Hapus semua ' + n + ' soal di ' + m + ' Paket ' + p + '? Tidak bisa dikembalikan.')) return;
-            config.tka.questions = config.tka.questions.filter(q => !(q.mp === m && tkaPk(q) === p)); Storage.saveConfig(config); toast('🗑️ ' + n + ' soal dihapus.'); render();
-        }
-        function tkaCopyPaket() {
-            const m = tkaSelMapel(), p = tkaSelPaket(), src = tkaCfg().questions.filter(q => q.mp === m && tkaPk(q) === p);
-            if (!src.length) return;
-            const np = tkaPaketList(m).length + 1;
-            src.forEach(q => tkaCfg().questions.push({ ...JSON.parse(JSON.stringify(q)), pk: np }));
-            state.tkaPkMax = state.tkaPkMax || {}; state.tkaPkMax[m] = np; state.tkaPk = np;
-            Storage.saveConfig(config); toast('📋 ' + src.length + ' soal disalin ke Paket ' + np + '. Silakan ubah isinya.'); render();
+            const m = tkaSelMapel(), n = tkaCount(m);
+            if (!n || !confirm('Hapus semua ' + n + ' soal TKA ' + m + '? Tidak bisa dikembalikan.')) return;
+            config.tka.questions = config.tka.questions.filter(q => q.mp !== m); Storage.saveConfig(config); toast('🗑️ ' + n + ' soal dihapus.'); render();
         }
         function tkaSetType(ty) { state.formQuestion.ty = ty; if (ty === 'pk' && !Array.isArray(state.formQuestion.ks)) state.formQuestion.ks = []; render(); }
         function renderTkaModal() {
-            const fq = state.formQuestion, isPk = fq.ty === 'pk', pkMax = Math.max(tkaPaketList(fq.mp || TKA_MAPEL[0]).length, Number(fq.pk) || 1);
+            const fq = state.formQuestion, isPk = fq.ty === 'pk';
             return `<div class="modal-overlay"><div class="modal-card">
                 <h3>${state.tkaEditIdx !== null ? 'Edit Soal TKA' : 'Tambah Soal TKA'}</h3>
                 <label>Mata Pelajaran</label>
                 <select onchange="state.formQuestion.mp=this.value;render()">${TKA_MAPEL.map(m => `<option ${fq.mp === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
-                <label>Paket Soal</label>
-                <select onchange="state.formQuestion.pk=+this.value">${[...Array(pkMax)].map((_, i) => `<option value="${i + 1}" ${(Number(fq.pk) || 1) === i + 1 ? 'selected' : ''}>Paket ${i + 1}</option>`).join('')}</select>
                 <label>Jenis Soal</label>
                 <div class="qm-types">${['pg', 'pk'].map(t => `<button type="button" class="qm-type-btn ${fq.ty === t ? 'on' : ''}" style="--qc:${QT[t].c};--ql:${QT[t].l}" onclick="tkaSetType('${t}')"><span>${QT[t].ic}</span><b>${t.toUpperCase()}</b><small>${QT[t].n}</small></button>`).join('')}</div>
                 <label>Teks Pertanyaan</label>
@@ -2980,14 +2982,14 @@
             if (!String(fq.t || '').trim()) { toast('⚠️ Teks pertanyaan wajib diisi!'); return; }
             if ((fq.o || []).length < 2 || fq.o.some(x => !String(x || '').trim())) { toast('⚠️ Isi semua opsi (minimal 2), atau hapus opsi yang kosong.'); return; }
             if (fq.ty === 'pk' && !(fq.ks || []).length) { toast('⚠️ Centang minimal 1 kunci jawaban!'); return; }
-            const q = { ty: fq.ty === 'pk' ? 'pk' : 'pg', t: fq.t.trim(), o: fq.o.map(x => String(x).trim()), mp: TKA_MAPEL.includes(fq.mp) ? fq.mp : TKA_MAPEL[0], pk: Math.max(1, parseInt(fq.pk) || 1), kl: 6, tka: 1 };
+            const q = { ty: fq.ty === 'pk' ? 'pk' : 'pg', t: fq.t.trim(), o: fq.o.map(x => String(x).trim()), mp: TKA_MAPEL.includes(fq.mp) ? fq.mp : TKA_MAPEL[0], kl: 6, tka: 1 };
             if (q.ty === 'pg') q.a = Math.min(Math.max(+fq.a || 0, 0), q.o.length - 1); else q.ks = [...new Set(fq.ks)].sort((a, b) => a - b);
             if (fq.tx && String(fq.tx).trim()) q.tx = String(fq.tx).trim();
             if (fq.img) q.img = fq.img;
             const T = tkaCfg();
             if (state.tkaEditIdx !== null && T.questions[state.tkaEditIdx]) T.questions[state.tkaEditIdx] = q; else T.questions.push(q);
-            state.tkaSel = q.mp; state.tkaPk = q.pk; state.showTkaModal = false;
-            Storage.saveConfig(config); toast('✅ Soal TKA disimpan di Paket ' + q.pk + '.'); render();
+            state.tkaSel = q.mp; state.showTkaModal = false;
+            Storage.saveConfig(config); toast('✅ Soal TKA disimpan di bank soal ' + q.mp + '.'); render();
         }
 
         // --- Sisi siswa: halaman khusus TKA ---
@@ -2997,16 +2999,11 @@
             if (clsGrade(state.studentClass) !== '6') { state.studentClass = ''; state.studentName = ''; }
             state.page = 'tka'; render(); window.scrollTo(0, 0);
         }
-        function tkaPick(m) { saveHomeInputs(); state.tkaMapel = m; state.tkaPaket = null; render(); }
-        function tkaPickPaket(p) { saveHomeInputs(); state.tkaPaket = p; render(); }
-        function tkaOpenPakets(m) { return tkaPaketList(m).filter(p => tkaCount(m, p) > 0); }
+        function tkaPick(m) { saveHomeInputs(); state.tkaMapel = m; render(); }
         function tkaHome(app) {
             initTid();
             const teachers = Storage.loadTeachers();
             const open = state.tkaMapel || '';
-            const pks = open ? tkaOpenPakets(open) : [];
-            if (open && pks.length === 1) state.tkaPaket = pks[0];
-            if (state.tkaPaket && !pks.includes(Number(state.tkaPaket))) state.tkaPaket = null;
             app.innerHTML = `
                 <div class="home-wrap">
                     <div class="home-top"><button class="chip" onclick="state.page='home';render()">← Kembali ke Beranda</button></div>
@@ -3019,7 +3016,7 @@
                         <div class="tips-bar">Khusus untuk siswa Kelas 6. Minta token TKA ke gurumu ya.</div>
 
                         <section class="step">
-                            <div class="step-head"><span class="step-no" style="background:#f97316">1</span><h3>Pilih mata pelajaran &amp; paket</h3></div>
+                            <div class="step-head"><span class="step-no" style="background:#f97316">1</span><h3>Pilih mata pelajaran</h3></div>
                             <label for="input-teacher">👩‍🏫 Pendidik</label>
                             <select id="input-teacher" onchange="selectTeacher(this.value)">
                                 ${teachers.length === 0 ? '<option value="">(Belum ada pendidik)</option>' : ''}
@@ -3029,14 +3026,14 @@
                             <div class="mapel-grid">
                                 ${TKA_MAPEL.map(m => `<button type="button" class="mapel-tile ${open === m ? 'on' : ''}" aria-pressed="${open === m}" onclick="tkaPick('${esc(m)}')"><span class="mt-ic">${MAPEL_ICON[m] || '📘'}</span><span>${esc(m)}</span></button>`).join('')}
                             </div>
-                            ${open ? `<label style="margin-top:14px">📦 Paket Soal</label>
-                            ${pks.length ? `<div class="mapel-grid paket-grid">${pks.map(p => `<button type="button" class="mapel-tile ${Number(state.tkaPaket) === p ? 'on' : ''}" aria-pressed="${Number(state.tkaPaket) === p}" onclick="tkaPickPaket(${p})"><span class="mt-ic">📦</span><span>Paket ${p}</span><small>${tkaCount(open, p)} soal</small></button>`).join('')}</div>`
-                                : '<p style="color:var(--warning);margin:0">⚠️ Belum ada paket soal untuk mata pelajaran ini.</p>'}` : ''}
+                            ${open ? (tkaCount(open)
+                                ? `<p style="margin:10px 0 0;font-size:0.9rem;color:var(--text-muted)">🎲 Kamu akan mengerjakan <b>${tkaDrawCount(open)} soal acak</b> · ⏱️ ${tkaMinutes(open)} menit</p>`
+                                : '<p style="color:var(--warning);margin:10px 0 0">⚠️ Belum ada soal untuk mata pelajaran ini.</p>') : ''}
                         </section>
 
                         <section class="step">
                             <div class="step-head"><span class="step-no" style="background:#f97316">2</span><h3>Token TKA</h3></div>
-                            <label for="input-token">🔑 Token <small style="font-weight:500;color:var(--text-muted)">(minta ke guru, tiap paket punya token sendiri)</small></label>
+                            <label for="input-token">🔑 Token <small style="font-weight:500;color:var(--text-muted)">(minta ke guru, tiap mata pelajaran punya token sendiri)</small></label>
                             <input type="text" id="input-token" placeholder="Contoh: AB3K9" autocomplete="off" autocapitalize="characters" style="text-transform: uppercase;" value="${esc(state.studentToken || '')}">
                         </section>
 
@@ -3051,12 +3048,11 @@
         }
         function prepareTka() {
             saveHomeInputs();
-            const name = state.studentName, cls = state.studentClass, m = state.tkaMapel, p = Number(state.tkaPaket) || 0;
+            const name = state.studentName, cls = state.studentClass, m = state.tkaMapel;
             if (!state.tid) { toast('⚠️ Pilih pendidik terlebih dahulu!'); return; }
-            if (!name || !cls || !m || !p) {
+            if (!name || !cls || !m) {
                 const miss = [];
-                if (!m) miss.push('.mapel-grid:not(.paket-grid)');
-                else if (!p) miss.push('.paket-grid');
+                if (!m) miss.push('.mapel-grid');
                 if (!cls) miss.push('#input-class-sel', '#input-class');
                 if (!name) miss.push('.step select:not(#input-teacher):not(#input-class-sel)', '.step input#input-name');
                 let first = null;
@@ -3067,12 +3063,12 @@
             if (clsGrade(cls) !== '6') { toast('🎯 TKA hanya untuk siswa Kelas 6.'); return; }
             if (CLOUD.on && !CLOUD.uid) { toast('⏳ Menghubungkan ke server, coba lagi sebentar.'); return; }
             if (CLOUD.on && !CLOUD.configExists) { toast('⚠️ Ujian belum disiapkan oleh guru.'); return; }
-            if (!tkaCount(m, p)) { toast('⚠️ Paket ' + p + ' belum punya soal.'); return; }
-            const tk = tkaToken(m, p);
-            if (!tk) { toast('⚠️ Token TKA ' + m + ' Paket ' + p + ' belum dibuat guru.'); return; }
+            if (!tkaCount(m)) { toast('⚠️ Belum ada soal TKA untuk ' + m + '.'); return; }
+            const tk = tkaToken(m);
+            if (!tk) { toast('⚠️ Token TKA ' + m + ' belum dibuat guru.'); return; }
             if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast('❌ Token salah. Minta token ke guru.'); return; }
             state.tkaMode = true;
-            state.studentMapel = 'TKA ' + m; state.studentUH = 'TKA-' + p;
+            state.studentMapel = 'TKA ' + m; state.studentUH = 'TKA';
             return beginExam(name, cls, prepareTka);
         }
 
