@@ -1106,6 +1106,7 @@
             else if (state.page === 'master-auth') masterAuth(app);
             else if (state.page === 'master') masterApp(app);
             else if (state.page === 'done') doneScreen(app);
+            else if (state.page === 'tka') tkaHome(app);
             if (state.page === 'exam') examAfterRender(); else examLeave();
         }
 
@@ -1114,7 +1115,7 @@
             const v = { studentName: g('input-name'), studentClass: g('input-class'), studentMapel: g('input-mapel'), studentUH: g('input-uh'), studentToken: g('input-token') };
             Object.keys(v).forEach(k => { if (v[k] !== null) state[k] = v[k]; });
         }
-        function refreshHome() { if (state.page === 'home') { saveHomeInputs(); render(); } }
+        function refreshHome() { if (state.page === 'home' || state.page === 'tka') { saveHomeInputs(); render(); } }
 
         function selectTeacher(tid) {
             saveHomeInputs();
@@ -1125,7 +1126,7 @@
             state.studentName = ''; state.studentClass = '';
             const opts = teacherClassOptions();
             if (opts.length === 1) state.studentClass = opts[0];
-            if (state.page === 'home') render();
+            if (state.page === 'home' || state.page === 'tka') render();
         }
 
         function pickMapel(m) { saveHomeInputs(); state.studentMapel = m; render(); }
@@ -1136,6 +1137,7 @@
             app.innerHTML = `
                 <div class="home-wrap">
                     <div class="home-top">
+                        <button class="chip" onclick="openTka()">🎯 TKA Kelas 6</button>
                         <button class="chip" onclick="state.page='master-auth'; render();">🏫 Admin / Guru Mapel</button>
                         <button class="chip" onclick="openAdminAuth()">⚙️ Guru</button>
                     </div>
@@ -1243,6 +1245,7 @@
         }
 
         function prepareExam() {
+            state.tkaMode = false;
             saveHomeInputs();
             const name = state.studentName, cls = state.studentClass;
             if (!state.tid) { toast("⚠️ Pilih pendidik terlebih dahulu!"); return; }
@@ -1265,6 +1268,11 @@
             const tk = tokenFor(state.studentMapel, state.studentUH, cls);
             if (!tk) { toast("⚠️ Token untuk Kelas " + cls + " pada ulangan ini belum dibuat guru."); return; }
             if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast("❌ Token salah. Minta token ke guru."); return; }
+            return beginExam(name, cls, prepareExam);
+        }
+
+        // Memulai ujian setelah semua pemeriksaan lolos (dipakai ujian biasa dan TKA)
+        function beginExam(name, cls, retry) {
             examEnterFs();
             const dn = Storage.loadResults().find(r => r.tid === state.tid && r.status === 'done' && r.name.toLowerCase() === name.toLowerCase() && r.cls.toLowerCase() === cls.toLowerCase() && r.mapel === state.studentMapel && String(r.uh) === String(state.studentUH));
             if (dn) {
@@ -1273,7 +1281,7 @@
                     gs('resultExists', dn.id).then(ok => {
                         if (ok) { toast(msg); return; }
                         try { localStorage.setItem('ujian_res', JSON.stringify(JSON.parse(localStorage.getItem('ujian_res') || '[]').filter(x => x.id !== dn.id))); } catch (e) {}
-                        prepareExam();
+                        retry();
                     }).catch(() => toast("⚠️ Gagal memeriksa status ulangan. Coba lagi."));
                     return;
                 }
@@ -1297,7 +1305,7 @@
                 }
             } else {
                 state.questions = generateStudentQuestions();
-                const durationMs = examMinutes(state.studentMapel, state.studentUH, state.studentClass) * 60 * 1000;
+                const durationMs = (state.tkaMode ? (parseInt(tkaCfg().minutes) > 0 ? parseInt(tkaCfg().minutes) : 60) : examMinutes(state.studentMapel, state.studentUH, state.studentClass)) * 60 * 1000;
                 const newAns = {};
                 state.questions.forEach((q, idx) => { newAns[idx] = initAns(q); });
 
@@ -1332,6 +1340,12 @@
         }
 
         function generateStudentQuestions() {
+            if (state.tkaMode) {
+                let tl = tkaCfg().questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.tkaMapel);
+                if (config.shuffleQ) tl = fisherYatesShuffle(tl);
+                tl.forEach(q => { const base = (q.o || []).map((_, i) => i); q._optOrder = config.shuffleO ? fisherYatesShuffle(base) : base; });
+                return tl;
+            }
             // Soal dipisah per kelas: soal bertanda Kelas N hanya muncul untuk siswa kelas N; soal "Semua kelas" muncul di semua kelas
             let qList = config.questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH) && clsMatch(q.kl, state.studentClass));
             if (config.shuffleQ) qList = fisherYatesShuffle(qList);
@@ -1453,7 +1467,7 @@
                 <div class="exam-header">
                     <div class="student-info">
                         ${esc(state.studentName)}
-                        <small>🏫 Kelas: ${esc(state.studentClass)} · ${esc(state.studentMapel)} UH ke-${esc(state.studentUH)}</small>
+                        <small>🏫 Kelas: ${esc(state.studentClass)} · ${esc(state.studentMapel)} ${esc(uhTxt(state.studentUH))}</small>
                     </div>
                     <div id="timer-badge-el" class="timer-badge ${state.result.remainingMs < 300000 ? 'urgent' : ''}">
                         ⏱️ ${mmss(state.result.remainingMs)}
@@ -1663,6 +1677,7 @@
             app.innerHTML = `
                 ${state.showQuestionModal ? renderQuestionModal() : ''}
                 ${state.showGenModal ? renderGenModal() : ''}
+                ${state.showTkaModal ? renderTkaModal() : ''}
                 ${state.showClearModal ? renderClearModal() : ''}
                 ${state.resetTarget ? renderResetModal() : ''}
                 ${state.showDeleteModal ? renderDeleteModal() : ''}
@@ -1693,10 +1708,11 @@
             `;
         }
 
-        function switchAdminTab(tab) { state.adminTab = tab; render(); }
+        function switchAdminTab(tab) { state.adminTab = tab; state.tkaView = false; render(); }
 
         const sessKey = (r) => `${r.mapel || '-'}||${r.uh || '-'}`;
-        const sessLabel = (r) => `${r.mapel || '-'} — UH ke-${r.uh || '-'}`;
+        const uhTxt = (u) => String(u) === 'TKA' ? 'TKA' : 'UH ke-' + (u || '-');
+        const sessLabel = (r) => `${r.mapel || '-'} — ${uhTxt(r.uh)}`;
         const grpKey = (r) => `${r.cls || '-'}||${r.mapel || '-'}||${r.uh || '-'}`;
         const natCmp = (a, b) => String(a || '').localeCompare(String(b || ''), 'id', { numeric: true });
         const grpCmp = (a, b) => natCmp(a.cls, b.cls) || natCmp(a.mapel, b.mapel) || (Number(a.uh) || 0) - (Number(b.uh) || 0);
@@ -1793,7 +1809,7 @@
                     <div class="rk-group">
                         <div class="rk-group-head">
                             <span class="rk-chip rk-mp">📚 ${esc(g.mapel || '-')}</span>
-                            <span class="rk-chip rk-uh">📝 UH ke-${esc(g.uh || '-')}</span>
+                            <span class="rk-chip rk-uh">📝 ${esc(uhTxt(g.uh))}</span>
                             <span class="rk-meta">${gsm.n} siswa · selesai ${gsm.done} · rata-rata <b>${show(gsm.avg)}</b></span>
                         </div>
                         <div class="table-responsive">
@@ -1889,7 +1905,7 @@
 
             const first = results[0];
             const t = Storage.loadTeachers().find(x => x.id === state.tid) || {};
-            const judul = `Nilai ${first.mapel || '-'} - Ulangan Harian ke-${first.uh || '-'} - Kelas ${first.cls || '-'}`;
+            const judul = `Nilai ${first.mapel || '-'} - ${String(first.uh) === 'TKA' ? 'TKA' : 'Ulangan Harian ke-' + (first.uh || '-')} - Kelas ${first.cls || '-'}`;
             const q = (x) => '"' + String(x).replace(/"/g, '""') + '"';
             const fmt = (num) => String(num).replace('.', ',');
             const sm = summarize(results);
@@ -2001,6 +2017,7 @@
             render();
         }
         function renderQuestionsTab() {
+            if (state.tkaView) return renderTkaManager();
             const sel = curQMapel(), scoped = (config.questions || []).filter(qInScope);
             let n = 0;
             const items = (config.questions || []).map((q, idx) => {
@@ -2049,6 +2066,7 @@
                     <button class="secondary" onclick="impPick()">📥 Impor File</button>
                     <button class="secondary" onclick="wordTemplate()">📄 Format Word</button>
                     <button class="secondary" onclick="impTemplate()">📊 Format Excel</button>
+                    <button onclick="state.tkaView=true;render()" style="background:linear-gradient(180deg,#fb923c,#f97316);box-shadow:0 5px 0 #c2410c">🎯 Soal TKA Kelas 6</button>
                 </div>
 
                 <div class="qm-step">
@@ -2446,8 +2464,10 @@
             render();
         }
         function nameFields() {
-            const R = rosterSorted();
-            const classes = teacherClassOptions();
+            const onlyTka = state.page === 'tka';
+            let classes = teacherClassOptions();
+            if (onlyTka) classes = classes.filter(c => clsGrade(c) === '6');
+            const R = onlyTka && !classes.length ? [] : rosterSorted();
             if (classes.length === 1 && !state.studentClass) state.studentClass = classes[0];
             const clsSel = classes.length ? `<label>🏫 Pilih Kelas</label>
                         <select id="input-class-sel" onchange="pickClass(this.value)">
@@ -2532,6 +2552,218 @@
             im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(state.imgGen.svg);
         }
         // ===== Akhir fitur tambahan =====
+
+
+        // ===== TKA (Tes Kemampuan Akademik) Kelas 6: hanya Pilihan Ganda dan Pilihan Kompleks =====
+        const TKA_MAPEL = ['Bahasa Indonesia', 'Matematika'];
+        function tkaCfg() {
+            if (!config.tka || typeof config.tka !== 'object') config.tka = {};
+            if (!Array.isArray(config.tka.questions)) config.tka.questions = [];
+            if (!config.tka.tokens || typeof config.tka.tokens !== 'object') config.tka.tokens = {};
+            if (!(parseInt(config.tka.minutes) > 0)) config.tka.minutes = 60;
+            return config.tka;
+        }
+        const tkaCount = (m) => tkaCfg().questions.filter(q => q.mp === m).length;
+
+        // --- Sisi guru ---
+        function renderTkaManager() {
+            const T = tkaCfg(), sel = TKA_MAPEL.includes(state.tkaSel) ? state.tkaSel : TKA_MAPEL[0], tk = T.tokens[sel] || '';
+            let n = 0;
+            const items = T.questions.map((q, idx) => {
+                if (q.mp !== sel) return '';
+                const t = QT[q.ty || 'pg'] || QT.pg;
+                return `<div class="qm-card" style="--qc:${t.c};--ql:${t.l}">
+                    <div class="qm-no">${++n}</div>
+                    <div class="qm-body">
+                        <div class="qm-tags"><span class="qm-type">${t.ic} ${t.n}</span>${q.img ? '<span class="qm-kls">🖼️ Gambar</span>' : ''}${q.tx ? '<span class="qm-kls">📄 Bacaan</span>' : ''}</div>
+                        <div class="qm-text">${esc(q.t)}</div>
+                    </div>
+                    <div class="qm-act">
+                        <button class="qm-ic" onclick="tkaEdit(${idx})" aria-label="Edit soal">✏️</button>
+                        <button class="qm-ic del" onclick="tkaDel(${idx})" aria-label="Hapus soal">🗑️</button>
+                    </div>
+                </div>`;
+            }).join('');
+            return `
+                <div class="qm-hero" style="background:linear-gradient(135deg,#f97316 0%,#ec4899 60%,#8b5cf6 100%)">
+                    <div class="qm-hero-ic">🎯</div>
+                    <div class="qm-hero-tx"><h3>Soal TKA Kelas 6</h3><p>${esc(sel)} · khusus Pilihan Ganda &amp; Pilihan Kompleks</p></div>
+                    <div class="qm-hero-n"><b>${n}</b><span>soal</span></div>
+                </div>
+                <button class="secondary" onclick="state.tkaView=false;render()" style="width:auto;display:inline-flex;margin-bottom:14px">← Kembali ke Soal Biasa</button>
+                <div class="qm-step">
+                    <div class="qm-step-h"><span class="qm-sn">1</span> Pilih Mata Pelajaran TKA</div>
+                    <div class="qm-chips">${TKA_MAPEL.map(m => `<button class="qm-chip ${m === sel ? 'on' : ''}" onclick="state.tkaSel='${esc(m)}';render()">${MAPEL_ICON[m] || '📘'} ${esc(m)} <small>${tkaCount(m)}</small></button>`).join('')}</div>
+                </div>
+                <div class="qm-step">
+                    <div class="qm-step-h"><span class="qm-sn">2</span> Token &amp; Waktu</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
+                        <span>🔑 Token ${esc(sel)}:</span>
+                        <b style="font-size:1.4rem;letter-spacing:3px;color:#c2410c">${tk ? esc(tk) : '(belum dibuat)'}</b>
+                        <button class="success" style="${smallBtn}" onclick="tkaGenToken()">${tk ? '🔄 Ganti Token' : '🎲 Buat Token'}</button>
+                        ${tk ? `<button class="danger" style="${smallBtn}" onclick="tkaDelToken()">🗑️</button>` : ''}
+                    </div>
+                    <label for="tka-min">⏱️ Durasi TKA (menit, semua mata pelajaran TKA)</label>
+                    <input type="number" id="tka-min" min="1" max="600" inputmode="numeric" value="${T.minutes}" onchange="tkaSetMinutes(this.value)">
+                </div>
+                <div class="qm-actions">
+                    <button class="success" onclick="tkaAdd()">➕ Tambah Soal TKA</button>
+                    <button class="danger" onclick="tkaDelAll()" ${n ? '' : 'disabled'}>🗑️ Hapus Semua (${n})</button>
+                </div>
+                <div class="qm-listhead"><b>📋 Daftar Soal TKA ${esc(sel)} (${n})</b></div>
+                <div class="qm-list">${items || `<div class="qm-empty"><div>📭</div><b>Belum ada soal TKA</b><span>Ketuk “Tambah Soal TKA” untuk mulai.</span></div>`}</div>`;
+        }
+        function tkaSetMinutes(v) { const m = parseInt(v); if (!(m > 0 && m <= 600)) { toast('⚠️ Isi durasi 1 sampai 600 menit.'); render(); return; } tkaCfg().minutes = m; Storage.saveConfig(config); toast('✅ Durasi TKA disimpan.'); }
+        function tkaGenToken() { const m = state.tkaSel || TKA_MAPEL[0], t = newTokenCode(); tkaCfg().tokens[m] = t; Storage.saveConfig(config); toast('🔑 Token TKA ' + m + ': ' + t); render(); }
+        function tkaDelToken() { const m = state.tkaSel || TKA_MAPEL[0]; delete tkaCfg().tokens[m]; Storage.saveConfig(config); render(); }
+        function tkaAdd() {
+            state.tkaEditIdx = null;
+            state.formQuestion = { ty: 'pg', t: '', o: ['', '', '', ''], a: 0, ks: [], mp: state.tkaSel || TKA_MAPEL[0] };
+            state.showTkaModal = true; render();
+        }
+        function tkaEdit(idx) {
+            state.tkaEditIdx = idx;
+            state.formQuestion = JSON.parse(JSON.stringify(tkaCfg().questions[idx]));
+            if (!Array.isArray(state.formQuestion.ks)) state.formQuestion.ks = [];
+            state.showTkaModal = true; render();
+        }
+        function tkaDel(idx) {
+            if (!confirm('Hapus soal TKA ini?')) return;
+            tkaCfg().questions.splice(idx, 1); Storage.saveConfig(config); toast('🗑️ Soal dihapus.'); render();
+        }
+        function tkaDelAll() {
+            const m = state.tkaSel || TKA_MAPEL[0], n = tkaCount(m);
+            if (!n || !confirm('Hapus semua ' + n + ' soal TKA ' + m + '? Tidak bisa dikembalikan.')) return;
+            config.tka.questions = config.tka.questions.filter(q => q.mp !== m); Storage.saveConfig(config); toast('🗑️ ' + n + ' soal dihapus.'); render();
+        }
+        function tkaSetType(ty) { state.formQuestion.ty = ty; if (ty === 'pk' && !Array.isArray(state.formQuestion.ks)) state.formQuestion.ks = []; render(); }
+        function renderTkaModal() {
+            const fq = state.formQuestion, isPk = fq.ty === 'pk';
+            return `<div class="modal-overlay"><div class="modal-card">
+                <h3>${state.tkaEditIdx !== null ? 'Edit Soal TKA' : 'Tambah Soal TKA'}</h3>
+                <label>Mata Pelajaran</label>
+                <select onchange="state.formQuestion.mp=this.value">${TKA_MAPEL.map(m => `<option ${fq.mp === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
+                <label>Jenis Soal</label>
+                <div class="qm-types">${['pg', 'pk'].map(t => `<button type="button" class="qm-type-btn ${fq.ty === t ? 'on' : ''}" style="--qc:${QT[t].c};--ql:${QT[t].l}" onclick="tkaSetType('${t}')"><span>${QT[t].ic}</span><b>${t.toUpperCase()}</b><small>${QT[t].n}</small></button>`).join('')}</div>
+                <label>Teks Pertanyaan</label>
+                <textarea rows="3" oninput="state.formQuestion.t=this.value">${esc(fq.t)}</textarea>
+                ${mediaFields(fq)}
+                <label>${isPk ? 'Pilihan Jawaban (centang semua yang benar)' : 'Pilihan Jawaban (pilih satu kunci)'}</label>
+                ${(fq.o || []).map((opt, i) => `
+                    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+                        ${isPk
+                            ? `<input type="checkbox" ${(fq.ks || []).includes(i) ? 'checked' : ''} onchange="toggleFormPkKey(${i})" style="width:24px;height:24px;cursor:pointer" aria-label="Kunci opsi ${i + 1}">`
+                            : `<input type="radio" name="tka-key" ${fq.a === i ? 'checked' : ''} onchange="state.formQuestion.a=${i}" style="width:24px;height:24px;cursor:pointer" aria-label="Kunci opsi ${i + 1}">`}
+                        <input type="text" placeholder="Opsi ${String.fromCharCode(65 + i)}" value="${esc(opt)}" oninput="state.formQuestion.o[${i}]=this.value" style="margin-bottom:0;flex-grow:1">
+                        <button class="danger" onclick="tkaRmOpt(${i})" style="width:auto;margin-bottom:0;padding:10px">X</button>
+                    </div>`).join('')}
+                <button class="secondary" onclick="addFormOpt()" style="padding:8px;font-size:0.9rem" ${(fq.o || []).length >= 8 ? 'disabled' : ''}>+ Tambah Opsi</button>
+                <p style="color:var(--text-muted);font-size:0.85rem">${isPk ? 'Tiap jawaban benar yang dicentang siswa bernilai 1 poin, tiap pilihan yang salah mengurangi 1 poin.' : 'Siswa memilih satu jawaban. Benar = 1 poin.'}</p>
+                <div style="display:flex;gap:12px;margin-top:20px">
+                    <button class="secondary" onclick="state.showTkaModal=false;render()">Batal</button>
+                    <button class="success" onclick="tkaSave()">Simpan Soal</button>
+                </div>
+            </div></div>`;
+        }
+        function tkaRmOpt(i) {
+            const fq = state.formQuestion; if ((fq.o || []).length <= 2) { toast('⚠️ Minimal 2 opsi.'); return; }
+            fq.o.splice(i, 1);
+            if (fq.ty === 'pg') { if (fq.a === i) fq.a = 0; else if (fq.a > i) fq.a--; }
+            else fq.ks = (fq.ks || []).filter(k => k !== i).map(k => k > i ? k - 1 : k);
+            render();
+        }
+        function tkaSave() {
+            const fq = state.formQuestion;
+            if (!String(fq.t || '').trim()) { toast('⚠️ Teks pertanyaan wajib diisi!'); return; }
+            if ((fq.o || []).length < 2 || fq.o.some(x => !String(x || '').trim())) { toast('⚠️ Isi semua opsi (minimal 2), atau hapus opsi yang kosong.'); return; }
+            if (fq.ty === 'pk' && !(fq.ks || []).length) { toast('⚠️ Centang minimal 1 kunci jawaban!'); return; }
+            const q = { ty: fq.ty === 'pk' ? 'pk' : 'pg', t: fq.t.trim(), o: fq.o.map(x => String(x).trim()), mp: TKA_MAPEL.includes(fq.mp) ? fq.mp : TKA_MAPEL[0], kl: 6, tka: 1 };
+            if (q.ty === 'pg') q.a = Math.min(Math.max(+fq.a || 0, 0), q.o.length - 1); else q.ks = [...new Set(fq.ks)].sort((a, b) => a - b);
+            if (fq.tx && String(fq.tx).trim()) q.tx = String(fq.tx).trim();
+            if (fq.img) q.img = fq.img;
+            const T = tkaCfg();
+            if (state.tkaEditIdx !== null && T.questions[state.tkaEditIdx]) T.questions[state.tkaEditIdx] = q; else T.questions.push(q);
+            state.tkaSel = q.mp; state.showTkaModal = false;
+            Storage.saveConfig(config); toast('✅ Soal TKA disimpan!'); render();
+        }
+
+        // --- Sisi siswa: halaman khusus TKA ---
+        function openTka() {
+            saveHomeInputs();
+            initTid();
+            if (clsGrade(state.studentClass) !== '6') { state.studentClass = ''; state.studentName = ''; }
+            state.page = 'tka'; render(); window.scrollTo(0, 0);
+        }
+        function tkaPick(m) { saveHomeInputs(); state.tkaMapel = m; render(); }
+        function tkaHome(app) {
+            initTid();
+            const teachers = Storage.loadTeachers();
+            const open = state.tkaMapel || '';
+            app.innerHTML = `
+                <div class="home-wrap">
+                    <div class="home-top"><button class="chip" onclick="state.page='home';render()">← Kembali ke Beranda</button></div>
+                    <div class="card home-card" style="border-color:#fdba74">
+                        <div class="home-hero">
+                            <div class="home-emoji">🎯</div>
+                            <h2 style="color:#ea580c">TKA Kelas 6</h2>
+                            <p>Tes Kemampuan Akademik. Soalnya Pilihan Ganda dan Pilihan Kompleks.</p>
+                        </div>
+                        <div class="tips-bar">Khusus untuk siswa Kelas 6. Minta token TKA ke gurumu ya.</div>
+
+                        <section class="step">
+                            <div class="step-head"><span class="step-no" style="background:#f97316">1</span><h3>Pilih mata pelajaran TKA</h3></div>
+                            <label for="input-teacher">👩‍🏫 Pendidik</label>
+                            <select id="input-teacher" onchange="selectTeacher(this.value)">
+                                ${teachers.length === 0 ? '<option value="">(Belum ada pendidik)</option>' : ''}
+                                ${teachers.map(t => `<option value="${esc(t.id)}" ${t.id === state.tid ? 'selected' : ''}>${esc(teacherLabel(t))}</option>`).join('')}
+                            </select>
+                            <label>📚 Mata Pelajaran <small style="font-weight:500;color:var(--text-muted)">(ketuk salah satu)</small></label>
+                            <div class="mapel-grid">
+                                ${TKA_MAPEL.map(m => `<button type="button" class="mapel-tile ${open === m ? 'on' : ''}" aria-pressed="${open === m}" onclick="tkaPick('${esc(m)}')"><span class="mt-ic">${MAPEL_ICON[m] || '📘'}</span><span>${esc(m)}</span></button>`).join('')}
+                            </div>
+                        </section>
+
+                        <section class="step">
+                            <div class="step-head"><span class="step-no" style="background:#f97316">2</span><h3>Token TKA</h3></div>
+                            <label for="input-token">🔑 Token <small style="font-weight:500;color:var(--text-muted)">(minta ke guru)</small></label>
+                            <input type="text" id="input-token" placeholder="Contoh: AB3K9" autocomplete="off" autocapitalize="characters" style="text-transform: uppercase;" value="${esc(state.studentToken || '')}">
+                        </section>
+
+                        <section class="step">
+                            <div class="step-head"><span class="step-no" style="background:#f97316">3</span><h3>Siapa kamu?</h3></div>
+                            ${nameFields()}
+                        </section>
+
+                        <button class="success btn-start" onclick="prepareTka()">🚀 Mulai TKA</button>
+                    </div>
+                </div>`;
+        }
+        function prepareTka() {
+            saveHomeInputs();
+            const name = state.studentName, cls = state.studentClass, m = state.tkaMapel;
+            if (!state.tid) { toast('⚠️ Pilih pendidik terlebih dahulu!'); return; }
+            if (!name || !cls || !m) {
+                const miss = [];
+                if (!m) miss.push('.mapel-grid');
+                if (!cls) miss.push('#input-class-sel', '#input-class');
+                if (!name) miss.push('.step select:not(#input-teacher):not(#input-class-sel)', '.step input#input-name');
+                let first = null;
+                miss.forEach(sel => document.querySelectorAll(sel).forEach(el => { if (el.type === 'hidden') return; el.classList.add('need'); if (!first) first = el; setTimeout(() => el.classList.remove('need'), 2500); }));
+                if (first && first.scrollIntoView) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                toast('⚠️ Lengkapi dulu bagian yang berwarna merah ya!'); return;
+            }
+            if (clsGrade(cls) !== '6') { toast('🎯 TKA hanya untuk siswa Kelas 6.'); return; }
+            if (CLOUD.on && !CLOUD.uid) { toast('⏳ Menghubungkan ke server, coba lagi sebentar.'); return; }
+            if (CLOUD.on && !CLOUD.configExists) { toast('⚠️ Ujian belum disiapkan oleh guru.'); return; }
+            const T = tkaCfg();
+            if (!T.questions.some(q => q.mp === m)) { toast('⚠️ Belum ada soal TKA ' + m + '.'); return; }
+            const tk = T.tokens[m];
+            if (!tk) { toast('⚠️ Token TKA ' + m + ' belum dibuat guru.'); return; }
+            if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast('❌ Token salah. Minta token ke guru.'); return; }
+            state.tkaMode = true;
+            state.studentMapel = 'TKA ' + m; state.studentUH = 'TKA';
+            return beginExam(name, cls, prepareTka);
+        }
 
         // ===== Mesin Pembuat Soal (offline, berbasis aturan) =====
         const GEN_NAMA = ['Budi', 'Siti', 'Ani', 'Rudi', 'Dina', 'Joko', 'Maya', 'Dewi', 'Andi', 'Rina'];
