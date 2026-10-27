@@ -2091,6 +2091,7 @@
         const curKelas = () => state.qKelas || '';
         const qKls = (q) => String(q.kl || '');
         const qCountKls = (m, u, k) => (config.questions || []).filter(q => (q.mp || '') === m && (m === '' || qUH(q) === String(u)) && (k === '' || qKls(q) === String(k))).length;
+        const qCountMK = (m, k) => (config.questions || []).filter(q => (q.mp || '') === m && (k === '' || qKls(q) === String(k))).length;
         function setQKelas(k) { state.qKelas = k; render(); }
         function setFormKelas(k) { if (k) state.formQuestion.kl = k; else delete state.formQuestion.kl; render(); }
         // Hapus satu ulangan harian: semua soal (semua kelas), token, dan aturan waktunya. Hasil ujian siswa tidak ikut dihapus.
@@ -2228,22 +2229,22 @@
                     </div>
                 </div>
 
+                <div class="qm-step">
+                    <div class="qm-step-h"><span class="qm-sn">${++step}</span> Pilih Kelas</div>
+                    <div class="qm-chips">
+                        <button class="qm-chip ${curKelas() === '' ? 'on' : ''}" onclick="setQKelas('')">🏫 Semua <small>${qCountMK(sel, '')}</small></button>
+                        ${[1, 2, 3, 4, 5, 6].map(k => `<button class="qm-chip ${curKelas() === String(k) ? 'on' : ''}" onclick="setQKelas('${k}')">Kelas ${k} <small>${qCountMK(sel, k)}</small></button>`).join('')}
+                    </div>
+                </div>
+
                 ${sel !== '' ? `<div class="qm-step">
                     <div class="qm-step-h"><span class="qm-sn">${++step}</span> Pilih Ulangan Harian</div>
                     <div class="qm-chips">
-                        ${uhList(sel).map(u => `<button class="qm-chip ${String(u) === curQUH() ? 'on' : ''}" onclick="setQUH(${u})">📝 UH ${u} <small>${qCountUH(sel, u)}</small></button>`).join('')}
+                        ${uhList(sel).map(u => `<button class="qm-chip ${String(u) === curQUH() ? 'on' : ''}" onclick="setQUH(${u})">📝 UH ${u} <small>${qCountKls(sel, u, curKelas())}</small></button>`).join('')}
                         <button class="qm-chip add" onclick="addUH('${sel}')">➕ UH Baru</button>
                     </div>
                     <div style="margin-top:10px"><button class="danger" style="${smallBtn}" onclick="delUH('${sel}', ${curQUH()})" ${uhHasData(sel, curQUH()) ? '' : 'disabled'}>🗑️ Hapus UH ${esc(curQUH())} (${qCountUH(sel, curQUH())} soal)</button></div>
                 </div>` : ''}
-
-                <div class="qm-step">
-                    <div class="qm-step-h"><span class="qm-sn">${++step}</span> Pilih Kelas</div>
-                    <div class="qm-chips">
-                        <button class="qm-chip ${curKelas() === '' ? 'on' : ''}" onclick="setQKelas('')">🏫 Semua <small>${qCountKls(sel, curQUH(), '')}</small></button>
-                        ${[1, 2, 3, 4, 5, 6].map(k => `<button class="qm-chip ${curKelas() === String(k) ? 'on' : ''}" onclick="setQKelas('${k}')">Kelas ${k} <small>${qCountKls(sel, curQUH(), k)}</small></button>`).join('')}
-                    </div>
-                </div>
 
                 ${sel === '' ? `<div class="qm-step" style="border-style:dashed"><p style="margin:0 0 8px;color:var(--text-muted)">Soal lama ini belum punya mapel dan tidak akan muncul di ulangan. Pindahkan semuanya ke satu mapel, atau edit satu per satu.</p><select id="mv-mapel">${MAPEL.map(m => `<option>${m}</option>`).join('')}</select><button class="secondary" onclick="moveUntagged(document.getElementById('mv-mapel').value)">Pindahkan semua ke mapel ini</button></div>` : ''}
 
