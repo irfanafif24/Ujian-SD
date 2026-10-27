@@ -793,7 +793,7 @@
         function fixMapelCfg(c) {
             if (!c || typeof c !== 'object') return c;
             (c.questions || []).forEach(q => { if (q && MAPEL_LAMA[q.mp]) q.mp = MAPEL_LAMA[q.mp]; });
-            if (c.tokens) Object.keys(c.tokens).forEach(k => { const [m, u] = k.split('||'); if (MAPEL_LAMA[m]) { c.tokens[MAPEL_LAMA[m] + '||' + u] = c.tokens[k]; delete c.tokens[k]; } });
+            if (c.tokens) Object.keys(c.tokens).forEach(k => { const [m, ...rest] = k.split('||'); if (MAPEL_LAMA[m]) { c.tokens[MAPEL_LAMA[m] + '||' + rest.join('||')] = c.tokens[k]; delete c.tokens[k]; } });
             return c;
         }
         const fixMapelRes = (rs) => (rs || []).map(r => (r && MAPEL_LAMA[r.mapel]) ? { ...r, mapel: MAPEL_LAMA[r.mapel] } : r);
@@ -1262,8 +1262,8 @@
             const _qMU = (config.questions || []).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH));
             if (!_qMU.length) { toast("⚠️ Belum ada soal untuk mapel dan ulangan harian ini!"); return; }
             if (!_qMU.some(q => clsMatch(q.kl, cls))) { toast("⚠️ Belum ada soal untuk Kelas " + cls + " pada mapel dan ulangan harian ini!"); return; }
-            const tk = (config.tokens || {})[state.studentMapel + '||' + state.studentUH];
-            if (!tk) { toast("⚠️ Token untuk ulangan ini belum dibuat guru."); return; }
+            const tk = tokenFor(state.studentMapel, state.studentUH, cls);
+            if (!tk) { toast("⚠️ Token untuk Kelas " + cls + " pada ulangan ini belum dibuat guru."); return; }
             if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast("❌ Token salah. Minta token ke guru."); return; }
             examEnterFs();
             const dn = Storage.loadResults().find(r => r.tid === state.tid && r.status === 'done' && r.name.toLowerCase() === name.toLowerCase() && r.cls.toLowerCase() === cls.toLowerCase() && r.mapel === state.studentMapel && String(r.uh) === String(state.studentUH));
@@ -2187,22 +2187,60 @@
                 ${tblWrap(['#', 'Nama', 'Kelas', 'UH', 'Nilai', 'Pelanggaran', 'Aksi'], rs.map((r, i) => `<tr>${td(i + 1)}${td(esc(r.name))}${td(esc(r.cls))}${td(esc(r.uh))}${td('<b>' + r.score + '</b>')}${td(r.cheat || 0)}${td(`<button class="secondary" style="${smallBtn}" onclick="resetResult('${r.id}')">🔄 Reset</button>`)}</tr>`).join(''))}`;
         }
 
-        // --- Token ulangan harian ---
-        function genToken() {
-            const m = state.tkM || MAPEL[0], u = parseInt(state.tkU) || 1, ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let t = ''; for (let i = 0; i < 5; i++) t += ch[Math.floor(Math.random() * ch.length)];
-            config.tokens = config.tokens || {}; config.tokens[m + '||' + u] = t;
-            Storage.saveConfig(config); toast(`🔑 Token ${m} UH ${u}: ${t}`); render();
+        // --- Token ulangan harian: per mata pelajaran, per ulangan harian, per kelas ---
+        // Kunci token: "Mapel||UH||Kelas". Kelas boleh nama kelas (5A), tingkat (5 = semua kelas 5), atau kosong (semua kelas).
+        function tokenKey(m, u, k) { return m + '||' + u + (k ? '||' + k : ''); }
+        function tokenFor(m, u, cls) {
+            const T = config.tokens || {}, c = String(cls || '').trim();
+            const exact = Object.keys(T).find(k => { const p = k.split('||'); return p[0] === m && String(p[1]) === String(u) && p[2] && p[2].toLowerCase() === c.toLowerCase(); });
+            if (exact) return T[exact];
+            const g = clsGrade(c);
+            if (g && T[tokenKey(m, u, g)]) return T[tokenKey(m, u, g)];
+            return T[tokenKey(m, u, '')] || '';
         }
+        function newTokenCode() {
+            const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let t = '';
+            for (let i = 0; i < 5; i++) t += ch[Math.floor(Math.random() * ch.length)];
+            return t;
+        }
+        function tokenClassOptions() {
+            const g = ['1', '2', '3', '4', '5', '6'], own = typeof teacherClassOptions === 'function' ? teacherClassOptions().filter(c => !g.includes(String(c))) : [];
+            return g.concat(own);
+        }
+        function genToken(all) {
+            const m = state.tkM || MAPEL[0], u = parseInt(state.tkU) || 1;
+            config.tokens = config.tokens || {};
+            if (all === true) {
+                const list = tokenClassOptions().filter(c => !/^\d$/.test(c));
+                const targets = list.length ? list : ['1', '2', '3', '4', '5', '6'];
+                targets.forEach(c => { config.tokens[tokenKey(m, u, c)] = newTokenCode(); });
+                Storage.saveConfig(config); toast(`🔑 ${targets.length} token dibuat untuk ${m} UH ${u}, satu per kelas.`); render(); return;
+            }
+            const k = state.tkK || '', t = newTokenCode();
+            config.tokens[tokenKey(m, u, k)] = t;
+            Storage.saveConfig(config); toast(`🔑 Token ${m} UH ${u} ${k ? 'Kelas ' + k : '(semua kelas)'}: ${t}`); render();
+        }
+        function regenToken(k) { if (!config.tokens || !config.tokens[k]) return; config.tokens[k] = newTokenCode(); Storage.saveConfig(config); toast('🔄 Token diganti: ' + config.tokens[k]); render(); }
         function delToken(k) { delete config.tokens[k]; Storage.saveConfig(config); render(); }
         function renderTokenTab() {
-            const T = config.tokens || {};
-            return `<h3>Token Ulangan Harian</h3>
-                <p style="color:var(--text-muted);font-size:0.9rem">Buat token per mapel dan UH, lalu bagikan ke siswa. Siswa wajib memasukkan token di halaman awal. Membuat ulang token akan mengganti token lama.</p>
-                <label>Mata Pelajaran</label><select onchange="state.tkM=this.value">${MAPEL.map(m => `<option ${(state.tkM || MAPEL[0]) === m ? 'selected' : ''}>${m}</option>`).join('')}</select>
-                <label>Ulangan Harian ke-</label><input type="number" min="1" value="${state.tkU || 1}" onchange="state.tkU=this.value">
-                <button class="success" onclick="genToken()">🎲 Buat Token Otomatis</button>
-                ${tblWrap(['Mapel / UH', 'Token', ''], Object.keys(T).map(k => `<tr>${td(esc(k.replace('||', ' — UH ')))}${td('<b style="font-size:1.2rem;letter-spacing:2px">' + esc(T[k]) + '</b>')}${td(`<button class="danger" style="${smallBtn}" onclick="delToken('${esc(k)}')">🗑️</button>`)}</tr>`).join(''))}`;
+            const T = config.tokens || {}, selM = state.tkM || MAPEL[0], selK = state.tkK || '';
+            const rows = Object.keys(T).map(k => { const p = k.split('||'); return { k, m: p[0], u: Number(p[1]) || 0, c: p[2] || '' }; })
+                .sort((a, b) => natCmp(a.m, b.m) || a.u - b.u || natCmp(a.c, b.c));
+            const kelasTxt = (c) => c ? (/^\d+$/.test(c) ? 'Semua kelas ' + c : 'Kelas ' + c) : 'Semua kelas';
+            return `<h3>🔑 Token Ulangan</h3>
+                <p style="color:var(--text-muted);font-size:0.9rem">Setiap token berlaku untuk satu kombinasi <b>mata pelajaran + ulangan harian + kelas</b>. Siswa wajib memasukkan token yang sesuai dengan kelasnya. Jika tidak ada token khusus kelas, token "Semua kelas" dipakai. Membuat token yang sama lagi akan menggantinya.</p>
+                <label>📚 Mata Pelajaran</label>
+                <select onchange="state.tkM=this.value;render()">${MAPEL.map(m => `<option ${selM === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
+                <label>📝 Ulangan Harian ke-</label>
+                <input type="number" min="1" value="${state.tkU || 1}" onchange="state.tkU=this.value">
+                <label>🏫 Kelas</label>
+                <select onchange="state.tkK=this.value;render()">
+                    <option value="" ${selK === '' ? 'selected' : ''}>Semua kelas</option>
+                    ${tokenClassOptions().map(c => `<option value="${esc(c)}" ${selK === c ? 'selected' : ''}>${/^\d$/.test(c) ? 'Semua kelas ' + esc(c) + ' (mis. ' + esc(c) + 'A, ' + esc(c) + 'B)' : 'Kelas ' + esc(c)}</option>`).join('')}
+                </select>
+                <button class="success" onclick="genToken()">🎲 Buat Token: ${esc(selM)} · UH ${esc(state.tkU || 1)} · ${esc(kelasTxt(selK))}</button>
+                <button class="secondary" onclick="genToken(true)">🏫 Buat Token untuk Setiap Kelas Sekaligus</button>
+                ${tblWrap(['Mata Pelajaran', 'UH', 'Kelas', 'Token', ''], rows.map(r => `<tr>${td(esc(r.m))}${td('UH ' + esc(r.u))}${td(esc(kelasTxt(r.c)))}${td('<b style="font-size:1.2rem;letter-spacing:2px">' + esc(T[r.k]) + '</b>')}${td(`<button class="secondary" style="${smallBtn}" title="Ganti token" onclick="regenToken('${esc(r.k)}')">🔄</button> <button class="danger" style="${smallBtn}" title="Hapus token" onclick="delToken('${esc(r.k)}')">🗑️</button>`)}</tr>`).join(''))}`;
         }
 
         // --- Anti-curang ---
