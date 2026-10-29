@@ -9,9 +9,6 @@
     <meta name="robots" content="noindex, nofollow">
     <script src="config.js"></script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9D%3C/text%3E%3C/svg%3E">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #F3F6F9;
@@ -353,15 +350,15 @@
         /* ===== Tema ceria untuk anak SD ===== */
         body { font-family: 'Baloo 2', 'Comic Sans MS', 'Trebuchet MS', system-ui, sans-serif; background: linear-gradient(160deg, #fef3c7 0%, #dbeafe 45%, #fce7f3 100%) fixed; }
         body::after { content: "✏️ 📚 🌈 ⭐ 🎒"; position: fixed; bottom: 6px; right: 12px; font-size: 1.5rem; letter-spacing: 8px; opacity: .55; pointer-events: none; }
-        .card { border: 4px solid #bfdbfe; border-radius: 32px; box-shadow: 0 8px 0 #93c5fd66, 0 14px 24px -8px rgba(59,130,246,.25); }
+        .card { border: 4px solid #bfdbfe; border-radius: 32px; box-shadow: none; }
         h2, h3 { color: #2563eb; font-weight: 800; }
         .card > div[style*="3.5rem"] { animation: sdBounce 1.6s ease-in-out infinite; }
         @keyframes sdBounce { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-10px) rotate(4deg); } }
-        button { font-family: inherit; font-weight: 800; font-size: 1.05rem; border-radius: 20px; background: linear-gradient(180deg, #60a5fa, #3b82f6); box-shadow: 0 5px 0 #1d4ed8; transition: transform .1s, box-shadow .1s; }
-        button:active { transform: translateY(4px); box-shadow: 0 1px 0 #1d4ed8; }
-        button.success { background: linear-gradient(180deg, #4ade80, #22c55e); box-shadow: 0 5px 0 #15803d; }
-        button.danger { background: linear-gradient(180deg, #f87171, #ef4444); box-shadow: 0 5px 0 #b91c1c; }
-        button.secondary { background: #fff; color: #1e293b; border: 3px solid #bfdbfe; box-shadow: 0 5px 0 #bfdbfe; }
+        button { font-family: inherit; font-weight: 800; font-size: 1.05rem; border-radius: 20px; background: #3b82f6; box-shadow: none; transition: transform .1s, box-shadow .1s; }
+        button:active { transform: translateY(4px); box-shadow: none; }
+        button.success { background: #22c55e; box-shadow: none; }
+        button.danger { background: #ef4444; box-shadow: none; }
+        button.secondary { background: #fff; color: #1e293b; border: 3px solid #bfdbfe; box-shadow: none; }
         .pin-eye { box-shadow: none !important; }
         input, select, textarea { border-width: 3px; border-radius: 18px; font-family: inherit; }
         input:focus, select:focus, textarea:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 4px #fde68a; }
@@ -374,29 +371,29 @@
         .dd-blank.filled { border: 3px solid #22c55e; background: #dcfce7; color: #166534; }
         .dd-blank.over { background: #fde68a; transform: scale(1.08); }
         .dd-bank { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; border-radius: 22px; background: #ede9fe; margin-bottom: 20px; }
-        .dd-chip { padding: 8px 18px; border-radius: 999px; background: linear-gradient(180deg, #a78bfa, #7c3aed); color: #fff; font-weight: 800; font-size: 1.15rem; cursor: grab; box-shadow: 0 4px 0 #5b21b6; user-select: none; }
+        .dd-chip { padding: 8px 18px; border-radius: 999px; background: #7c3aed; color: #fff; font-weight: 800; font-size: 1.15rem; cursor: grab; box-shadow: none; user-select: none; }
         .dd-chip.sel { outline: 4px solid #f59e0b; transform: scale(1.08); }
         .dd-chip.used { opacity: .25; pointer-events: none; }
         @media (prefers-color-scheme: dark) {
             body { background: linear-gradient(160deg, #1e1b4b, #0f172a) fixed; }
-            .card { border-color: #334155; box-shadow: 0 8px 0 #0006; }
+            .card { border-color: #334155; box-shadow: none; }
             h2, h3 { color: #93c5fd; }
-            button.secondary { background: #1e293b; color: #f8fafc; border-color: #475569; box-shadow: 0 5px 0 #0f172a; }
+            button.secondary { background: #1e293b; color: #f8fafc; border-color: #475569; box-shadow: none; }
             .dd-blank { background: #422006; color: #fde68a; } .dd-blank.filled { background: #14532d; color: #bbf7d0; } .dd-bank { background: #2e1065; }
         }
             /* ===== Tema warna-warni v2.4 ===== */
         :root { --primary: #6366f1; --primary-hover: #4f46e5; --primary-light: #e0e7ff; --success: #10b981; --success-light: #d1fae5; --error: #f43f5e; --error-light: #ffe4e6; --border: #c7d2fe; }
         body { background: radial-gradient(circle at 10% 6%, #fde68a99 0, transparent 38%), radial-gradient(circle at 92% 10%, #f9a8d499 0, transparent 40%), radial-gradient(circle at 86% 92%, #86efac99 0, transparent 38%), radial-gradient(circle at 8% 90%, #93c5fd99 0, transparent 40%), linear-gradient(160deg, #fff7ed, #eef2ff 50%, #fdf2f8) fixed; }
-        .card { border: 4px solid transparent; background: linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, #f472b6, #fbbf24, #34d399, #60a5fa, #a78bfa) border-box; box-shadow: 0 8px 0 #c4b5fd66, 0 14px 24px -8px rgba(139,92,246,.3); }
+        .card { border: 4px solid transparent; background: linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, #f472b6, #fbbf24, #34d399, #60a5fa, #a78bfa) border-box; box-shadow: none; }
         h2 { color: #7c3aed; } h3 { color: #db2777; }
-        button { background: linear-gradient(180deg, #818cf8, #6366f1); box-shadow: 0 5px 0 #4338ca; }
-        button:active { box-shadow: 0 1px 0 #4338ca; }
-        button.success { background: linear-gradient(180deg, #34d399, #10b981); box-shadow: 0 5px 0 #047857; }
-        button.danger { background: linear-gradient(180deg, #fb7185, #f43f5e); box-shadow: 0 5px 0 #be123c; }
-        button.secondary { background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: 0 5px 0 #c7d2fe; }
+        button { background: #6366f1; box-shadow: none; }
+        button:active { box-shadow: none; }
+        button.success { background: #10b981; box-shadow: none; }
+        button.danger { background: #f43f5e; box-shadow: none; }
+        button.secondary { background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: none; }
         .pin-eye { box-shadow: none !important; }
         input:focus, select:focus, textarea:focus { border-color: #ec4899; box-shadow: 0 0 0 4px #fbcfe8; }
-        .admin-nav button { background: var(--cl); color: var(--c); border: 3px solid var(--c); box-shadow: 0 4px 0 var(--c); }
+        .admin-nav button { background: var(--cl); color: var(--c); border: 3px solid var(--c); box-shadow: none; }
         .admin-nav button.active { background: var(--c); color: #fff; }
         .admin-nav button:nth-child(5n+1) { --c: #ef4444; --cl: #fee2e2; }
         .admin-nav button:nth-child(5n+2) { --c: #f59e0b; --cl: #fef3c7; }
@@ -433,9 +430,9 @@
         @media (prefers-color-scheme: dark) {
             :root { --border: #4338ca; }
             body { background: radial-gradient(circle at 10% 6%, #7c2d1266 0, transparent 38%), radial-gradient(circle at 92% 10%, #83184366 0, transparent 40%), radial-gradient(circle at 86% 92%, #06403066 0, transparent 38%), radial-gradient(circle at 8% 90%, #1e3a8a66 0, transparent 40%), linear-gradient(160deg, #1e1b4b, #0f172a) fixed; }
-            .card { box-shadow: 0 8px 0 #0006; }
+            .card { box-shadow: none; }
             h2 { color: #c4b5fd; } h3 { color: #f9a8d4; }
-            button.secondary { background: #1e293b; color: #c7d2fe; border-color: #6366f1; box-shadow: 0 5px 0 #312e81; }
+            button.secondary { background: #1e293b; color: #c7d2fe; border-color: #6366f1; box-shadow: none; }
             .admin-nav button { background: #1e293b; }
             .admin-nav button.active { background: var(--c); }
             .stat-card:nth-child(n) { background: #1e293b; } .stat-label { color: #cbd5e1; }
@@ -485,7 +482,7 @@
         @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
         /* ===== Halaman Edit Soal: tampilan ceria untuk anak & guru ===== */
-        .qm-hero { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 26px; color: #fff; background: linear-gradient(135deg, #6366f1 0%, #ec4899 60%, #f59e0b 100%); box-shadow: 0 6px 0 #4338ca55; margin-bottom: 16px; }
+        .qm-hero { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 26px; color: #fff; background: linear-gradient(135deg, #6366f1 0%, #ec4899 60%, #f59e0b 100%); box-shadow: none; margin-bottom: 16px; }
         .qm-hero-ic { font-size: 2.4rem; line-height: 1; flex: none; animation: sdBounce 1.8s ease-in-out infinite; }
         .qm-hero-tx { flex: 1; min-width: 0; }
         .qm-hero h3 { margin: 0; text-align: left; color: #fff !important; font-size: 1.4rem; }
@@ -499,16 +496,16 @@
         .qm-step-h { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; margin-bottom: 10px; color: #4338ca; }
         .qm-sn { width: 30px; height: 30px; border-radius: 50%; background: #f59e0b; color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
         .qm-chips { display: flex; flex-wrap: wrap; gap: 10px; }
-        button.qm-chip { width: auto; margin: 0; min-height: 46px; padding: 8px 16px; font-size: .98rem; border-radius: 999px; background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: 0 4px 0 #c7d2fe; }
-        button.qm-chip:active { transform: translateY(3px); box-shadow: 0 1px 0 #c7d2fe; }
+        button.qm-chip { width: auto; margin: 0; min-height: 46px; padding: 8px 16px; font-size: .98rem; border-radius: 999px; background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: none; }
+        button.qm-chip:active { transform: translateY(3px); box-shadow: none; }
         button.qm-chip small { background: rgba(99,102,241,.16); border-radius: 999px; padding: 0 8px; font-size: .8rem; font-weight: 800; }
-        button.qm-chip.on { background: linear-gradient(180deg, #fbbf24, #f59e0b); color: #fff; border-color: #f59e0b; box-shadow: 0 4px 0 #b45309; }
+        button.qm-chip.on { background: #f59e0b; color: #fff; border-color: #f59e0b; box-shadow: none; }
         button.qm-chip.on small { background: rgba(255,255,255,.32); }
-        button.qm-chip.add { border-style: dashed; color: #059669; border-color: #6ee7b7; box-shadow: 0 4px 0 #a7f3d0; }
+        button.qm-chip.add { border-style: dashed; color: #059669; border-color: #6ee7b7; box-shadow: none; }
         .qm-listhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 18px 0 12px; font-size: 1.1rem; }
         button.qm-delall { width: auto; margin: 0; min-height: 44px; padding: 8px 16px; font-size: .9rem; }
         .qm-list { display: flex; flex-direction: column; gap: 12px; }
-        .qm-card { display: flex; align-items: center; gap: 12px; background: var(--ql); border: 3px solid var(--qc); border-left-width: 10px; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 rgba(0,0,0,.06); }
+        .qm-card { display: flex; align-items: center; gap: 12px; background: var(--ql); border: 3px solid var(--qc); border-left-width: 10px; border-radius: 22px; padding: 12px 14px; box-shadow: none; }
         .qm-no { width: 40px; height: 40px; border-radius: 50%; background: var(--qc); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
         .qm-body { flex: 1; min-width: 0; }
         .qm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
@@ -516,29 +513,29 @@
         .qm-kls { display: inline-block; background: #fff; color: #475569; border: 2px solid #e2e8f0; font-weight: 700; font-size: .78rem; padding: 0 8px; border-radius: 999px; }
         .qm-text { font-weight: 700; color: #1e293b; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
         .qm-act { display: flex; gap: 8px; flex: none; }
-        button.qm-ic { width: 46px; height: 46px; min-height: 0; padding: 0; margin: 0; border-radius: 16px; font-size: 1.2rem; background: #fff; color: #1e293b; border: 3px solid #c7d2fe; box-shadow: 0 3px 0 #c7d2fe; }
-        button.qm-ic.del { border-color: #fda4af; box-shadow: 0 3px 0 #fda4af; }
-        button.qm-ic:active { transform: translateY(2px); box-shadow: 0 1px 0 #c7d2fe; }
+        button.qm-ic { width: 46px; height: 46px; min-height: 0; padding: 0; margin: 0; border-radius: 16px; font-size: 1.2rem; background: #fff; color: #1e293b; border: 3px solid #c7d2fe; box-shadow: none; }
+        button.qm-ic.del { border-color: #fda4af; box-shadow: none; }
+        button.qm-ic:active { transform: translateY(2px); box-shadow: none; }
         .qm-empty { text-align: center; padding: 28px 16px; border: 3px dashed #c7d2fe; border-radius: 24px; display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); }
         .qm-empty div { font-size: 3rem; line-height: 1; }
         .qm-empty b { color: #4338ca; font-size: 1.15rem; }
         .qm-scope { text-align: left; background: #fff1f2; border: 3px solid #fda4af; border-radius: 18px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; color: #1e293b; }
         .qm-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(6.2rem, 1fr)); gap: 10px; margin-bottom: 16px; }
-        button.qm-type-btn { flex-direction: column; gap: 0; margin: 0; padding: 8px 6px; min-height: 76px; line-height: 1.15; background: var(--ql); color: var(--qc); border: 3px solid var(--qc); box-shadow: 0 4px 0 var(--qc); }
+        button.qm-type-btn { flex-direction: column; gap: 0; margin: 0; padding: 8px 6px; min-height: 76px; line-height: 1.15; background: var(--ql); color: var(--qc); border: 3px solid var(--qc); box-shadow: none; }
         button.qm-type-btn span { font-size: 1.5rem; }
         button.qm-type-btn b { font-size: 1rem; }
         button.qm-type-btn small { font-size: .7rem; font-weight: 700; }
         button.qm-type-btn.on { background: var(--qc); color: #fff; }
-        button.qm-type-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--qc); }
+        button.qm-type-btn:active { transform: translateY(3px); box-shadow: none; }
         @media (max-width: 520px) { .qm-card { flex-wrap: wrap; } .qm-act { width: 100%; justify-content: flex-end; } .qm-hero { padding: 12px 14px; } .qm-hero-ic { font-size: 1.8rem; } }
         @media (prefers-color-scheme: dark) {
             .qm-step { background: #0f172a; } .qm-step-h { color: #c7d2fe; }
-            button.qm-chip { background: #1e293b; color: #c7d2fe; border-color: #4338ca; box-shadow: 0 4px 0 #312e81; }
-            button.qm-chip.on { color: #fff; border-color: #f59e0b; box-shadow: 0 4px 0 #b45309; }
+            button.qm-chip { background: #1e293b; color: #c7d2fe; border-color: #4338ca; box-shadow: none; }
+            button.qm-chip.on { color: #fff; border-color: #f59e0b; box-shadow: none; }
             .qm-card { background: #1e293b; } .qm-text { color: #f8fafc; }
             .qm-kls { background: #0f172a; color: #cbd5e1; border-color: #334155; }
-            button.qm-ic { background: #0f172a; color: #f8fafc; border-color: #4338ca; box-shadow: 0 3px 0 #312e81; }
-            button.qm-ic.del { border-color: #be123c; box-shadow: 0 3px 0 #9f1239; }
+            button.qm-ic { background: #0f172a; color: #f8fafc; border-color: #4338ca; box-shadow: none; }
+            button.qm-ic.del { border-color: #be123c; box-shadow: none; }
             .qm-empty { border-color: #4338ca; } .qm-empty b { color: #c7d2fe; }
             .qm-scope { background: #4c0519; border-color: #be123c; color: #ffe4e6; }
             button.qm-type-btn { background: #1e293b; } button.qm-type-btn.on { background: var(--qc); }
@@ -575,19 +572,19 @@
         /* ===== v3: Tampilan Exam Browser yang ramah anak ===== */
         body.exam-mode { background: #eef2ff; }
         body.exam-mode::after, body.exam-mode #net-badge { display: none !important; }
-        body.exam-mode .card { background: var(--card); border: 3px solid #c7d2fe; box-shadow: 0 6px 0 #c7d2fe88; }
+        body.exam-mode .card { background: var(--card); border: 3px solid #c7d2fe; box-shadow: none; }
         body.exam-mode .kiosk-bar { position: sticky; top: 0; z-index: 60; margin-bottom: 8px; }
         body.exam-mode .exam-header { top: 52px; }
         .exam-title { font-weight: 800; font-size: .95rem; color: #fff; opacity: .95; }
         .exam-card { padding: 1.25rem; }
         .q-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
         .q-type-tag { font-size: .85rem; font-weight: 800; color: #4338ca; background: #e0e7ff; border-radius: 999px; padding: 4px 12px; }
-        .btn-tts { width: auto; margin: 0 0 14px; min-height: 44px; padding: 6px 16px; font-size: 1rem; background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: 0 4px 0 #c7d2fe; }
-        .btn-tts.on { background: #fef9c3; border-color: #f59e0b; color: #92400e; box-shadow: 0 4px 0 #f59e0b; }
+        .btn-tts { width: auto; margin: 0 0 14px; min-height: 44px; padding: 6px 16px; font-size: 1rem; background: #fff; color: #4338ca; border: 3px solid #c7d2fe; box-shadow: none; }
+        .btn-tts.on { background: #fef9c3; border-color: #f59e0b; color: #92400e; box-shadow: none; }
         .exam-dock { position: sticky; bottom: max(8px, env(safe-area-inset-bottom)); z-index: 40; display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; background: var(--card); border: 3px solid #c4b5fd; border-radius: 28px; padding: 10px; box-shadow: 0 -8px 26px rgba(76,29,149,.2); margin: 14px 0 12px; }
         .exam-dock button { margin: 0; min-height: 60px; font-size: 1.1rem; }
-        .exam-dock .btn-ragu { width: auto; padding: 8px 18px; background: #fff; color: #854d0e; border: 3px solid #fde047; box-shadow: 0 5px 0 #fde047; }
-        .exam-dock .btn-ragu.on { background: linear-gradient(180deg, #fde047, #facc15); color: #422006; border-color: #eab308; box-shadow: 0 5px 0 #a16207; }
+        .exam-dock .btn-ragu { width: auto; padding: 8px 18px; background: #fff; color: #854d0e; border: 3px solid #fde047; box-shadow: none; }
+        .exam-dock .btn-ragu.on { background: #facc15; color: #422006; border-color: #eab308; box-shadow: none; }
         @media (max-width: 520px) { .exam-dock { grid-template-columns: 1fr 1fr; } .exam-dock .btn-ragu { grid-column: 1 / -1; order: -1; min-height: 52px; } .exam-dock button { font-size: 1rem; } }
         .tips-bar { background: #fff7ed; border: 2px dashed #fdba74; color: #9a3412; border-radius: 16px; padding: 8px 14px; font-weight: 700; font-size: .9rem; margin-bottom: 12px; text-align: center; }
         .miss-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 16px; }
@@ -603,9 +600,9 @@
         .help-list { text-align: left; margin: 0 0 16px 20px; line-height: 1.8; font-weight: 600; }
         @media (prefers-color-scheme: dark) {
             body.exam-mode { background: #0f172a; }
-            body.exam-mode .card { border-color: #4338ca; box-shadow: 0 6px 0 #0006; }
+            body.exam-mode .card { border-color: #4338ca; box-shadow: none; }
             .q-type-tag { background: #312e81; color: #c7d2fe; }
-            .btn-tts { background: #1e293b; color: #c7d2fe; border-color: #4338ca; box-shadow: 0 4px 0 #312e81; }
+            .btn-tts { background: #1e293b; color: #c7d2fe; border-color: #4338ca; box-shadow: none; }
             .exam-dock { border-color: #6d28d9; }
             .exam-dock .btn-ragu { background: #1e293b; color: #fde68a; }
             .tips-bar { background: #431407; color: #fed7aa; border-color: #c2410c; }
@@ -627,14 +624,72 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
 .qm-chips .qm-chip{min-height:44px}
 .stats-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .stat-card{padding:12px}
-.tka-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.tka-row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:12px 14px;border:1px solid var(--border);border-radius:16px;background:var(--card)}
-.tka-row .nm{font-weight:700;overflow-wrap:anywhere}.tka-row .sub{grid-column:1;font-size:.85rem;color:var(--text-muted)}
-.tka-row .sc{grid-column:2;grid-row:1/3;font-size:1.6rem;font-weight:800;text-align:right;min-width:52px}
-.tka-row .ac{grid-column:1/3}
-@media(max-width:480px){.stats-grid{grid-template-columns:repeat(2,1fr)}button:not(.chip):not(.qm-chip):not(.rk-btn):not(.mapel-tile){box-shadow:0 3px 0 rgba(0,0,0,.25)}.home-top .chip{min-width:100%}}
-@media(min-width:768px){.tka-list{display:grid;grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1100px){.tka-list{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.stats-grid{grid-template-columns:repeat(2,1fr)}button:not(.chip):not(.qm-chip):not(.rk-btn):not(.mapel-tile){box-shadow: none}.home-top .chip{min-width:100%}}
+
+/* ===== Tampilan sederhana: datar, satu warna utama, font sistem ===== */
+html,body,button,input,select,textarea{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+body,body.exam-mode{background:var(--bg)}
+.card,body.exam-mode .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.06)}
+h1,h2,h3{font-weight:700}
+button{border-radius:12px;font-weight:600;background:var(--primary);color:#fff;border:none;box-shadow:none}
+button:hover{background:var(--primary-hover)}
+button.success{background:var(--success)}
+button.success:hover{background:#16a34a}
+button.danger{background:var(--error)}
+button.danger:hover{background:#dc2626}
+button.secondary{background:var(--card);color:var(--text-main);border:1px solid var(--border)}
+button.secondary:hover{background:var(--bg)}
+button:active{transform:none;opacity:.85}
+input[type="text"],input[type="password"],input[type="number"],select,textarea{border:1px solid var(--border);border-radius:12px;background:var(--card)}
+input[type="text"]:focus,input[type="password"]:focus,input[type="number"]:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+/* beranda */
+.home-wrap{max-width:640px}
+.home-top{justify-content:flex-end;gap:8px;margin:0 0 12px}
+.home-top .chip{flex:0 0 auto;min-width:0;width:auto;padding:8px 14px;min-height:40px;font-size:.9rem;font-weight:600;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--text-muted)}
+.home-top .chip:hover{color:var(--text-main);background:var(--bg)}
+.home-card{padding:clamp(18px,5vw,32px)}
+.home-hero{margin-bottom:24px}
+.home-hero h2{margin-bottom:4px}
+.step{background:transparent;border:0;border-radius:0;padding:0;margin-bottom:24px}
+.step-head{margin-bottom:12px}
+.step-head h3{font-size:1.05rem}
+.step-no{width:26px;height:26px;font-size:.85rem;background:var(--primary-light);color:var(--primary)}
+.step input[type="text"],.step input[type="number"],.step input[type="password"],.step select{background:var(--card)}
+.mapel-grid{gap:8px}
+.mapel-tile{border:1px solid var(--border);border-radius:12px;min-height:72px;background:var(--card);color:var(--text-main);font-weight:600}
+.mapel-tile:hover{background:var(--bg)}
+.mapel-tile .mt-ic{font-size:1.5rem}
+.mapel-tile.on,.mapel-tile.on:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.btn-start{min-height:52px;font-size:1.1rem}
+/* animasi dimatikan */
+.card > div[style*="3.5rem"],.qm-hero-ic,.done-emoji{animation:none}
+/* ujian */
+.exam-header,body.exam-mode .exam-header{background:var(--card);color:var(--text-main);border:1px solid var(--border);box-shadow:none}
+body.exam-mode .exam-header .student-info small{color:var(--text-muted)}
+.progress-fill{background:var(--primary)}
+.progress-bar{height:8px}
+.opt-card{border:1px solid var(--border);background:var(--card)}
+.opt-card.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:inset 0 0 0 1px var(--primary)}
+/* dasbor guru */
+.admin-nav button{background:var(--card);color:var(--text-main);border:1px solid var(--border);box-shadow:none}
+.admin-nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+table.data-table th{background:var(--bg);color:var(--text-muted)}
+button.qm-chip{background:var(--card);color:var(--text-main);border:1px solid var(--border)}
+button.qm-chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+button.qm-chip.add{border-style:dashed;color:var(--success);border-color:var(--success)}
+button.qm-ic{background:var(--card);color:var(--text-main);border:1px solid var(--border)}
+button.qm-ic.del{color:var(--error);border-color:var(--error)}
+.qm-hero{background:var(--primary);border-radius:16px;box-shadow:none}
+.qm-step{background:var(--card);border:1px solid var(--border);border-radius:14px}
+.qm-step-h{color:var(--text-main)}
+.qm-card{border:1px solid var(--border);border-left:6px solid var(--qc);border-radius:12px}
+.rk-class{border:1px solid var(--border);border-radius:14px}
+.done-stat{border:1px solid var(--border);background:var(--bg);color:var(--text-main)}
+h1,h2,h3{color:var(--text-main)}
+:root{--border:#CBD5E1;--primary:#4F6EF7;--primary-hover:#3F5BE0;--primary-light:#EEF2FF}
+@media (prefers-color-scheme:dark){:root{--border:#334155;--primary-light:#1E2A5A}}
+.qm-hero h3{color:#fff}
+body::after{content:none}
 </style>
 </head>
 <body>
@@ -1163,7 +1218,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             else if (state.page === 'master-auth') masterAuth(app);
             else if (state.page === 'master') masterApp(app);
             else if (state.page === 'done') doneScreen(app);
-            else if (state.page === 'tka') tkaHome(app);
             if (state.page === 'exam') examAfterRender(); else examLeave();
         }
 
@@ -1172,7 +1226,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             const v = { studentName: g('input-name'), studentClass: g('input-class'), studentMapel: g('input-mapel'), studentUH: g('input-uh'), studentToken: g('input-token') };
             Object.keys(v).forEach(k => { if (v[k] !== null) state[k] = v[k]; });
         }
-        function refreshHome() { if (state.page === 'home' || state.page === 'tka') { saveHomeInputs(); render(); } }
+        function refreshHome() { if (state.page === 'home') { saveHomeInputs(); render(); } }
 
         function selectTeacher(tid) {
             saveHomeInputs();
@@ -1183,7 +1237,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             state.studentName = ''; state.studentClass = '';
             const opts = teacherClassOptions();
             if (opts.length === 1) state.studentClass = opts[0];
-            if (state.page === 'home' || state.page === 'tka') render();
+            if (state.page === 'home') render();
         }
 
         function pickMapel(m) { saveHomeInputs(); state.studentMapel = m; render(); }
@@ -1194,25 +1248,23 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             app.innerHTML = `
                 <div class="home-wrap">
                     <div class="home-top">
-                        <button class="chip" onclick="openTka()">🎯 TKA Kelas 6</button>
-                        <button class="chip" onclick="state.page='master-auth'; render();">🏫 Admin / Guru Mapel</button>
-                        <button class="chip" onclick="openAdminAuth()">⚙️ Guru</button>
+                        <button class="chip" onclick="state.page='master-auth'; render();">Admin / Guru Mapel</button>
+                        <button class="chip" onclick="openAdminAuth()">Guru</button>
                     </div>
                     <div class="card home-card">
                         <div class="home-hero">
-                            <div class="home-emoji">🎓</div>
                             <h2>${esc(config.title || "Ujian Sekolah Dasar")}</h2>
-                            <p>Ikuti 3 langkah mudah untuk memulai ulangan.</p>
+                            <p>Pilih pelajaran, isi token, lalu mulai.</p>
                         </div>
 
                         <section class="step">
-                            <div class="step-head"><span class="step-no">1</span><h3>Pilih pelajaran</h3></div>
-                            <label for="input-teacher">👩‍🏫 Pendidik</label>
+                            <div class="step-head"><span class="step-no">1</span><h3>Pelajaran</h3></div>
+                            <label for="input-teacher">Pendidik</label>
                             <select id="input-teacher" onchange="selectTeacher(this.value)">
                                 ${teachers.length === 0 ? '<option value="">(Belum ada pendidik)</option>' : ''}
                                 ${teachers.map(t => `<option value="${esc(t.id)}" ${t.id === state.tid ? 'selected' : ''}>${esc(teacherLabel(t))}</option>`).join('')}
                             </select>
-                            <label>📚 Mata Pelajaran <small style="font-weight:500;color:var(--text-muted)">(ketuk salah satu)</small></label>
+                            <label>Mata pelajaran</label>
                             <div class="mapel-grid">
                                 ${MAPEL.map(m => `<button type="button" class="mapel-tile ${state.studentMapel === m ? 'on' : ''}" aria-pressed="${state.studentMapel === m}" onclick="pickMapel('${esc(m)}')"><span class="mt-ic">${MAPEL_ICON[m] || '📘'}</span><span>${esc(m)}</span></button>`).join('')}
                             </div>
@@ -1220,27 +1272,25 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                         </section>
 
                         <section class="step">
-                            <div class="step-head"><span class="step-no">2</span><h3>Ulangan &amp; token</h3></div>
-                            <label for="input-uh">📝 Ulangan Harian ke-</label>
+                            <div class="step-head"><span class="step-no">2</span><h3>Ulangan</h3></div>
+                            <label for="input-uh">Ulangan harian ke-</label>
                             <input type="number" id="input-uh" min="1" inputmode="numeric" placeholder="Contoh: 1" value="${esc(state.studentUH || '')}">
-                            <label for="input-token">🔑 Token Ulangan <small style="font-weight:500;color:var(--text-muted)">(minta ke guru)</small></label>
+                            <label for="input-token">Token <small style="font-weight:500;color:var(--text-muted)">(minta ke guru)</small></label>
                             <input type="text" id="input-token" placeholder="Contoh: AB3K9" autocomplete="off" autocapitalize="characters" style="text-transform: uppercase;" value="${esc(state.studentToken || '')}">
                         </section>
 
                         <section class="step">
-                            <div class="step-head"><span class="step-no">3</span><h3>Siapa kamu?</h3></div>
+                            <div class="step-head"><span class="step-no">3</span><h3>Data siswa</h3></div>
                             ${nameFields()}
                         </section>
 
-                        <button class="success btn-start" onclick="prepareExam()">🚀 Mulai Ujian</button>
+                        <button class="success btn-start" onclick="prepareExam()">Mulai Ujian</button>
                     </div>
                 </div>
             `;
         }
 
-        function openAdminAuth() { state.goTka = false; state.page = 'admin-auth'; render(); }
-        function tkaGuru() { saveHomeInputs(); state.goTka = true; state.page = 'admin-auth'; render(); window.scrollTo(0, 0); }
-        function tkaLand() { if (state.goTka) { state.goTka = false; state.adminTab = 'questions'; state.tkaView = true; state.tkaTab = 'soal'; } }
+        function openAdminAuth() { state.page = 'admin-auth'; render(); }
 
         function adminAuth(app) {
             app.innerHTML = `
@@ -1258,7 +1308,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                     </div>
 
                     <button class="success" onclick="verifyPin()">Buka Dasbor</button>
-                    <button class="secondary" onclick="state.page=state.goTka?'tka':'home'; state.goTka=false; render();">← Kembali</button>
+                    <button class="secondary" onclick="state.page='home'; render();">← Kembali</button>
 
                     ${CLOUD.on ? '' : `
                     <div style="text-align: left; border-top: 1px solid var(--border); margin-top: 16px; padding-top: 16px;">
@@ -1295,7 +1345,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             if (t && pinEl && pinEl.value === String(t.pin)) {
                 state.tid = t.id; config = Storage.loadConfig(t.id);
                 state.rankFilter = 'all'; state.rankKelas = state.rankMapel = state.rankUH = 'all';
-                tkaLand(); state.page = 'admin';
+                state.page = 'admin';
                 render();
             } else {
                 toast("❌ PIN Salah!");
@@ -1304,7 +1354,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
         }
 
         function prepareExam() {
-            state.tkaMode = false;
             saveHomeInputs();
             const name = state.studentName, cls = state.studentClass;
             if (!state.tid) { toast("⚠️ Pilih pendidik terlebih dahulu!"); return; }
@@ -1330,7 +1379,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             return beginExam(name, cls, prepareExam);
         }
 
-        // Memulai ujian setelah semua pemeriksaan lolos (dipakai ujian biasa dan TKA)
+        // Memulai ujian setelah semua pemeriksaan lolos 
         function beginExam(name, cls, retry) {
             examEnterFs();
             const dn = Storage.loadResults().find(r => r.tid === state.tid && r.status === 'done' && r.name.toLowerCase() === name.toLowerCase() && r.cls.toLowerCase() === cls.toLowerCase() && r.mapel === state.studentMapel && String(r.uh) === String(state.studentUH));
@@ -1364,7 +1413,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                 }
             } else {
                 state.questions = generateStudentQuestions();
-                const durationMs = (state.tkaMode ? tkaMinutes(state.tkaMapel, state.tkaNo) : examMinutes(state.studentMapel, state.studentUH, state.studentClass)) * 60 * 1000;
+                const durationMs = examMinutes(state.studentMapel, state.studentUH, state.studentClass) * 60 * 1000;
                 const newAns = {};
                 state.questions.forEach((q, idx) => { newAns[idx] = initAns(q); });
 
@@ -1399,13 +1448,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
         }
 
         function generateStudentQuestions() {
-            if (state.tkaMode) {
-                // Sistem soal acak: ambil sejumlah soal secara acak dari bank soal mapel, urutannya juga acak
-                let tl = tkaCfg().questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.tkaMapel && tkaNo(q) === Number(state.tkaNo));
-                tl = fisherYatesShuffle(tl).slice(0, tkaDrawCount(state.tkaMapel, state.tkaNo));
-                tl.forEach(q => { const base = (q.o || []).map((_, i) => i); q._optOrder = config.shuffleO ? fisherYatesShuffle(base) : base; });
-                return tl;
-            }
             // Soal dipisah per kelas: soal bertanda Kelas N hanya muncul untuk siswa kelas N; soal "Semua kelas" muncul di semua kelas
             let qList = config.questions.map((q, idx) => ({ ...q, originalIndex: idx })).filter(q => q.mp === state.studentMapel && qUH(q) === String(state.studentUH) && clsMatch(q.kl, state.studentClass));
             if (config.shuffleQ) qList = fisherYatesShuffle(qList);
@@ -1737,7 +1779,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             app.innerHTML = `
                 ${state.showQuestionModal ? renderQuestionModal() : ''}
                 ${state.showGenModal ? renderGenModal() : ''}
-                ${state.showTkaModal ? renderTkaModal() : ''}
                 ${state.showClearModal ? renderClearModal() : ''}
                 ${state.resetTarget ? renderResetModal() : ''}
                 ${state.showDeleteModal ? renderDeleteModal() : ''}
@@ -1769,15 +1810,15 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             `;
         }
 
-        function switchAdminTab(tab) { state.adminTab = tab; state.tkaView = false; render(); }
+        function switchAdminTab(tab) { state.adminTab = tab; render(); }
 
         const sessKey = (r) => `${r.mapel || '-'}||${r.uh || '-'}`;
-        const uhTxt = (u) => { const s = String(u || ''); if (/^TKA/.test(s)) { const m = /^TKA-(\d+)$/.exec(s); return m ? 'TKA ke-' + m[1] : 'TKA'; } return 'UH ke-' + (s || '-'); };
+        const uhTxt = (u) => 'UH ke-' + (String(u || '') || '-');
         const sessLabel = (r) => `${r.mapel || '-'} — ${uhTxt(r.uh)}`;
         const grpKey = (r) => `${r.cls || '-'}||${r.mapel || '-'}||${r.uh || '-'}`;
         const natCmp = (a, b) => String(a || '').localeCompare(String(b || ''), 'id', { numeric: true });
         const grpCmp = (a, b) => natCmp(a.cls, b.cls) || natCmp(a.mapel, b.mapel) || (Number(a.uh) || 0) - (Number(b.uh) || 0);
-        function teacherResults() { return Storage.loadResults().filter(r => r.tid === state.tid); }
+        function teacherResults() { return Storage.loadResults().filter(r => r.tid === state.tid && !/^TKA/.test(String(r.uh))); }
 
         // Filter peringkat bertingkat: Kelas -> Mata Pelajaran -> Ulangan Harian (nilai tidak valid otomatis jadi "Semua")
         function rankSel() {
@@ -1919,7 +1960,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
 
                 <div class="rk-filter">
                     <div>
-                        <label>🏫 Kelas</label>
+                        <label>Kelas</label>
                         <select onchange="setRankF('kelas', this.value)">
                             ${opt('all', f.kelas, 'Semua Kelas')}${f.kelasOpts.map(c => opt(c, f.kelas, 'Kelas ' + c)).join('')}
                         </select>
@@ -1967,7 +2008,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             if (!Array.isArray(qs) || !qs.length || !qs[0]) return null;
             if (qs[0].oi === undefined) return qs;
             const cfg = (!r.tid || r.tid === state.tid) ? config : Storage.loadConfig(r.tid);
-            const src = /^TKA/.test(String(r.uh)) ? ((typeof tkaCfg === 'function' && tkaCfg().questions) || []) : ((cfg && cfg.questions) || []);
+            const src = (cfg && cfg.questions) || [];
             const out = qs.map(e => { const q = e && src[e.oi]; return q ? Object.assign({}, q, { _optOrder: e.oo || undefined }) : null; });
             return out.every(Boolean) ? out : null;
         }
@@ -2060,7 +2101,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
 
             const first = results[0];
             const t = Storage.loadTeachers().find(x => x.id === state.tid) || {};
-            const judul = `Nilai ${first.mapel || '-'} - ${/^TKA/.test(String(first.uh)) ? uhTxt(first.uh) : 'Ulangan Harian ke-' + (first.uh || '-')} - Kelas ${first.cls || '-'}`;
+            const judul = `Nilai ${first.mapel || '-'} - Ulangan Harian ke-${first.uh || '-'} - Kelas ${first.cls || '-'}`;
             const q = (x) => '"' + String(x).replace(/"/g, '""') + '"';
             const fmt = (num) => String(num).replace('.', ',');
             const sm = summarize(results);
@@ -2194,7 +2235,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             render();
         }
         function renderQuestionsTab() {
-            if (state.tkaView) return renderTkaManager();
             const sel = curQMapel(), scoped = (config.questions || []).filter(qInScope);
             let n = 0;
             const items = (config.questions || []).map((q, idx) => {
@@ -2243,7 +2283,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                     <button class="secondary" onclick="impPick()">📥 Impor File</button>
                     <button class="secondary" onclick="wordTemplate()">📄 Format Word</button>
                     <button class="secondary" onclick="impTemplate()">📊 Format Excel</button>
-                    <button onclick="state.tkaView=true;render()" style="background:linear-gradient(180deg,#fb923c,#f97316);box-shadow:0 5px 0 #c2410c">🎯 Soal TKA Kelas 6</button>
                 </div>
 
                 <div class="qm-step">
@@ -2429,7 +2468,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                 <select onchange="state.tkM=this.value;render()">${MAPEL.map(m => `<option ${selM === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
                 <label>📝 Ulangan Harian ke-</label>
                 <input type="number" min="1" value="${state.tkU || 1}" onchange="state.tkU=this.value">
-                <label>🏫 Kelas</label>
+                <label>Kelas</label>
                 <select onchange="state.tkK=this.value;render()">
                     <option value="" ${selK === '' ? 'selected' : ''}>Semua kelas</option>
                     ${tokenClassOptions().map(c => `<option value="${esc(c)}" ${selK === c ? 'selected' : ''}>${/^\d$/.test(c) ? 'Semua kelas ' + esc(c) + ' (mis. ' + esc(c) + 'A, ' + esc(c) + 'B)' : 'Kelas ' + esc(c)}</option>`).join('')}
@@ -2642,29 +2681,27 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
             render();
         }
         function nameFields() {
-            const onlyTka = state.page === 'tka';
             let classes = teacherClassOptions();
-            if (onlyTka) classes = classes.filter(c => clsGrade(c) === '6');
-            const R = onlyTka && !classes.length ? [] : rosterSorted();
+            const R = rosterSorted();
             if (classes.length === 1 && !state.studentClass) state.studentClass = classes[0];
-            const clsSel = classes.length ? `<label>🏫 Pilih Kelas</label>
+            const clsSel = classes.length ? `<label>Kelas</label>
                         <select id="input-class-sel" onchange="pickClass(this.value)">
                             <option value="">— Pilih kelas —</option>
                             ${classes.map(c => `<option value="${esc(c)}" ${c === state.studentClass ? 'selected' : ''}>Kelas ${esc(c)}</option>`).join('')}
                         </select>` : '';
             if (!R.length) {
                 if (classes.length) return `${clsSel}
-                        <label>👦 Nama Lengkap</label>
+                        <label>Nama lengkap</label>
                         <input type="text" id="input-name" placeholder="Contoh: Budi Santoso" value="${esc(state.studentName)}">
                         <input type="hidden" id="input-class" value="${esc(state.studentClass)}">`;
-                return `<label>👦 Nama Lengkap</label>
+                return `<label>Nama lengkap</label>
                         <input type="text" id="input-name" placeholder="Contoh: Budi Santoso" value="${esc(state.studentName)}">
-                        <label>🏫 Kelas</label>
+                        <label>Kelas</label>
                         <input type="text" id="input-class" placeholder="Contoh: 5A" value="${esc(state.studentClass)}">`;
             }
             const inCls = R.map((s, i) => ({ s, i })).filter(x => x.s.cls === state.studentClass);
             return `${clsSel}
-                        <label>👦 Pilih Namamu</label>
+                        <label>Nama</label>
                         <select onchange="pickStudent(this.value)" ${state.studentClass ? '' : 'disabled'}>
                             <option value="">${state.studentClass ? '— Pilih nama —' : '— Pilih kelas dulu —'}</option>
                             ${inCls.map(x => `<option value="${x.i}" ${x.s.name === state.studentName ? 'selected' : ''}>${esc(x.s.name)}</option>`).join('')}
@@ -2731,445 +2768,6 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
         }
         // ===== Akhir fitur tambahan =====
 
-
-        // ===== TKA (Tes Kemampuan Akademik) Kelas 6: TKA ke-N per mata pelajaran, soal diacak per siswa =====
-        // Tiap mata pelajaran punya beberapa TKA (TKA ke-1, ke-2, ...). Tiap TKA punya bank soal, token, durasi, dan jumlah soal acak sendiri.
-        // Siswa menerima soal yang diambil dan diurutkan secara acak dari bank TKA yang dipilih. Hanya PG dan PK.
-        const TKA_MAPEL = ['Bahasa Indonesia', 'Matematika'];
-        function tkaCfg() {
-            if (!config.tka || typeof config.tka !== 'object') config.tka = {};
-            const T = config.tka;
-            if (!Array.isArray(T.questions)) T.questions = [];
-            if (!T.tokens || typeof T.tokens !== 'object') T.tokens = {};
-            if (!T.mMin || typeof T.mMin !== 'object') T.mMin = {};
-            if (!T.cnt || typeof T.cnt !== 'object') T.cnt = {};
-            if (!(parseInt(T.minutes) > 0)) T.minutes = 60;
-            return T;
-        }
-        const tkaNo = (q) => Math.max(1, parseInt(q && q.pk) || 1);           // soal tanpa nomor = TKA ke-1
-        const tkaKey = (m, n) => m + '||' + n;
-        const tkaCount = (m, n) => tkaCfg().questions.filter(q => q.mp === m && (n === undefined || tkaNo(q) === Number(n))).length;
-        function tkaNoList(m) {
-            const mx = Math.max(3, (state.tkaNoMax || {})[m] || 0, ...tkaCfg().questions.filter(q => q.mp === m).map(tkaNo));
-            return [...Array(mx)].map((_, i) => i + 1);
-        }
-        function tkaToken(m, n) { const T = tkaCfg().tokens; return T[tkaKey(m, n)] || (Number(n) === 1 ? T[m] : '') || ''; }
-        function tkaMinutes(m, n) { const T = tkaCfg(), v = parseInt(T.mMin[tkaKey(m, n)]) || parseInt(T.mMin[m]) || (T.pkMin && parseInt(T.pkMin[tkaKey(m, n)])) || 0; return v > 0 ? v : (parseInt(T.minutes) > 0 ? parseInt(T.minutes) : 60); }
-        // Jumlah soal per siswa: nilai dari guru, atau semua soal bila kosong atau melebihi bank soal
-        function tkaDrawCount(m, n) { const c = tkaCount(m, n), v = parseInt(tkaCfg().cnt[tkaKey(m, n)]); return v > 0 ? Math.min(v, c) : c; }
-        const tkaSelMapel = () => TKA_MAPEL.includes(state.tkaSel) ? state.tkaSel : TKA_MAPEL[0];
-        const tkaSelNo = () => Math.max(1, parseInt(state.tkaNoSel) || 1);
-
-        // --- Sisi guru ---
-        function tkaBackBtn() { return `<button class="secondary" onclick="state.tkaView=false;render()" style="width:auto;display:inline-flex;margin-bottom:14px">← Kembali ke Soal Biasa</button>`; }
-        function tkaTabsHtml() { const h = state.tkaTab === 'hasil'; return `<div class="qm-chips" style="margin-bottom:14px"><button class="qm-chip ${h ? '' : 'on'}" onclick="state.tkaTab='soal';render()">📝 Soal</button><button class="qm-chip ${h ? 'on' : ''}" onclick="state.tkaTab='hasil';state.tkaDn=null;render()">📊 Nilai dan status</button></div>`; }
-        // Nilai dan status siswa untuk TKA yang dipilih: belum mulai, sedang mengerjakan, selesai
-        function tkaHasil() {
-            const sel = tkaSelMapel(), no = tkaSelNo(), KKM = 70;
-            const rs = teacherResults().filter(r => (r.mapel === sel || r.mapel === 'TKA ' + sel) && String(r.uh) === 'TKA-' + no);
-            const k = (n, c) => String(n || '').toLowerCase() + '||' + String(c || '').toLowerCase();
-            const mp = {}; rs.forEach(r => { mp[k(r.name, r.cls)] = r; });
-            const rows = rosterSorted().filter(x => clsGrade(x.cls) === '6').map(x => ({ nm: x.name, cls: x.cls, r: mp[k(x.name, x.cls)] }));
-            rs.forEach(r => { if (!rows.some(x => k(x.nm, x.cls) === k(r.name, r.cls))) rows.push({ nm: r.name, cls: r.cls, r }); });
-            const D = rows.filter(x => x.r && x.r.status === 'done'), P = rows.filter(x => x.r && x.r.status !== 'done'), B = rows.length - D.length - P.length;
-            const sc = D.map(x => Number(x.r.score) || 0), avg = sc.length ? Math.round(sc.reduce((a, b) => a + b, 0) / sc.length) : '-';
-            const hi = sc.length ? Math.max(...sc) : '-', lo = sc.length ? Math.min(...sc) : '-', tun = sc.filter(v => v >= KKM).length;
-            const bands = [[0, 59], [60, 69], [70, 79], [80, 89], [90, 100]].map(([a, b]) => ({ l: a + '-' + b, c: sc.filter(v => v >= a && v <= b).length })), mx = Math.max(1, ...bands.map(b => b.c));
-            const qa = {};
-            D.forEach(x => { const qs = canDetail(x.r) ? resQuestions(x.r) : null; if (qs) qs.forEach((q, i) => { const o = qa[q.t] = qa[q.t] || { t: q.t, b: 0, n: 0 }; o.n++; if (has(q, x.r.ans[i]) && pts(q, x.r.ans[i]) >= maxPts(q)) o.b++; }); });
-            const QL = Object.values(qa).sort((a, b) => a.b / a.n - b.b / b.n);
-            const st = (x) => !x.r ? '<span class="status-pill" style="background:var(--border);color:var(--text-muted)">Belum mulai</span>' : x.r.status === 'done' ? '<span class="status-pill done">Selesai</span>' : '<span class="status-pill progress">Mengerjakan</span>';
-            const card = (l, v, c) => `<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" ${c ? `style="color:${c}"` : ''}>${v}</div></div>`;
-            const bar = (l, pct, v) => `<div style="display:flex;align-items:center;gap:10px;margin-top:6px"><span style="width:56px;flex:none;font-size:.88rem;color:var(--text-muted)">${l}</span><div style="flex:1;height:12px;border-radius:6px;background:var(--border)"><i style="display:block;height:100%;border-radius:6px;background:var(--primary);width:${pct}%"></i></div><b style="width:44px;text-align:right;flex:none">${v}</b></div>`;
-            return `${tkaBackBtn()}${tkaTabsHtml()}
-                <div class="qm-step"><div class="qm-step-h"><span class="qm-sn">1</span> Pilih TKA</div>
-                    <div class="qm-chips">${TKA_MAPEL.map(m => `<button class="qm-chip ${m === sel ? 'on' : ''}" onclick="state.tkaSel='${esc(m)}';state.tkaNoSel=1;state.tkaDn=null;render()">${MAPEL_ICON[m] || '📘'} ${esc(m)}</button>`).join('')}</div>
-                    <div class="qm-chips" style="margin-top:10px">${tkaNoList(sel).map(u => `<button class="qm-chip ${u === no ? 'on' : ''}" onclick="state.tkaNoSel=${u};state.tkaDn=null;render()">🎯 TKA ${u}</button>`).join('')}</div>
-                    <button class="secondary" style="width:auto;margin-top:12px;padding:6px 14px;font-size:.85rem" onclick="Promise.resolve(CLOUD.on&&cloudPollResults(true)).then(()=>{state.tkaDn=null;render();toast('🔄 Data disegarkan.')})">🔄 Segarkan</button></div>
-                <h3>Ringkasan ${esc(sel)} · TKA ke-${no}</h3>
-                <div class="stats-grid">${card('SUDAH KUMPUL', D.length + '/' + rows.length, 'var(--success)')}${card('MENGERJAKAN', P.length, 'var(--warning)')}${card('BELUM MULAI', B)}${card('RATA-RATA', avg)}${card('TERTINGGI / TERENDAH', hi + ' / ' + lo)}${card('TUNTAS (KKM ' + KKM + ')', tun + '/' + D.length, 'var(--success)')}</div>
-                <h3 style="margin-top:16px">Sebaran nilai</h3>${bands.map(b => bar(b.l, b.c / mx * 100, b.c)).join('')}
-                ${QL.length ? `<h3 style="margin-top:16px">Persentase benar per soal</h3><p style="color:var(--text-muted);font-size:.9rem">Diurutkan dari yang paling sulit.</p>${QL.map(q => { const p = Math.round(q.b / q.n * 100); return `<div style="margin-top:10px"><div style="font-size:.92rem;overflow-wrap:anywhere">${esc(q.t)}</div>${bar('', p, p + '%')}</div>`; }).join('')}` : ''}
-                <h3 style="margin-top:16px">Daftar siswa</h3>
-                ${rows.length ? `<div class="tka-list">${rows.map(x => { const r = x.r, d = r && r.status === 'done', s2 = d ? getStats(r) : null; return `<div class="tka-row"><div class="nm">${esc(x.nm)}</div><div class="sc" style="color:${d ? (Number(r.score) >= KKM ? 'var(--success)' : 'var(--error)') : 'var(--text-muted)'}">${d ? (r.score || 0) : '-'}</div><div class="sub">Kelas ${esc(x.cls || '-')} · ${st(x)}${s2 ? ` · ✅ ${s2.benar} ❌ ${s2.salah}` : ''}</div>${d && canDetail(r) ? `<div class="ac"><button class="rk-btn ket" onclick="openDetail('${r.id}')">📋 Lihat Jawaban</button></div>` : ''}</div>`; }).join('')}</div>` : '<p style="text-align:center;color:var(--text-muted)">Belum ada siswa kelas 6 terdaftar atau mengerjakan TKA ini.</p>'}`;
-        }
-        function renderTkaManager() {
-            if (state.tkaTab === 'hasil') return tkaHasil();
-            const T = tkaCfg(), sel = tkaSelMapel(), no = tkaSelNo(), tk = tkaToken(sel, no);
-            let n = 0;
-            const items = T.questions.map((q, idx) => {
-                if (q.mp !== sel || tkaNo(q) !== no) return '';
-                const t = QT[q.ty || 'pg'] || QT.pg;
-                return `<div class="qm-card" style="--qc:${t.c};--ql:${t.l}">
-                    <div class="qm-no">${++n}</div>
-                    <div class="qm-body">
-                        <div class="qm-tags"><span class="qm-type">${t.ic} ${t.n}</span>${q.img ? '<span class="qm-kls">🖼️ Gambar</span>' : ''}${q.tx ? '<span class="qm-kls">📄 Bacaan</span>' : ''}</div>
-                        <div class="qm-text">${esc(q.t)}</div>
-                    </div>
-                    <div class="qm-act">
-                        <button class="qm-ic" onclick="tkaEdit(${idx})" aria-label="Edit soal">✏️</button>
-                        <button class="qm-ic del" onclick="tkaDel(${idx})" aria-label="Hapus soal">🗑️</button>
-                    </div>
-                </div>`;
-            }).join('');
-            const draw = tkaDrawCount(sel, no), cfgCnt = parseInt(T.cnt[tkaKey(sel, no)]) > 0 ? parseInt(T.cnt[tkaKey(sel, no)]) : '';
-            return `
-                <div class="qm-hero" style="background:linear-gradient(135deg,#f97316 0%,#ec4899 60%,#8b5cf6 100%)">
-                    <div class="qm-hero-ic">🎯</div>
-                    <div class="qm-hero-tx"><h3>Soal TKA Kelas 6</h3><p>${esc(sel)} · TKA ke-${no} · soal diacak per siswa · khusus PG &amp; PK</p></div>
-                    <div class="qm-hero-n"><b>${n}</b><span>soal</span></div>
-                </div>
-                ${tkaBackBtn()}${tkaTabsHtml()}
-                <div class="qm-step">
-                    <div class="qm-step-h"><span class="qm-sn">1</span> Pilih Mata Pelajaran TKA</div>
-                    <div class="qm-chips">${TKA_MAPEL.map(m => `<button class="qm-chip ${m === sel ? 'on' : ''}" onclick="state.tkaSel='${esc(m)}';render()">${MAPEL_ICON[m] || '📘'} ${esc(m)} <small>${tkaCount(m)}</small></button>`).join('')}</div>
-                </div>
-                <div class="qm-step">
-                    <div class="qm-step-h"><span class="qm-sn">2</span> Pilih TKA ke-</div>
-                    <div class="qm-chips">
-                        ${tkaNoList(sel).map(u => `<button class="qm-chip ${u === no ? 'on' : ''}" onclick="state.tkaNoSel=${u};render()">🎯 TKA ${u} <small>${tkaCount(sel, u)}</small></button>`).join('')}
-                        <button class="qm-chip add" onclick="tkaAddNo()">➕ TKA Baru</button>
-                    </div>
-                    <div style="margin-top:10px"><button class="danger" style="${smallBtn}" onclick="tkaDelNo()" ${tkaHasData(sel, no) ? '' : 'disabled'}>🗑️ Hapus TKA ke-${no} (${tkaCount(sel, no)} soal)</button></div>
-                </div>
-                <div class="qm-step">
-                    <div class="qm-step-h"><span class="qm-sn">3</span> Token, Waktu &amp; Jumlah Soal Acak TKA ke-${no}</div>
-                    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
-                        <span>🔑 Token:</span>
-                        <b style="font-size:1.4rem;letter-spacing:3px;color:#c2410c">${tk ? esc(tk) : '(belum dibuat)'}</b>
-                        <button class="success" style="${smallBtn}" onclick="tkaGenToken()">${tk ? '🔄 Ganti Token' : '🎲 Buat Token'}</button>
-                        ${tk ? `<button class="danger" style="${smallBtn}" onclick="tkaDelToken()">🗑️</button>` : ''}
-                    </div>
-                    <label for="tka-min">⏱️ Durasi TKA ke-${no} (menit)</label>
-                    <input type="number" id="tka-min" min="1" max="600" inputmode="numeric" value="${tkaMinutes(sel, no)}" onchange="tkaSetMinutes(this.value)">
-                    <label for="tka-cnt">🎲 Jumlah soal acak per siswa <small style="font-weight:500;color:var(--text-muted)">(kosongkan untuk memakai semua soal)</small></label>
-                    <input type="number" id="tka-cnt" min="1" max="${Math.max(n, 1)}" inputmode="numeric" placeholder="Semua (${n})" value="${cfgCnt}" onchange="tkaSetDraw(this.value)">
-                    <p style="margin:6px 0 0;font-size:0.85rem;color:var(--text-muted)">${n ? `Tiap siswa mendapat <b>${draw}</b> dari ${n} soal, dipilih dan diurutkan secara acak.` : 'Tambahkan soal dulu. Soal akan diacak otomatis untuk tiap siswa.'}</p>
-                    <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Semua token ${esc(sel)}</summary>
-                        <div style="margin-top:8px">${tkaNoList(sel).map(u => `<div>🎯 TKA ke-${u}: <b style="letter-spacing:2px">${esc(tkaToken(sel, u) || '-')}</b> · ${tkaMinutes(sel, u)} menit · ${tkaDrawCount(sel, u)} dari ${tkaCount(sel, u)} soal</div>`).join('')}</div>
-                    </details>
-                </div>
-                ${tkaImpPanelHtml()}
-                <div class="qm-actions">
-                    <button class="success" onclick="tkaAdd()">➕ Tambah Soal ke TKA ke-${no}</button>
-                    <button class="danger" onclick="tkaDelAll()" ${n ? '' : 'disabled'}>🗑️ Kosongkan Soal TKA ke-${no} (${n})</button>
-                </div>
-                <div class="qm-listhead"><b>📋 Bank Soal: ${esc(sel)} · TKA ke-${no} (${n})</b></div>
-                <div class="qm-list">${items || `<div class="qm-empty"><div>📭</div><b>TKA ke-${no} masih kosong</b><span>Ketuk “Tambah Soal ke TKA ke-${no}” untuk mulai.</span></div>`}</div>`;
-        }
-        // ===== IMPOR SOAL TKA DARI WORD (.docx) =====
-        // Format: baris Mapel dan TKA ke, lalu tiap soal diawali [PG] atau [PK] (Soal, A-F, Kunci). Hanya PG dan PK.
-        const TKA_WORD_B64 = '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';
-        function tkaWordTemplate() {
-            try {
-                const bin = atob(TKA_WORD_B64), u = new Uint8Array(bin.length);
-                for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(new Blob([u], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
-                a.download = 'Format_Input_Soal_TKA.docx'; document.body.appendChild(a); a.click(); a.remove();
-                toast('📄 Format Word TKA diunduh. Isi di Word lalu impor lagi.');
-            } catch (e) { toast('⚠️ Format Word TKA gagal diunduh.'); }
-        }
-        function tkaWordPick() {
-            const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.docx';
-            inp.onchange = () => {
-                const f = inp.files[0]; if (!f) return;
-                if (/\.doc$/i.test(f.name)) { toast('⚠️ Simpan dulu sebagai .docx (Word 2007 atau lebih baru), lalu impor lagi.'); return; }
-                if (!/\.docx$/i.test(f.name)) { toast('⚠️ Pilih file Word berformat .docx.'); return; }
-                if (!window.JSZip) { toast('⚠️ Pembaca Word butuh internet. Sambungkan internet lalu coba lagi.'); return; }
-                const rd = new FileReader();
-                rd.onload = () => {
-                    JSZip.loadAsync(rd.result).then(z => { const x = z.file('word/document.xml'); if (!x) throw new Error('x'); return x.async('string'); })
-                        .then(xml => tkaWordRun(tkaWordParse(xml)), () => toast('⚠️ File Word tidak bisa dibaca. Pakai file dari tombol Unduh Format Word TKA.'));
-                };
-                rd.readAsArrayBuffer(f);
-            };
-            inp.click();
-        }
-        function tkaWordParse(xml) {
-            const norm = s => String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]/g, '');
-            const out = { qs: [], errs: [], sample: 0, dup: 0 };
-            let mp = tkaSelMapel(), pk = tkaSelNo(), cur = null, field = null, n = 0;
-            const seen = new Set(tkaCfg().questions.map(q => JSON.stringify([q.ty || 'pg', q.mp, tkaNo(q), q.t])));
-            const letter = v => { v = String(v || '').toUpperCase().replace(/[\s.,;|)]+/g, ''); return v; };
-            const flush = () => {
-                const c = cur; cur = null; field = null;
-                if (!c) return;
-                const filled = c.o.map((v, j) => ({ v: String(v || '').trim(), j })).filter(x => x.v);
-                if (!c.t.trim() && !c.k.trim() && !filled.length) return;      // blok kosong
-                if (c.sample) { out.sample++; return; }
-                const err = m => out.errs.push('Soal ke-' + n + ' [' + c.ty + ']: ' + m);
-                n++;
-                if (!mp) { err('Mapel belum valid (pilih ' + TKA_MAPEL.join(' atau ') + ')'); return; }
-                if (!pk) { err('TKA ke- belum valid (isi angka 1 sampai 99)'); return; }
-                if (!c.t.trim()) { err('teks Soal kosong'); return; }
-                if (filled.length < 2) { err('butuh minimal 2 pilihan jawaban (A, B, ...)'); return; }
-                const q = { ty: c.ty.toLowerCase(), t: c.t.trim(), o: filled.map(x => x.v), mp, pk, kl: 6, tka: 1 };
-                const kunci = letter(c.k);
-                if (c.ty === 'PG') {
-                    if (!/^[A-F]$/.test(kunci)) { err('Kunci PG harus satu huruf (A sampai F)'); return; }
-                    const a = filled.findIndex(x => x.j === kunci.charCodeAt(0) - 65);
-                    if (a < 0) { err('Kunci PG menunjuk pilihan yang kosong'); return; }
-                    q.a = a;
-                } else {
-                    if (!/^[A-F]+$/.test(kunci)) { err('Kunci PK harus huruf pilihan dipisah koma (contoh A,C)'); return; }
-                    const idx = [...kunci].map(ch => filled.findIndex(x => x.j === ch.charCodeAt(0) - 65));
-                    if (idx.some(i => i < 0)) { err('Kunci PK menunjuk pilihan yang kosong'); return; }
-                    q.ks = [...new Set(idx)].sort((a, b) => a - b);
-                }
-                if (c.tx.trim()) q.tx = c.tx.trim();
-                const key = JSON.stringify([q.ty, q.mp, q.pk, q.t]);
-                if (seen.has(key)) { out.dup++; return; }
-                seen.add(key); out.qs.push(q);
-            };
-            wordParas(xml).forEach(pr => {
-                if (pr.h) { flush(); return; }
-                pr.text.split('\n').forEach(raw => {
-                    const s = raw.replace(/\u00a0/g, ' ').trim();
-                    if (!s) return;
-                    let m;
-                    if ((m = s.match(/^\[\s*(contoh\s+)?(pg|pk)\s*\]/i))) { flush(); cur = { ty: m[2].toUpperCase(), sample: !!m[1], t: '', tx: '', o: [], k: '' }; return; }
-                    if ((m = s.match(/^\[\s*(contoh\s+)?(is|dd|mj|fl)\s*\]/i))) { flush(); if (!m[1]) out.errs.push('Jenis [' + m[2].toUpperCase() + '] tidak didukung di TKA (hanya PG dan PK), dilewati'); return; }
-                    if ((m = s.match(/^(?:paket|tka\s*ke-?)\s*[:：]\s*(.*)$/i))) {
-                        flush(); const d = parseInt((m[1].match(/\d+/) || [])[0], 10);
-                        if (!(d >= 1 && d <= 99)) { out.errs.push('TKA ke- "' + m[1].trim() + '" tidak valid (isi angka 1 sampai 99)'); pk = null; } else pk = d;
-                        return;
-                    }
-                    if ((m = s.match(/^mapel\s*[:：]\s*(.*)$/i))) {
-                        flush(); const v = m[1].trim();
-                        const f = TKA_MAPEL.find(x => norm(x) === norm(v));
-                        if (!f) { out.errs.push('Mapel "' + v + '" tidak valid untuk TKA (pilih ' + TKA_MAPEL.join(' atau ') + ')'); mp = null; } else mp = f;
-                        return;
-                    }
-                    if (!cur) return;
-                    if ((m = s.match(/^soal\s*[:：]\s*(.*)$/i))) { cur.t = m[1]; field = 't'; return; }
-                    if ((m = s.match(/^bacaan\s*[:：]\s*(.*)$/i))) { cur.tx = m[1]; field = 'tx'; return; }
-                    if ((m = s.match(/^kunci\s*[:：]\s*(.*)$/i))) { cur.k = m[1]; field = 'k'; return; }
-                    if ((m = s.match(/^([A-Fa-f])\s*[.)]\s*(.*)$/))) { cur.o[m[1].toUpperCase().charCodeAt(0) - 65] = m[2].trim(); field = 'o'; return; }
-                    if (field === 't') cur.t += '\n' + s; else if (field === 'tx') cur.tx += '\n' + s;
-                });
-            });
-            flush();
-            return out;
-        }
-        function tkaWordRun(r) {
-            const n = r.qs.length;
-            const notes = (r.sample ? '\n' + r.sample + ' soal contoh dilewati.' : '') + (r.dup ? '\n' + r.dup + ' soal sama persis (sudah ada) dilewati.' : '')
-                + (r.errs.length ? '\n\n' + r.errs.length + ' masalah, tidak diimpor:\n' + r.errs.slice(0, 8).map(e => '- ' + e).join('\n') + (r.errs.length > 8 ? '\n... dan ' + (r.errs.length - 8) + ' lainnya' : '') : '');
-            if (!n) { alert('Tidak ada soal TKA yang bisa diimpor.' + notes + '\nIsi soal pada bagian "Isi Soal TKA Anda di Bawah Ini" lalu coba lagi.'); return; }
-            const cnt = {}; r.qs.forEach(q => { const k = q.mp + ' · TKA ke-' + q.pk; cnt[k] = (cnt[k] || 0) + 1; });
-            if (!confirm('Ditemukan ' + n + ' soal TKA siap diimpor:\n' + Object.keys(cnt).map(k => '• ' + k + ': ' + cnt[k] + ' soal').join('\n') + notes + '\n\nImpor soal yang valid sekarang?')) return;
-            const T = tkaCfg(); T.questions = T.questions.concat(r.qs);
-            state.tkaSel = r.qs[0].mp; state.tkaNoSel = r.qs[0].pk;
-            Storage.saveConfig(config); toast('✅ ' + n + ' soal TKA berhasil diimpor!'); render();
-        }
-        function tkaImpPanelHtml() {
-            const b = 'width:auto;padding:8px 14px;font-size:0.85rem;margin-bottom:0';
-            return `<div class="imp-box">
-                <b>📥 Input Soal TKA dari Word</b>
-                <p style="margin:4px 0 8px;font-size:0.85rem;color:var(--text-muted)">Unduh format Word, isi soal PG dan PK (boleh banyak TKA sekaligus), lalu impor. Soal masuk sesuai Mapel dan TKA ke- yang tertulis di file, dan diacak otomatis untuk tiap siswa.</p>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                    <button class="success" onclick="tkaWordTemplate()" style="${b}">⬇️ Unduh Format Word TKA</button>
-                    <button class="secondary" onclick="tkaWordPick()" style="${b}">📂 Pilih File Word &amp; Impor</button>
-                </div>
-                <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Lihat cara mengisi</summary>
-                    <ul style="margin:8px 0 0 18px;font-size:0.85rem">
-                        <li style="margin-bottom:4px"><b>Mapel dan TKA ke</b>: tulis pada baris <i>Mapel:</i> (${esc(TKA_MAPEL.join(' atau '))}) dan <i>TKA ke:</i> (angka). Ulangi kedua baris untuk TKA lain di file yang sama.</li>
-                        <li style="margin-bottom:4px"><b>Pilihan Ganda [PG]</b>: tulis Soal, pilihan A sampai F, dan Kunci satu huruf (contoh C).</li>
-                        <li style="margin-bottom:4px"><b>Pilihan Kompleks [PK]</b>: sama seperti PG, tetapi Kunci berisi semua huruf yang benar (contoh A,C). Tiap jawaban benar bernilai 1 poin.</li>
-                        <li style="margin-bottom:4px"><b>Bacaan</b> (opsional): tulis setelah kata <i>Bacaan:</i> sebelum baris Soal.</li>
-                        <li style="margin-bottom:4px">Soal bertanda [CONTOH PG] atau [CONTOH PK] dan blok kosong tidak diimpor. Simpan file sebagai <b>.docx</b>.</li>
-                    </ul>
-                </details>
-            </div>`;
-        }
-
-        function tkaHasData(m, n) { return tkaCount(m, n) > 0 || !!tkaToken(m, n) || !!tkaCfg().mMin[tkaKey(m, n)] || !!tkaCfg().cnt[tkaKey(m, n)]; }
-        function tkaAddNo() { const m = tkaSelMapel(); state.tkaNoMax = state.tkaNoMax || {}; state.tkaNoMax[m] = tkaNoList(m).length + 1; state.tkaNoSel = state.tkaNoMax[m]; render(); }
-        function tkaDelNo() {
-            const m = tkaSelMapel(), u = tkaSelNo(), c = tkaCount(m, u);
-            if (!tkaHasData(m, u)) return;
-            if (!confirm('Hapus TKA ke-' + u + ' ' + m + '?\n\n' + c + ' soal, token, durasi, dan jumlah soal acaknya akan dihapus permanen. Hasil ujian siswa tidak ikut terhapus.')) return;
-            const T = tkaCfg(), k = tkaKey(m, u);
-            T.questions = T.questions.filter(q => !(q.mp === m && tkaNo(q) === u));
-            delete T.tokens[k]; delete T.mMin[k]; delete T.cnt[k]; if (u === 1) delete T.tokens[m];
-            state.tkaNoMax = state.tkaNoMax || {};
-            if (u >= tkaNoList(m).length) state.tkaNoMax[m] = Math.max(3, ...T.questions.filter(q => q.mp === m).map(tkaNo));
-            state.tkaNoSel = 1;
-            Storage.saveConfig(config); toast('🗑️ TKA ke-' + u + ' ' + m + ' dihapus.'); render();
-        }
-        function tkaSetMinutes(v) {
-            const m = parseInt(v); if (!(m > 0 && m <= 600)) { toast('⚠️ Isi durasi 1 sampai 600 menit.'); render(); return; }
-            tkaCfg().mMin[tkaKey(tkaSelMapel(), tkaSelNo())] = m; Storage.saveConfig(config); toast('✅ Durasi disimpan.');
-        }
-        function tkaSetDraw(v) {
-            const m = tkaSelMapel(), u = tkaSelNo(), T = tkaCfg(), k = tkaKey(m, u), raw = String(v || '').trim();
-            if (!raw) { delete T.cnt[k]; Storage.saveConfig(config); toast('✅ Siswa akan mendapat semua soal (diacak).'); render(); return; }
-            const c = parseInt(raw); if (!(c > 0)) { toast('⚠️ Isi angka lebih dari 0, atau kosongkan.'); render(); return; }
-            T.cnt[k] = c; Storage.saveConfig(config);
-            toast(c > tkaCount(m, u) ? '✅ Disimpan. Jumlah melebihi bank soal, jadi semua soal dipakai.' : '✅ Tiap siswa akan mendapat ' + c + ' soal acak.'); render();
-        }
-        function tkaGenToken() { const m = tkaSelMapel(), u = tkaSelNo(), t = newTokenCode(), T = tkaCfg(); T.tokens[tkaKey(m, u)] = t; if (u === 1) delete T.tokens[m]; Storage.saveConfig(config); toast('🔑 Token ' + m + ' TKA ke-' + u + ': ' + t); render(); }
-        function tkaDelToken() { const m = tkaSelMapel(), u = tkaSelNo(), T = tkaCfg(); delete T.tokens[tkaKey(m, u)]; if (u === 1) delete T.tokens[m]; Storage.saveConfig(config); render(); }
-        function tkaAdd() {
-            state.tkaEditIdx = null;
-            state.formQuestion = { ty: 'pg', t: '', o: ['', '', '', ''], a: 0, ks: [], mp: tkaSelMapel(), pk: tkaSelNo() };
-            state.showTkaModal = true; render();
-        }
-        function tkaEdit(idx) {
-            state.tkaEditIdx = idx;
-            state.formQuestion = JSON.parse(JSON.stringify(tkaCfg().questions[idx]));
-            state.formQuestion.pk = tkaNo(state.formQuestion);
-            if (!Array.isArray(state.formQuestion.ks)) state.formQuestion.ks = [];
-            state.showTkaModal = true; render();
-        }
-        function tkaDel(idx) {
-            if (!confirm('Hapus soal TKA ini?')) return;
-            tkaCfg().questions.splice(idx, 1); Storage.saveConfig(config); toast('🗑️ Soal dihapus.'); render();
-        }
-        function tkaDelAll() {
-            const m = tkaSelMapel(), u = tkaSelNo(), c = tkaCount(m, u);
-            if (!c || !confirm('Kosongkan semua ' + c + ' soal di ' + m + ' TKA ke-' + u + '? Tidak bisa dikembalikan.')) return;
-            config.tka.questions = config.tka.questions.filter(q => !(q.mp === m && tkaNo(q) === u)); Storage.saveConfig(config); toast('🗑️ ' + c + ' soal dihapus.'); render();
-        }
-        function tkaSetType(ty) { state.formQuestion.ty = ty; if (ty === 'pk' && !Array.isArray(state.formQuestion.ks)) state.formQuestion.ks = []; render(); }
-        function renderTkaModal() {
-            const fq = state.formQuestion, isPk = fq.ty === 'pk', noMax = Math.max(tkaNoList(fq.mp || TKA_MAPEL[0]).length, Number(fq.pk) || 1);
-            return `<div class="modal-overlay"><div class="modal-card">
-                <h3>${state.tkaEditIdx !== null ? 'Edit Soal TKA' : 'Tambah Soal TKA'}</h3>
-                <label>Mata Pelajaran</label>
-                <select onchange="state.formQuestion.mp=this.value;render()">${TKA_MAPEL.map(m => `<option ${fq.mp === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
-                <label>TKA ke-</label>
-                <select onchange="state.formQuestion.pk=+this.value">${[...Array(noMax)].map((_, i) => `<option value="${i + 1}" ${(Number(fq.pk) || 1) === i + 1 ? 'selected' : ''}>TKA ke-${i + 1}</option>`).join('')}</select>
-                <label>Jenis Soal</label>
-                <div class="qm-types">${['pg', 'pk'].map(t => `<button type="button" class="qm-type-btn ${fq.ty === t ? 'on' : ''}" style="--qc:${QT[t].c};--ql:${QT[t].l}" onclick="tkaSetType('${t}')"><span>${QT[t].ic}</span><b>${t.toUpperCase()}</b><small>${QT[t].n}</small></button>`).join('')}</div>
-                <label>Teks Pertanyaan</label>
-                <textarea rows="3" oninput="state.formQuestion.t=this.value">${esc(fq.t)}</textarea>
-                ${mediaFields(fq)}
-                <label>${isPk ? 'Pilihan Jawaban (centang semua yang benar)' : 'Pilihan Jawaban (pilih satu kunci)'}</label>
-                ${(fq.o || []).map((opt, i) => `
-                    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
-                        ${isPk
-                            ? `<input type="checkbox" ${(fq.ks || []).includes(i) ? 'checked' : ''} onchange="toggleFormPkKey(${i})" style="width:24px;height:24px;cursor:pointer" aria-label="Kunci opsi ${i + 1}">`
-                            : `<input type="radio" name="tka-key" ${fq.a === i ? 'checked' : ''} onchange="state.formQuestion.a=${i}" style="width:24px;height:24px;cursor:pointer" aria-label="Kunci opsi ${i + 1}">`}
-                        <input type="text" placeholder="Opsi ${String.fromCharCode(65 + i)}" value="${esc(opt)}" oninput="state.formQuestion.o[${i}]=this.value" style="margin-bottom:0;flex-grow:1">
-                        <button class="danger" onclick="tkaRmOpt(${i})" style="width:auto;margin-bottom:0;padding:10px">X</button>
-                    </div>`).join('')}
-                <button class="secondary" onclick="addFormOpt()" style="padding:8px;font-size:0.9rem" ${(fq.o || []).length >= 8 ? 'disabled' : ''}>+ Tambah Opsi</button>
-                <p style="color:var(--text-muted);font-size:0.85rem">${isPk ? 'Tiap jawaban benar yang dicentang siswa bernilai 1 poin, tiap pilihan yang salah mengurangi 1 poin.' : 'Siswa memilih satu jawaban. Benar = 1 poin.'}</p>
-                <div style="display:flex;gap:12px;margin-top:20px">
-                    <button class="secondary" onclick="state.showTkaModal=false;render()">Batal</button>
-                    <button class="success" onclick="tkaSave()">Simpan Soal</button>
-                </div>
-            </div></div>`;
-        }
-        function tkaRmOpt(i) {
-            const fq = state.formQuestion; if ((fq.o || []).length <= 2) { toast('⚠️ Minimal 2 opsi.'); return; }
-            fq.o.splice(i, 1);
-            if (fq.ty === 'pg') { if (fq.a === i) fq.a = 0; else if (fq.a > i) fq.a--; }
-            else fq.ks = (fq.ks || []).filter(k => k !== i).map(k => k > i ? k - 1 : k);
-            render();
-        }
-        function tkaSave() {
-            const fq = state.formQuestion;
-            if (!String(fq.t || '').trim()) { toast('⚠️ Teks pertanyaan wajib diisi!'); return; }
-            if ((fq.o || []).length < 2 || fq.o.some(x => !String(x || '').trim())) { toast('⚠️ Isi semua opsi (minimal 2), atau hapus opsi yang kosong.'); return; }
-            if (fq.ty === 'pk' && !(fq.ks || []).length) { toast('⚠️ Centang minimal 1 kunci jawaban!'); return; }
-            const q = { ty: fq.ty === 'pk' ? 'pk' : 'pg', t: fq.t.trim(), o: fq.o.map(x => String(x).trim()), mp: TKA_MAPEL.includes(fq.mp) ? fq.mp : TKA_MAPEL[0], pk: Math.max(1, parseInt(fq.pk) || 1), kl: 6, tka: 1 };
-            if (q.ty === 'pg') q.a = Math.min(Math.max(+fq.a || 0, 0), q.o.length - 1); else q.ks = [...new Set(fq.ks)].sort((a, b) => a - b);
-            if (fq.tx && String(fq.tx).trim()) q.tx = String(fq.tx).trim();
-            if (fq.img) q.img = fq.img;
-            const T = tkaCfg();
-            if (state.tkaEditIdx !== null && T.questions[state.tkaEditIdx]) T.questions[state.tkaEditIdx] = q; else T.questions.push(q);
-            state.tkaSel = q.mp; state.tkaNoSel = q.pk; state.showTkaModal = false;
-            Storage.saveConfig(config); toast('✅ Soal TKA disimpan di TKA ke-' + q.pk + '.'); render();
-        }
-
-        // --- Sisi siswa: halaman khusus TKA ---
-        function openTka() {
-            saveHomeInputs();
-            initTid();
-            if (clsGrade(state.studentClass) !== '6') { state.studentClass = ''; state.studentName = ''; }
-            state.page = 'tka'; render(); window.scrollTo(0, 0);
-        }
-        function tkaPick(m) { saveHomeInputs(); state.tkaMapel = m; state.tkaNoS = null; render(); }
-        function tkaPickNo(n) { saveHomeInputs(); state.tkaNoS = n; render(); }
-        function tkaOpenNos(m) { return tkaNoList(m).filter(n => tkaCount(m, n) > 0); }
-        function tkaHome(app) {
-            initTid();
-            const teachers = Storage.loadTeachers();
-            const open = state.tkaMapel || '';
-            const nos = open ? tkaOpenNos(open) : [];
-            if (open && nos.length === 1) state.tkaNoS = nos[0];
-            if (state.tkaNoS && !nos.includes(Number(state.tkaNoS))) state.tkaNoS = null;
-            app.innerHTML = `
-                <div class="home-wrap">
-                    <div class="home-top"><button class="chip" onclick="state.page='home';render()">← Kembali ke Beranda</button><button class="chip" onclick="tkaGuru()">🔐 Kelola soal (guru)</button></div>
-                    <div class="card home-card" style="border-color:#fdba74">
-                        <div class="home-hero">
-                            <div class="home-emoji">🎯</div>
-                            <h2 style="color:#ea580c">TKA Kelas 6</h2>
-                            <p>Tes Kemampuan Akademik. Soalnya Pilihan Ganda dan Pilihan Kompleks.</p>
-                        </div>
-                        <div class="tips-bar">Khusus untuk siswa Kelas 6. Minta token TKA ke gurumu ya.</div>
-
-                        <section class="step">
-                            <div class="step-head"><span class="step-no" style="background:#f97316">1</span><h3>Pilih mata pelajaran &amp; TKA ke-</h3></div>
-                            <label for="input-teacher">👩‍🏫 Pendidik</label>
-                            <select id="input-teacher" onchange="selectTeacher(this.value)">
-                                ${teachers.length === 0 ? '<option value="">(Belum ada pendidik)</option>' : ''}
-                                ${teachers.map(t => `<option value="${esc(t.id)}" ${t.id === state.tid ? 'selected' : ''}>${esc(teacherLabel(t))}</option>`).join('')}
-                            </select>
-                            <label>📚 Mata Pelajaran <small style="font-weight:500;color:var(--text-muted)">(ketuk salah satu)</small></label>
-                            <div class="mapel-grid">
-                                ${TKA_MAPEL.map(m => `<button type="button" class="mapel-tile ${open === m ? 'on' : ''}" aria-pressed="${open === m}" onclick="tkaPick('${esc(m)}')"><span class="mt-ic">${MAPEL_ICON[m] || '📘'}</span><span>${esc(m)}</span></button>`).join('')}
-                            </div>
-                            ${open ? `<label style="margin-top:14px">🎯 TKA ke-</label>
-                            ${nos.length ? `<div class="mapel-grid paket-grid">${nos.map(n => `<button type="button" class="mapel-tile ${Number(state.tkaNoS) === n ? 'on' : ''}" aria-pressed="${Number(state.tkaNoS) === n}" onclick="tkaPickNo(${n})"><span class="mt-ic">🎯</span><span>TKA ke-${n}</span><small>${tkaDrawCount(open, n)} soal acak · ${tkaMinutes(open, n)} menit</small></button>`).join('')}</div>`
-                                : '<p style="color:var(--warning);margin:0">⚠️ Belum ada soal TKA untuk mata pelajaran ini.</p>'}` : ''}
-                        </section>
-
-                        <section class="step">
-                            <div class="step-head"><span class="step-no" style="background:#f97316">2</span><h3>Token TKA</h3></div>
-                            <label for="input-token">🔑 Token <small style="font-weight:500;color:var(--text-muted)">(minta ke guru, tiap TKA punya token sendiri)</small></label>
-                            <input type="text" id="input-token" placeholder="Contoh: AB3K9" autocomplete="off" autocapitalize="characters" style="text-transform: uppercase;" value="${esc(state.studentToken || '')}">
-                        </section>
-
-                        <section class="step">
-                            <div class="step-head"><span class="step-no" style="background:#f97316">3</span><h3>Siapa kamu?</h3></div>
-                            ${nameFields()}
-                        </section>
-
-                        <button class="success btn-start" onclick="prepareTka()">🚀 Mulai TKA</button>
-                    </div>
-                </div>`;
-        }
-        function prepareTka() {
-            saveHomeInputs();
-            const name = state.studentName, cls = state.studentClass, m = state.tkaMapel, p = Number(state.tkaNoS) || 0;
-            if (!state.tid) { toast('⚠️ Pilih pendidik terlebih dahulu!'); return; }
-            if (!name || !cls || !m || !p) {
-                const miss = [];
-                if (!m) miss.push('.mapel-grid:not(.paket-grid)');
-                else if (!p) miss.push('.paket-grid');
-                if (!cls) miss.push('#input-class-sel', '#input-class');
-                if (!name) miss.push('.step select:not(#input-teacher):not(#input-class-sel)', '.step input#input-name');
-                let first = null;
-                miss.forEach(sel => document.querySelectorAll(sel).forEach(el => { if (el.type === 'hidden') return; el.classList.add('need'); if (!first) first = el; setTimeout(() => el.classList.remove('need'), 2500); }));
-                if (first && first.scrollIntoView) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                toast('⚠️ Lengkapi dulu bagian yang berwarna merah ya!'); return;
-            }
-            if (clsGrade(cls) !== '6') { toast('🎯 TKA hanya untuk siswa Kelas 6.'); return; }
-            if (CLOUD.on && !CLOUD.uid) { toast('⏳ Menghubungkan ke server, coba lagi sebentar.'); return; }
-            if (CLOUD.on && !CLOUD.configExists) { toast('⚠️ Ujian belum disiapkan oleh guru.'); return; }
-            if (!tkaCount(m, p)) { toast('⚠️ TKA ke-' + p + ' belum punya soal.'); return; }
-            const tk = tkaToken(m, p);
-            if (!tk) { toast('⚠️ Token TKA ' + m + ' ke-' + p + ' belum dibuat guru.'); return; }
-            if (String(state.studentToken || '').trim().toUpperCase() !== tk) { toast('❌ Token salah. Minta token ke guru.'); return; }
-            state.tkaMode = true;
-            state.studentMapel = 'TKA ' + m; state.tkaNo = p; state.studentUH = 'TKA-' + p;
-            return beginExam(name, cls, prepareTka);
-        }
 
         // ===== Mesin Pembuat Soal (offline, berbasis aturan) =====
         const GEN_NAMA = ['Budi', 'Siti', 'Ani', 'Rudi', 'Dina', 'Joko', 'Maya', 'Dewi', 'Andi', 'Rina'];
@@ -4200,7 +3798,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                 document.body.appendChild(b);
             }
             const online = navigator.onLine && ok !== false;
-            b.textContent = (!GAS ? '💾 Mode lokal' : online ? '🟢 Online' : '🔴 Offline') + ' · v' + APP_VERSION;
+            b.textContent = !GAS ? 'Mode lokal' : online ? 'Online' : 'Offline';
         }
         window.addEventListener('online', () => { setNetState(true); try { toast('🟢 Kembali online.'); } catch (e) {} });
         window.addEventListener('offline', () => { setNetState(false); try { toast('🔴 Koneksi terputus. Jawaban tetap tersimpan di perangkat.'); } catch (e) {} });
@@ -4396,7 +3994,7 @@ h2{font-size:clamp(1.3rem,5vw,1.7rem)}h3{font-size:clamp(1.05rem,4vw,1.2rem)}
                 }
                 try { CLOUD.roster = await gs('getRoster', r.tid, r.token) || []; } catch (e) { CLOUD.roster = []; }
                 await cloudPollResults(true);
-                tkaLand(); state.page = 'admin'; render();
+                state.page = 'admin'; render();
             } catch (e) { CLOUD.isTeacher = false; CLOUD.token = null; toast("❌ Tidak bisa terhubung ke server."); }
         }
 
