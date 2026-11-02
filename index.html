@@ -2,7 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="theme-color" content="#3B82F6">
+    <meta name="theme-color" content="#3B82F6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)">
+    <meta name="color-scheme" content="light dark">
+    <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Ujian Sekolah Dasar</title>
     <meta name="description" content="Aplikasi ulangan harian online untuk siswa sekolah dasar">
@@ -553,6 +556,9 @@
         body.exam-mode { -webkit-touch-callout: none; overscroll-behavior: none; }
         body.exam-mode img { -webkit-user-drag: none; user-drag: none; }
         @media print { body.exam-mode { display: none !important; } }
+        /* Lintas perangkat: cegah tarik-untuk-muat-ulang tak sengaja */
+        html, body { overscroll-behavior-y: contain; }
+
         .kiosk-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; background: #0f172a; color: #e2e8f0; padding: 8px 14px; border-radius: 14px; margin-bottom: 10px; font-size: 0.85rem; font-weight: 700; }
         .kiosk-bar .kb-lock { color: #86efac; }
         .kiosk-bar .kb-tools { display: flex; gap: 6px; }
@@ -815,7 +821,7 @@ body::after{content:none}
 #tka-root .xb-qmeta{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem}
 #tka-root .xb-split{display:grid;gap:1rem}
 #tka-root .xb-split.g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-#tka-root .xb-stim{background:var(--wal);border:1px solid var(--wa);border-radius:14px;padding:1rem;white-space:pre-line;max-height:calc(100vh - 17rem);overflow:auto;position:sticky;top:0;align-self:start}
+#tka-root .xb-stim{background:var(--wal);border:1px solid var(--wa);border-radius:14px;padding:1rem;white-space:pre-line;max-height:calc(100vh - 17rem);max-height:calc(100dvh - 17rem);overflow:auto;position:sticky;top:0;align-self:start}
 #tka-root .xb-stim .lb{font-size:.75rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--wat);margin-bottom:.4rem}
 #tka-root .xb-qt{font-size:1.25em;font-weight:600;margin:0 0 .6rem}
 #tka-root .xb-hint{color:var(--mu);font-size:.9em;margin-bottom:.4rem}
@@ -5786,7 +5792,7 @@ function siswa(){
   ${S.length?`<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem">${kb("all","Semua")}${kl.map(k=>kb(k,"Kelas "+k)).join("")}</div>
   <input type="search" placeholder="🔍 Cari nama atau NISN" value="${esc(A.sq||"")}" onchange="TKA.swq(this.value)" style="margin-bottom:.6rem">
   <div style="overflow:auto"><table><tr><th>No</th><th>NISN</th><th>Nama</th><th>Kelas</th><th>L/P</th><th></th></tr>${V.map((x,n)=>`<tr><td>${n+1}</td><td>${esc(x.s.nis||"")}</td><td>${esc(x.s.name)}</td><td>${esc(x.s.cls||"")}</td><td>${esc(x.s.jk||"")}</td><td style="white-space:nowrap"><button class="sec" onclick="TKA.swed(${x.i})">✏️</button> <button class="sec" onclick="TKA.swdel(${x.i})">🗑</button></td></tr>`).join("")||`<tr><td colspan="6" class="mu">Tidak ada yang cocok.</td></tr>`}</table></div>
-  <button class="sec" style="margin-top:1rem" onclick="TKA.swclr()">🗑 Hapus semua data siswa</button>`:`<p class="mu">Belum ada data siswa. Tambah manual atau impor dari Excel.</p>`}`;
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">${A.sk&&A.sk!=="all"?`<button class="danger" onclick="TKA.swclrk()">🗑 Hapus semua siswa Kelas ${esc(A.sk)} (${S.filter(s=>s.cls===A.sk).length})</button>`:`<span class="mu" style="align-self:center;font-size:.85rem">Pilih salah satu kelas di atas untuk menghapus data siswa per kelas.</span>`}<button class="sec" onclick="TKA.swclr()">🗑 Hapus semua data siswa</button></div>`:`<p class="mu">Belum ada data siswa. Tambah manual atau impor dari Excel.</p>`}`;
 }
 function swimp(){
   const i=document.createElement("input");i.type="file";i.accept=".xlsx,.xls,.csv";
@@ -5865,6 +5871,9 @@ Object.assign(TKA,{wimp,swimp,swexp,swsave,
  swed:i=>{const S=swLoad();if(!S[i])return;A.sf=Object.assign(swEmpty(),S[i],{i});panel();ROOT.scrollTo(0,0)},
  swcx:()=>{A.sf=swEmpty();panel()},
  swdel:i=>{const S=swLoad();if(!S[i])return;if(confirm("Hapus siswa "+S[i].name+"?")){S.splice(i,1);swSave(S);panel()}},
+ swclrk:()=>{const k=A.sk,S=swLoad(),n=S.filter(s=>s.cls===k).length;if(!k||k==="all"||!n)return;
+  if(!confirm("Hapus SEMUA data siswa Kelas "+k+" ("+n+" siswa)?\n\nSiswa kelas lain tidak terpengaruh. Tindakan ini juga berlaku di tab Siswa & Rapor dasbor guru. Hasil TKA yang sudah masuk tidak dihapus."))return;
+  swSave(S.filter(s=>s.cls!==k));A.sk="all";A.sf=swEmpty();panel()},
  swclr:()=>{if(confirm("Hapus SEMUA data siswa? Tindakan ini juga berlaku di tab Siswa & Rapor dasbor guru.")){swSave([]);panel()}},
  swpick:v=>{const x=String(v||"").trim().toLowerCase();if(!x)return;const m=allSw().filter(s=>String(s.name).toLowerCase()===x);if(m.length===1){const k=$("#tk-kl");if(k&&m[0].cls)k.value=m[0].cls}}
 });
@@ -5882,6 +5891,41 @@ Object.assign(TKA,{
   const rows=[["Kelas","Mata uji","Paket","Peserta","Rata-rata","Tertinggi","Terendah","Jumlah nilai >= 70","Persen nilai >= 70"]].concat(Object.keys(g).sort((x,y)=>nC(g[x].c,g[y].c)||x.localeCompare(y)).map(k=>{const x=g[k],s=sm(x.a);return[x.c,BANK[x.m]?BANK[x.m].nama:x.m,x.p,s.n,s.avg,s.hi,s.lo,s.ok,Math.round(s.ok/s.n*100)+"%"]}));
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(";")).join("\n")],{type:"text/csv"}));a.download="statistik_tka_per_kelas.csv";document.body.appendChild(a);a.click();a.remove()}
 });
+})();
+</script>
+<script>
+/* ===== Lintas perangkat: layar tetap menyala saat ujian ===== */
+(function(){
+  /* Web biasa (bukan aplikasi): bersihkan service worker/cache lama bila pernah terpasang */
+  try{
+    if("serviceWorker" in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}).catch(function(){});
+    }
+    if(window.caches&&caches.keys){
+      caches.keys().then(function(ks){ks.filter(function(k){return k.indexOf("ujian-v")===0}).forEach(function(k){caches.delete(k)})}).catch(function(){});
+    }
+  }catch(e){}
+
+  /* Layar tetap menyala selama ujian (tablet/HP). Diam-diam diabaikan jika browser tidak mendukung. */
+  try{
+    if("wakeLock" in navigator){
+      var lock=null;
+      var perlu=function(){
+        if(document.hidden)return false;
+        if(document.body&&document.body.classList.contains("exam-mode"))return true;
+        var r=document.getElementById("tka-root");return !!(r&&!r.hidden);
+      };
+      var cek=function(){
+        if(perlu()&&!lock){
+          navigator.wakeLock.request("screen").then(function(l){
+            lock=l;l.addEventListener("release",function(){lock=null});
+          }).catch(function(){});
+        }else if(!perlu()&&lock){try{lock.release()}catch(e){}lock=null}
+      };
+      setInterval(cek,4000);
+      document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(cek,300)});
+    }
+  }catch(e){}
 })();
 </script>
 </body>
