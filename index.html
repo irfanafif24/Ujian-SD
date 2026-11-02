@@ -5183,6 +5183,12 @@ const clsOf=r=>String(r.cls||"").trim()||"-";
 const pidOf=r=>r.p||(BANK[r.m]?PS(r.m)[0].id:"p1");
 const pnOf=r=>r.pn||(BANK[r.m]?gP(r.m,r.p).nama:"Paket 1");
 const lbl=r=>(BANK[r.m]?BANK[r.m].nama:r.m)+" • "+pnOf(r);
+/* ===== Aturan: satu paket hanya boleh dikerjakan SEKALI per siswa (nama + kelas). Mengulang hanya setelah guru menekan Reset. ===== */
+const nk=s=>String(s||"").toLowerCase().replace(/\s+/g," ").trim();
+const kk=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
+const sudah=(n,k,m,p)=>(ls.g("tka_results")||[]).some(r=>nk(r.name)===nk(n)&&kk(r.cls)===kk(k)&&r.m===m&&pidOf(r)===p);
+const sedang=(n,k,m,p)=>{const rn=ls.g("tka_run");return !!(rn&&rn.end>Date.now()&&rn.m===m&&(rn.p||(BANK[m]?PS(m)[0].id:""))===p&&nk(rn.name)===nk(n)&&kk(rn.cls)===kk(k))};
+const TOLAK="🔒 Paket ini sudah kamu kerjakan dan hanya bisa dikerjakan satu kali.\n\nJika perlu mengulang, minta guru untuk menekan tombol Reset.";
 const sm=a=>{const v=a.map(r=>r.nilai),n=v.length;return{n,avg:n?Math.round(v.reduce((x,y)=>x+y,0)/n):0,hi:n?Math.max(...v):0,lo:n?Math.min(...v):0,ok:v.filter(x=>x>=70).length}};
 function loadBank(){const c=ls.g("tka_bank");BANK=mig(c&&c.bank?c.bank:clone(BANK0));STIM=c&&c.stim?c.stim:clone(STIM0)}
 const saveBank=()=>{if(!ls.s("tka_bank",{bank:BANK,stim:STIM}))alert("⚠️ Memori penuh, soal terakhir mungkin tidak tersimpan. Kurangi jumlah atau ukuran gambar.")};loadBank();
@@ -5309,6 +5315,8 @@ function brief(){
   sessionStorage.tkaN=n;sessionStorage.tkaK=k;
   const B=BANK[pick],P=curPk();
   if(!P.soal.length){xtoast("Soal untuk paket ini belum tersedia.");return}
+  if(sedang(n,k,pick,P.id)){alert("Ujianmu pada paket ini masih berjalan. Tekan tombol Lanjutkan Ujian di beranda.");return}
+  if(sudah(n,k,pick,P.id)){alert(TOLAK);return}
   scr="brief";
   const cf=CF(),acak=[cf.sq?"soal":"",cf.so?"pilihan jawaban":""].filter(Boolean).join(" dan ");
   ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby narrow"><div class="card">
@@ -5334,7 +5342,9 @@ function brief(){
 
 /* ================= UJIAN ================= */
 function start(){
-  const P=curPk(),o=mkOrder(P,CF());
+  const P=curPk();
+  if(sudah(sessionStorage.tkaN,sessionStorage.tkaK,pick,P.id)){alert(TOLAK);home();return}
+  const o=mkOrder(P,CF());
   S={m:pick,p:P.id,name:sessionStorage.tkaN,cls:sessionStorage.tkaK,ans:P.soal.map(init),doubt:[],cur:0,t0:Date.now(),end:Date.now()+P.menit*60000,qo:o.qo,oo:o.oo,vio:0};
   RES=null;rf="all";skipFs=false;away=false;lastRi=-1;
   if(!save())xtoast("⚠️ Penyimpanan perangkat penuh atau nonaktif. Jawaban tidak bisa dipulihkan bila halaman dimuat ulang.");
@@ -5466,7 +5476,8 @@ function showResult(){
     <div class="xb-bars"><div style="font-weight:800;font-size:1.05rem">${pred}</div>${Object.keys(per).filter(k=>per[k][1]).map(k=>{const pc=Math.round(per[k][0]/per[k][1]*100);return `<div class="xb-bar"><div class="l"><span>${nm[k]}</span><span>${+per[k][0].toFixed(1)} / ${per[k][1]}</span></div><div class="b"><i style="width:${pc}%"></i></div></div>`}).join("")}</div></div>
    <div class="xb-sum"><div class="g"><b>${cnt.ok}</b>Benar</div><div class="y"><b>${cnt.par}</b>Sebagian</div><div class="r"><b>${cnt.no}</b>Salah</div><div><b>${cnt.kos}</b>Kosong</div></div>
    <p class="mu" style="text-align:center;margin-top:.8rem">⏱ Waktu dipakai ${mm} menit ${ss} detik${r.vio?` • ⚠️ ${r.vio} pelanggaran`:""}</p>
-   <div class="foot"><button class="sec" onclick="TKA.home()">🏠 Beranda</button><button onclick="TKA.again('${S.m}','${P.id}')">🔁 Ulangi</button></div></div>
+   <p class="mu" style="text-align:center;margin-top:.8rem">🔒 Paket ini hanya bisa dikerjakan satu kali. Jika perlu mengulang, minta guru untuk mereset.</p>
+   <div class="foot"><button class="sec" onclick="TKA.home()">🏠 Beranda</button></div></div>
   <div class="card" style="margin-top:1rem" id="tk-rev"><h2>Pembahasan</h2>
    <div class="xb-flt">${fl.map(([k,l,c])=>`<button class="${rf===k?"":"sec"}" onclick="TKA.rf('${k}')">${l} (${c})</button>`).join("")}</div>
    ${items.length?items.map(({qi,n,q,st})=>{const p=pts(q,S.ans[qi]),m=maxP(q);return `<div class="rv ${st==="ok"?"ok":"no"}" ${st==="par"?'style="border-color:var(--wa)"':""}><b>${n+1}. ${esc(q.t)}</b> <span class="chip ${st==="ok"?"ok":st==="par"?"wa":"er"}">${+p.toFixed(1)}/${m}</span>${qimg(q)}<div class="mu">Jawabanmu: ${esc(mine(q,S.ans[qi],qi))}</div><div>✅ Kunci: ${esc(key(q,qi))}</div>${q.b?`<div class="mu">💡 ${esc(q.b)}</div>`:""}</div>`}).join(""):`<p class="mu">Tidak ada soal pada kategori ini.</p>`}
@@ -5570,7 +5581,8 @@ function stat(){
   <h2 style="margin-top:1rem">📦 Statistik per paket</h2><div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Peserta</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th></tr>${rowsP}</table></div>
   <h2 style="margin-top:1.2rem">Sebaran kategori nilai</h2>${pie([{l:"Sangat baik (90–100)",v:c(r=>r.nilai>=90),c:"#22C55E"},{l:"Baik (75–89)",v:c(r=>r.nilai>=75&&r.nilai<90),c:"#3B82F6"},{l:"Cukup (60–74)",v:c(r=>r.nilai>=60&&r.nilai<75),c:"#F59E0B"},{l:"Perlu bimbingan (<60)",v:c(r=>r.nilai<60),c:"#EF4444"}])}
   <h2 style="margin-top:1.2rem">Ketepatan jawaban (poin)</h2>${pie([{l:"Poin benar",v:sk,c:"#22C55E"},{l:"Poin hilang",v:mx-sk,c:"#EF4444"}])}
-  <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Paket</th><th>Nilai</th><th>Tanggal</th></tr>${R.slice().reverse().slice(0,50).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td>${esc(pnOf(r))}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td></tr>`).join("")}</table></div>
+  <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Paket</th><th>Nilai</th><th>Tanggal</th><th>Aksi</th></tr>${R.slice().reverse().slice(0,200).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td>${esc(pnOf(r))}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td><td><button class="sec" onclick="TKA.rsr(${r.tgl})" title="Hapus hasil agar siswa bisa mengerjakan paket ini sekali lagi">🔄 Reset</button></td></tr>`).join("")}</table></div>
+  <p class="mu" style="font-size:.85rem">Setiap paket hanya bisa dikerjakan satu kali per siswa. Tekan <b>Reset</b> pada baris siswa agar ia boleh mengerjakan paket itu sekali lagi (nilai lama dihapus).</p>
   <button class="sec" style="margin-top:1rem" onclick="TKA.clr()">🗑 Hapus semua hasil TKA</button>`:`<p class="mu">${byP.length?"Tidak ada hasil untuk kelas ini.":"Belum ada siswa yang menyelesaikan TKA di perangkat ini untuk pilihan ini."}</p>`}`;
 }
 const curP=()=>gP(A.mp,A.pp&&A.pp[A.mp]);
@@ -5761,7 +5773,10 @@ function swsave(){
 Object.assign(TKA,{adm,lg,
  out:()=>{A.ok=false;home()},tab:t=>{A.tab=t;panel()},fm:k=>{A.fm=k;A.fp="all";panel()},mp:k=>{A.mp=k;panel()},
  mn:v=>{curP().menit=Math.max(1,parseInt(v)||75);saveBank()},
- clr:()=>{if(confirm("Hapus semua hasil TKA di perangkat ini?")){ls.d("tka_results");panel()}},
+ clr:()=>{if(confirm("Hapus semua hasil TKA di perangkat ini?\n\nSemua siswa akan bisa mengerjakan ulang semua paket.")){ls.d("tka_results");panel()}},
+ rsr:t=>{const all=ls.g("tka_results")||[],i=all.findIndex(r=>r.tgl===t);if(i<0){panel();return}const r=all[i];
+  if(!confirm("Reset hasil "+r.name+" (Kelas "+(r.cls||"-")+")\n"+lbl(r)+" • nilai "+r.nilai+"?\n\nNilai ini akan dihapus dan siswa dapat mengerjakan paket ini satu kali lagi."))return;
+  all.splice(i,1);ls.s("tka_results",all);panel()},
  qadd:()=>{D=blank("pg");EI=-1;A.tab="ed";panel()},
  qedit:i=>{D=clone(curP().soal[i]);D.s=D.s||"";D.b=D.b||"";EI=i;A.tab="ed";panel()},
  qdel:i=>{if(confirm("Hapus soal nomor "+(i+1)+"?")){curP().soal.splice(i,1);saveBank();panel()}},
