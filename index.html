@@ -691,21 +691,239 @@ h1,h2,h3{color:var(--text-main)}
 .qm-hero h3{color:#fff}
 body::after{content:none}
 
-/* ===== TKA ===== */
-#tka-root{--bg:#F3F6F9;--card:#fff;--tx:#1E293B;--mu:#64748B;--pr:#3B82F6;--prh:#2563EB;--prl:#EFF6FF;--ok:#22C55E;--okl:#DCFCE7;--er:#EF4444;--erl:#FEE2E2;--wa:#F59E0B;--wal:#FEF3C7;--bd:#CBD5E1;--sh:0 4px 12px -2px rgba(0,0,0,.08)}@media(prefers-color-scheme:dark){#tka-root{--bg:#0F172A;--card:#1E293B;--tx:#F8FAFC;--mu:#94A3B8;--prl:#1E3A5F;--okl:#14532D;--erl:#7F1D1D;--wal:#78350F;--bd:#475569}}#tka-root,#tka-root *{box-sizing:border-box}#tka-root{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);line-height:1.5}#tka-root button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:.7rem 1.1rem;font-weight:700;background:var(--pr);color:#fff}#tka-root button:hover{background:var(--prh)}#tka-root button:disabled{opacity:.4;cursor:not-allowed}#tka-root button.sec{background:var(--card);color:var(--tx);border:2px solid var(--bd)}#tka-root button.warn{background:var(--wa);color:#111}#tka-root input{font:inherit;width:100%;padding:.7rem .9rem;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx)}#tka-root .wrap{max-width:960px;margin:0 auto;padding:1rem}#tka-root .card{background:var(--card);border-radius:18px;box-shadow:var(--sh);padding:1.25rem}#tka-root h1{font-size:1.6rem;margin:.2rem 0}#tka-root h2{margin:.2rem 0 .6rem;font-size:1.2rem}#tka-root .mu{color:var(--mu)}#tka-root .row{display:flex;gap:.75rem;flex-wrap:wrap}#tka-root .row>*{flex:1 1 220px}#tka-root .mapel{border:3px solid var(--bd);border-radius:16px;padding:1rem;text-align:left;background:var(--card);color:var(--tx)}#tka-root .mapel.on{border-color:var(--pr);background:var(--prl)}#tka-root .mapel .ic{font-size:2.2rem}#tka-root .chip{display:inline-block;padding:.15rem .6rem;border-radius:99px;background:var(--prl);color:var(--pr);font-size:.8rem;font-weight:700}#tka-root .bar{position:sticky;top:0;z-index:5;background:var(--pr);color:#fff;display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;flex-wrap:wrap}#tka-root .bar b{flex:1}#tka-root .bar button{background:rgba(255,255,255,.2);padding:.35rem .7rem}#tka-root #tm{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:800;background:rgba(0,0,0,.25);padding:.2rem .7rem;border-radius:10px}#tka-root #tm.low{background:var(--er);animation:tkbl 1s infinite}@keyframes tkbl{50%{opacity:.6}}#tka-root .main{display:grid;grid-template-columns:1fr 230px;gap:1rem;align-items:start}#tka-root .qa{display:grid;gap:1rem}#tka-root .qa.g{grid-template-columns:1fr 1fr}#tka-root .stim{background:var(--wal);border-radius:14px;padding:1rem;max-height:60vh;overflow:auto;white-space:pre-line}#tka-root .opt{display:flex;gap:.7rem;align-items:center;border:2px solid var(--bd);border-radius:14px;padding:.7rem .9rem;margin:.5rem 0;cursor:pointer;background:var(--card)}#tka-root .opt.on{border-color:var(--pr);background:var(--prl)}#tka-root .k{flex:none;width:2rem;height:2rem;display:grid;place-items:center;border-radius:50%;background:var(--bd);font-weight:800;color:#111}#tka-root .opt.sq .k{border-radius:8px}#tka-root .opt.on .k{background:var(--pr);color:#fff}#tka-root table{width:100%;border-collapse:collapse}#tka-root td,#tka-root th{padding:.5rem;border-bottom:1px solid var(--bd);text-align:center}#tka-root td:first-child,#tka-root th:first-child{text-align:left}#tka-root .mj{border:2px solid var(--bd);border-radius:10px;padding:.3rem .9rem;background:var(--card);color:var(--tx)}#tka-root .mj.on{background:var(--pr);color:#fff;border-color:var(--pr)}#tka-root .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}#tka-root .nav button{padding:.5rem 0;background:var(--card);color:var(--tx);border:2px solid var(--bd)}#tka-root .nav .a{background:var(--pr);color:#fff;border-color:var(--pr)}#tka-root .nav .d{background:var(--wa);color:#111;border-color:var(--wa)}#tka-root .nav .c{outline:3px solid var(--tx)}#tka-root .foot{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}#tka-root .foot>*{flex:1}#tka-root .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:1rem;z-index:9}#tka-root .modal .card{max-width:420px;width:100%}#tka-root .big{font-size:4rem;font-weight:900;color:var(--pr);line-height:1}#tka-root .rv{border-left:6px solid var(--bd);padding:.5rem .9rem;margin:.7rem 0;background:var(--card);border-radius:0 12px 12px 0}#tka-root .rv.ok{border-color:var(--ok)}#tka-root .rv.no{border-color:var(--er)}@media(max-width:760px){#tka-root .main,#tka-root .qa.g{grid-template-columns:1fr}#tka-root .nav{grid-template-columns:repeat(8,1fr)}}#tka-root{position:fixed;inset:0;z-index:9000;overflow:auto;font-size:1rem;line-height:1.5;text-align:left}
+/* ===== TKA — tampilan ala ExamBrowser ===== */
+#tka-root{--bg:#EEF2F7;--card:#fff;--tx:#0F172A;--mu:#64748B;--pr:#2563EB;--prh:#1D4ED8;--prl:#E8F0FE;--ok:#16A34A;--okl:#DCFCE7;--er:#DC2626;--erl:#FEE2E2;--wa:#F59E0B;--wal:#FEF3C7;--wat:#92400E;--bd:#D6DEE9;--kb:#0B1220;--sh:0 1px 2px rgba(15,23,42,.06),0 10px 30px -12px rgba(15,23,42,.18);--fs:1}
+@media(prefers-color-scheme:dark){#tka-root{--bg:#0B1220;--card:#131C2E;--tx:#E8EEF8;--mu:#93A3BC;--pr:#3B82F6;--prh:#2563EB;--prl:#172B4D;--okl:#0F3D26;--erl:#4A1717;--wal:#4A3410;--wat:#FCD34D;--bd:#2A3A55;--kb:#050912;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.6)}}
+#tka-root,#tka-root *{box-sizing:border-box}
+#tka-root{position:fixed;inset:0;z-index:9000;overflow:auto;margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;text-align:left;-webkit-text-size-adjust:100%;overscroll-behavior:contain}
 #tka-root[hidden]{display:none}
-#tka-root h1,#tka-root h2{text-align:left;color:var(--tx)}
-#tka-root h2.c{text-align:center}
+#tka-root h1,#tka-root h2,#tka-root h3{text-align:left;color:var(--tx);margin:.2rem 0 .6rem;line-height:1.25}
+#tka-root h1{font-size:1.6rem}#tka-root h2{font-size:1.15rem}#tka-root h2.c{text-align:center}
 #tka-root p{margin:.4rem 0}
-#tka-root button{width:auto;min-height:0;box-shadow:none;transform:none;font-family:inherit;font-size:1rem;font-weight:700;transition:none}
-#tka-root .mapel{text-align:left}#tka-root .mapel.on{background:var(--prl)}
-#tka-root .card{border:0;margin:0}
-#tka-root .nav button{font-size:.95rem}
-#tka-root input{margin:0;font-weight:500}
-#tka-root table{margin:0}
-#tka-root textarea,#tka-root select{width:100%;font:inherit;padding:.6rem .8rem;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);margin:0 0 .4rem}
+#tka-root .mu{color:var(--mu)}
 #tka-root label{display:block;font-weight:700;margin:.8rem 0 .3rem;color:var(--tx)}
-#tka-root input[type=radio],#tka-root input[type=checkbox]{width:1.3rem;height:1.3rem;padding:0;flex:none}
+#tka-root table{width:100%;border-collapse:collapse;margin:0}
+#tka-root td,#tka-root th{padding:.5rem;border-bottom:1px solid var(--bd);text-align:center}
+#tka-root td:first-child,#tka-root th:first-child{text-align:left}
+#tka-root details>summary{cursor:pointer}
+
+/* ---- tombol & isian ---- */
+#tka-root button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:12px;padding:.7rem 1.1rem;background:var(--pr);color:#fff;width:auto;min-height:44px;margin:0;box-shadow:none;transform:none;transition:background .15s,border-color .15s;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;line-height:1.25;-webkit-tap-highlight-color:transparent}
+#tka-root button:hover{background:var(--prh)}
+#tka-root button:active{transform:scale(.98)}
+#tka-root button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+#tka-root button.sec{background:var(--card);color:var(--tx);border:2px solid var(--bd)}
+#tka-root button.sec:hover{background:var(--prl);border-color:var(--pr)}
+#tka-root button.warn{background:var(--wa);color:#111}
+#tka-root button.warn:hover{background:#D98E04}
+#tka-root button.ok{background:var(--ok)}
+#tka-root button.ok:hover{background:#15803D}
+#tka-root button.er{background:var(--er)}
+#tka-root button:focus-visible{outline:3px solid var(--wa);outline-offset:2px}
+#tka-root input:not([type=checkbox]):not([type=radio]),#tka-root textarea,#tka-root select{font:inherit;font-weight:500;width:100%;padding:.7rem .9rem;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);margin:0 0 .4rem;min-height:44px;outline:none}
+#tka-root input:focus,#tka-root textarea:focus,#tka-root select:focus{border-color:var(--pr)}
+#tka-root input[type=radio],#tka-root input[type=checkbox]{width:1.3rem;height:1.3rem;padding:0;flex:none;margin:0;accent-color:var(--pr)}
+
+/* ---- komponen umum (juga dipakai panel guru) ---- */
+#tka-root .wrap{max-width:960px;margin:0 auto;padding:1rem max(1rem,env(safe-area-inset-right)) max(1rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left))}
+#tka-root .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--sh);padding:1.25rem;margin:0}
+#tka-root .row{display:flex;gap:.75rem;flex-wrap:wrap}
+#tka-root .row>*{flex:1 1 220px}
+#tka-root .chip{display:inline-block;padding:.15rem .65rem;border-radius:99px;background:var(--prl);color:var(--pr);font-size:.8rem;font-weight:700}
+#tka-root .chip.wa{background:var(--wal);color:var(--wat)}
+#tka-root .chip.ok{background:var(--okl);color:var(--ok)}
+#tka-root .chip.er{background:var(--erl);color:var(--er)}
+#tka-root .foot{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
+#tka-root .foot>*{flex:1}
+#tka-root .opt{display:flex;gap:.7rem;align-items:center;border:2px solid var(--bd);border-radius:14px;padding:.7rem .9rem;margin:.5rem 0;cursor:pointer;background:var(--card)}
+#tka-root .opt.on{border-color:var(--pr);background:var(--prl)}
+#tka-root .k{flex:none;width:2rem;height:2rem;display:grid;place-items:center;border-radius:50%;background:var(--bd);font-weight:800;color:#111}
+#tka-root .opt.sq .k,#tka-root .xb-opt.sq .k{border-radius:8px}
+#tka-root .opt.on .k{background:var(--pr);color:#fff}
+#tka-root .stim{background:var(--wal);border-radius:14px;padding:1rem;max-height:60vh;overflow:auto;white-space:pre-line}
+#tka-root .rv{border-left:6px solid var(--bd);padding:.5rem .9rem;margin:.7rem 0;background:var(--card);border-radius:0 12px 12px 0}
+#tka-root .rv.ok{border-color:var(--ok)}
+#tka-root .rv.no{border-color:var(--er)}
+#tka-root .big{font-size:4rem;font-weight:900;color:var(--pr);line-height:1}
+#tka-root .opt-img{display:block;max-width:100%;max-height:180px;object-fit:contain;border-radius:12px;margin-top:6px;background:#fff}
+
+/* ---- kerangka aplikasi ---- */
+#tka-root .xb{display:flex;flex-direction:column;min-height:100%}
+#tka-root .xb.exam{height:100%;min-height:0;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#tka-root .xb.exam img{-webkit-user-drag:none}
+#tka-root .xb-kiosk{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:.7rem;background:var(--kb);color:#CBD5E1;padding:max(.35rem,env(safe-area-inset-top)) max(.9rem,env(safe-area-inset-right)) .35rem max(.9rem,env(safe-area-inset-left));font-size:.8rem;min-height:2.5rem;border-bottom:1px solid rgba(255,255,255,.08);flex:none}
+#tka-root .kb-lock{font-weight:800;color:#E2E8F0;white-space:nowrap}
+#tka-root .kb-lock.on{color:#86EFAC}
+#tka-root .kb-sp{flex:1}
+#tka-root .kb-i{white-space:nowrap;opacity:.92}
+#tka-root .kb-i.bad{color:#FCA5A5;font-weight:700}
+#tka-root .kb-t{display:flex;gap:.3rem}
+#tka-root .kb-t button{min-height:32px;padding:.15rem .65rem;border-radius:8px;background:rgba(255,255,255,.13);color:#fff;font-size:.9rem;border:0}
+#tka-root .kb-t button:hover{background:rgba(255,255,255,.25)}
+#tka-root .xb-main{flex:1;min-height:0}
+#tka-root .xb-lobby{max-width:1040px;margin:0 auto;padding:1rem max(1rem,env(safe-area-inset-right)) max(1.5rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left))}
+#tka-root .xb-lobby.narrow{max-width:720px}
+#tka-root .xb-hero{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:linear-gradient(120deg,#1E3A8A,#2563EB 60%,#4F46E5);color:#fff;border-radius:20px;padding:1.4rem 1.5rem;margin-bottom:1rem;box-shadow:var(--sh)}
+#tka-root .xb-hero h1{color:#fff;margin:.4rem 0 .3rem}
+#tka-root .xb-hero p{color:#DBEAFE;margin:0;max-width:44rem}
+#tka-root .xb-hero .chip{background:rgba(255,255,255,.18);color:#fff}
+#tka-root .xb-hero .ic{font-size:3.6rem;line-height:1;flex:none}
+#tka-root .xb-resume{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;background:var(--wal);border:2px solid var(--wa);border-radius:16px;padding:.9rem 1.1rem;margin-bottom:1rem}
+#tka-root .xb-resume>div{flex:1 1 220px}
+#tka-root .xb-cols{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1rem;align-items:start}
+#tka-root .xb-sec{background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--sh);padding:1.1rem 1.2rem;margin-bottom:1rem}
+#tka-root .xb-sec>h2{display:flex;align-items:center;gap:.6rem;margin:0 0 .8rem}
+#tka-root .xb-sec>h2 .n{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--pr);color:#fff;display:grid;place-items:center;font-size:.9rem}
+#tka-root .xb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem}
+#tka-root .xb-pick{display:block;width:100%;text-align:left;background:var(--card);color:var(--tx);border:2px solid var(--bd);border-radius:14px;padding:.9rem 1rem;position:relative}
+#tka-root .xb-pick:hover{background:var(--prl);border-color:var(--pr)}
+#tka-root .xb-pick.on{border-color:var(--pr);background:var(--prl);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+#tka-root .xb-pick.on::after{content:"✓";position:absolute;top:.6rem;right:.7rem;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--pr);color:#fff;display:grid;place-items:center;font-size:.8rem}
+#tka-root .xb-pick .ic{font-size:2rem;line-height:1.1}
+#tka-root .xb-pick b{display:block}
+#tka-root .xb-pick small{display:block;color:var(--mu);font-weight:500}
+#tka-root .xb-cta{width:100%;font-size:1.1rem;min-height:52px;border-radius:14px}
+#tka-root .xb-list{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}
+#tka-root .xb-list li{display:flex;gap:.6rem;align-items:flex-start;font-size:.92rem}
+#tka-root .xb-list .d{flex:none;width:1.4rem;height:1.4rem;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:800;background:var(--okl);color:var(--ok)}
+#tka-root .xb-list .d.w{background:var(--wal);color:var(--wat)}
+#tka-root .xb-list .d.r{background:var(--prl);color:var(--pr)}
+#tka-root .xb-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.8rem 0}
+#tka-root .xb-stat{background:var(--bg);border-radius:12px;padding:.6rem .5rem;text-align:center}
+#tka-root .xb-stat b{display:block;font-size:1.3rem}
+#tka-root .xb-stat small{color:var(--mu)}
+#tka-root .xb-agree{display:flex;gap:.7rem;align-items:flex-start;background:var(--prl);border:2px solid var(--bd);border-radius:14px;padding:.8rem 1rem;margin:1rem 0 0;cursor:pointer;font-weight:600}
+#tka-root .xb-hist{border-left:5px solid var(--bd);background:var(--bg);border-radius:0 10px 10px 0;padding:.45rem .7rem;margin:.5rem 0;font-size:.88rem}
+#tka-root .xb-hist.ok{border-color:var(--ok)}
+#tka-root .xb-hist.no{border-color:var(--er)}
+
+/* ---- layar ujian ---- */
+#tka-root .xb-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:1rem;align-items:center;background:var(--card);border-bottom:1px solid var(--bd);padding:.55rem max(1rem,env(safe-area-inset-right)) .55rem max(1rem,env(safe-area-inset-left));flex:none}
+#tka-root .who{display:flex;gap:.7rem;align-items:center;min-width:0}
+#tka-root .av{flex:none;width:2.4rem;height:2.4rem;border-radius:50%;background:var(--pr);color:#fff;display:grid;place-items:center;font-weight:800}
+#tka-root .who b,#tka-root .who small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tka-root .who small{color:var(--mu);font-size:.8rem}
+#tka-root .pt{display:flex;justify-content:space-between;font-size:.8rem;color:var(--mu);margin-bottom:.2rem}
+#tka-root .pb{height:.6rem;border-radius:99px;background:var(--bd);overflow:hidden}
+#tka-root .pb i{display:block;height:100%;background:var(--pr);border-radius:99px;transition:width .3s}
+#tka-root .tm{display:flex;align-items:center;gap:.4rem;background:var(--wal);color:var(--wat);border:2px solid var(--wa);border-radius:99px;padding:.25rem .9rem;font-weight:800;font-variant-numeric:tabular-nums;font-size:1.15rem;white-space:nowrap}
+#tka-root .tm.low{background:var(--erl);color:var(--er);border-color:var(--er);animation:tkbl 1s infinite}
+@keyframes tkbl{50%{opacity:.6}}
+#tka-root .xb-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:1rem;padding:1rem max(1rem,env(safe-area-inset-right)) 1rem max(1rem,env(safe-area-inset-left))}
+#tka-root .xb-qs{min-height:0;overflow:auto;padding-right:.2rem}
+#tka-root .xb-q{background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--sh);padding:1.25rem;font-size:calc(1rem*var(--fs))}
+#tka-root .xb-qmeta{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem}
+#tka-root .xb-split{display:grid;gap:1rem}
+#tka-root .xb-split.g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+#tka-root .xb-stim{background:var(--wal);border:1px solid var(--wa);border-radius:14px;padding:1rem;white-space:pre-line;max-height:calc(100vh - 17rem);overflow:auto;position:sticky;top:0;align-self:start}
+#tka-root .xb-stim .lb{font-size:.75rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--wat);margin-bottom:.4rem}
+#tka-root .xb-qt{font-size:1.25em;font-weight:600;margin:0 0 .6rem}
+#tka-root .xb-hint{color:var(--mu);font-size:.9em;margin-bottom:.4rem}
+#tka-root .xb-opt{display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;background:var(--card);color:var(--tx);border:2px solid var(--bd);border-radius:14px;padding:.8rem 1rem;margin:.5rem 0;min-height:3.6rem;font-weight:500;font-size:1em}
+#tka-root .xb-opt:hover{background:var(--prl);border-color:var(--pr)}
+#tka-root .xb-opt.on{border-color:var(--pr);background:var(--prl);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+#tka-root .xb-opt .k{width:2.2rem;height:2.2rem;font-size:1rem}
+#tka-root .xb-opt.on .k{background:var(--pr);color:#fff}
+#tka-root .xb-opt .t{flex:1;min-width:0;overflow-wrap:anywhere}
+#tka-root .xb-mj{display:grid;gap:.6rem}
+#tka-root .xb-mjr{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;border:2px solid var(--bd);border-radius:14px;padding:.7rem .9rem;background:var(--card)}
+#tka-root .xb-mjr.done{border-color:var(--pr);background:var(--prl)}
+#tka-root .xb-mjr .t{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+#tka-root .xb-mjr .bt{display:flex;gap:.5rem}
+#tka-root .xb-mjb{background:var(--card);color:var(--tx);border:2px solid var(--bd);min-width:5.5rem}
+#tka-root .xb-mjb:hover{background:var(--prl);border-color:var(--pr)}
+#tka-root .xb-mjb.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+#tka-root .xb-clear{background:none;color:var(--mu);border:0;min-height:36px;padding:.3rem .6rem;font-size:.85em;text-decoration:underline;margin-top:.3rem}
+#tka-root .xb-clear:hover{background:none;color:var(--er)}
+#tka-root .xb-side{min-height:0;overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--sh);padding:1rem;align-self:start;max-height:100%}
+#tka-root .xb-side h3{font-size:1rem;margin:0 0 .6rem;display:flex;justify-content:space-between}
+#tka-root .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}
+#tka-root .nav button{padding:.45rem 0;min-height:42px;background:var(--card);color:var(--tx);border:2px solid var(--bd);border-radius:10px;font-size:.95rem}
+#tka-root .nav button:hover{background:var(--prl);border-color:var(--pr)}
+#tka-root .nav .a{background:var(--pr);color:#fff;border-color:var(--pr)}
+#tka-root .nav .d{background:var(--wa);color:#111;border-color:var(--wa)}
+#tka-root .nav .c{outline:3px solid var(--tx);outline-offset:1px}
+#tka-root .xb-leg{display:grid;gap:.25rem;font-size:.82rem;color:var(--mu);margin:.8rem 0}
+#tka-root .xb-leg i{display:inline-block;width:.85rem;height:.85rem;border-radius:4px;vertical-align:-.1rem;margin-right:.4rem;border:2px solid var(--bd)}
+#tka-root .xb-leg i.a{background:var(--pr);border-color:var(--pr)}
+#tka-root .xb-leg i.d{background:var(--wa);border-color:var(--wa)}
+#tka-root .xb-foot{flex:none;justify-content:center;display:flex;gap:.6rem;align-items:center;background:var(--card);border-top:1px solid var(--bd);padding:.6rem max(1rem,env(safe-area-inset-right)) max(.6rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left))}
+#tka-root .xb-foot button{flex:1;max-width:260px}
+#tka-root .xb-foot .xb-navbtn{display:none}
+#tka-root .xb-foot .sh{display:none}
+#tka-root .xb-foot .sp{flex:1}
+#tka-root .xb-bd{display:none}
+
+/* ---- dialog, overlay, toast ---- */
+#tka-root .xb-modal{position:fixed;inset:0;z-index:50;background:rgba(2,6,23,.62);display:grid;place-items:center;padding:1rem}
+#tka-root .xb-dlg{background:var(--card);color:var(--tx);border-radius:18px;padding:1.4rem;width:100%;max-width:460px;max-height:90vh;overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+#tka-root .xb-dlg h2{margin-top:0}
+#tka-root .xb-miss{display:flex;gap:.35rem;flex-wrap:wrap;margin:.4rem 0 .8rem}
+#tka-root .xb-miss button{min-height:36px;min-width:40px;padding:.2rem .6rem;background:var(--erl);color:var(--er);border:2px solid var(--er);border-radius:10px}
+#tka-root .xb-miss button.d{background:var(--wal);color:var(--wat);border-color:var(--wa)}
+#tka-root .xb-lock{position:fixed;inset:0;z-index:60;background:linear-gradient(160deg,#0B1220,#1E3A8A);display:grid;place-items:center;padding:1rem}
+#tka-root .xb-lock .box{background:var(--card);border-radius:22px;padding:1.8rem;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+#tka-root .xb-lock .box .ic{font-size:3.5rem;line-height:1.1}
+#tka-root .xb-lock .box button{width:100%;margin-top:.6rem}
+#tka-root .xb-lock.vio{background:rgba(127,29,29,.96);animation:tkvio .7s infinite alternate}
+@keyframes tkvio{from{background:rgba(185,28,28,.96)}to{background:rgba(69,10,10,.98)}}
+#tka-root .xb-lock.vio h2{color:var(--er);text-align:center}
+#tka-root .xb-zoom{position:fixed;inset:0;z-index:70;background:rgba(2,6,23,.92);display:grid;place-items:center;padding:1rem;overflow:auto}
+#tka-root .xb-zoom img{max-width:100%;max-height:90vh;background:#fff;border-radius:10px}
+#tka-root .xb-zoom button{position:fixed;top:max(.8rem,env(safe-area-inset-top));right:.8rem}
+.xb-toast{position:fixed;left:50%;bottom:max(5rem,env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#0F172A;color:#fff;padding:.7rem 1.2rem;border-radius:99px;font:600 .95rem system-ui,sans-serif;opacity:0;pointer-events:none;transition:all .25s;z-index:9500;max-width:92vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.xb-toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---- hasil ---- */
+#tka-root .xb-score{display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;justify-content:center}
+#tka-root .xb-ring{position:relative;width:170px;height:170px;flex:none}
+#tka-root .xb-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+#tka-root .xb-ring circle{fill:none;stroke-width:12;stroke-linecap:round}
+#tka-root .xb-ring .bg{stroke:var(--bd)}
+#tka-root .xb-ring .num{position:absolute;inset:0;display:grid;place-items:center;align-content:center;text-align:center}
+#tka-root .xb-ring .num b{font-size:2.8rem;line-height:1}
+#tka-root .xb-ring .num small{color:var(--mu)}
+#tka-root .xb-bars{flex:1 1 260px;display:grid;gap:.7rem;min-width:0}
+#tka-root .xb-bar .l{display:flex;justify-content:space-between;font-size:.88rem;font-weight:600}
+#tka-root .xb-bar .b{height:.65rem;border-radius:99px;background:var(--bd);overflow:hidden}
+#tka-root .xb-bar .b i{display:block;height:100%;background:var(--pr);border-radius:99px}
+#tka-root .xb-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-top:1rem}
+#tka-root .xb-sum div{border-radius:12px;padding:.6rem;text-align:center;background:var(--bg)}
+#tka-root .xb-sum b{display:block;font-size:1.4rem}
+#tka-root .xb-sum .g b{color:var(--ok)}#tka-root .xb-sum .r b{color:var(--er)}#tka-root .xb-sum .y b{color:var(--wat)}
+#tka-root .xb-flt{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem 0 .6rem}
+#tka-root .xb-flt button{min-height:36px;padding:.25rem .8rem;font-size:.9rem}
+
+/* ---- responsif ---- */
+@media(max-width:900px){
+ #tka-root .xb-cols{grid-template-columns:1fr}
+ #tka-root .xb-body{grid-template-columns:minmax(0,1fr);padding:.7rem}
+ #tka-root .xb-split.g{grid-template-columns:1fr}
+ #tka-root .xb-stim{position:static;max-height:14rem}
+ #tka-root .xb-side{position:fixed;left:0;right:0;bottom:0;z-index:40;border-radius:20px 20px 0 0;max-height:72vh;transform:translateY(105%);transition:transform .25s;padding-bottom:max(1rem,env(safe-area-inset-bottom))}
+ #tka-root .xb-side.open{transform:none}
+ #tka-root .xb-bd.on{display:block;position:fixed;inset:0;z-index:39;background:rgba(2,6,23,.5)}
+ #tka-root .nav{grid-template-columns:repeat(6,1fr)}
+ #tka-root .xb-foot .xb-navbtn{display:inline-flex}
+ #tka-root .xb-foot button{max-width:none}
+}
+@media(max-width:640px){
+ #tka-root .xb-head{grid-template-columns:minmax(0,1fr) auto;gap:.5rem .8rem}
+ #tka-root .xb-head .prog{grid-column:1/-1;order:3}
+ #tka-root .xb-hero{padding:1rem}#tka-root .xb-hero .ic{display:none}
+ #tka-root .xb-stats,#tka-root .xb-sum{grid-template-columns:repeat(2,1fr)}
+ #tka-root .xb-foot{gap:.4rem}
+ #tka-root .xb-foot button{padding:.6rem .5rem;font-size:.9rem}
+ #tka-root .xb-foot button .lb{display:none}
+ #tka-root #tk-clock,#tka-root #tk-net .tx{display:none}
+ #tka-root .xb-kiosk{gap:.4rem;padding-left:max(.6rem,env(safe-area-inset-left));padding-right:max(.6rem,env(safe-area-inset-right))}
+ #tka-root .kb-lock{font-size:.78rem}
+ #tka-root .kb-t button{padding:.15rem .5rem}
+ #tka-root .xb-foot .sh{display:inline}
+ #tka-root .xb-mjr .bt{width:100%}
+ #tka-root .xb-mjb{flex:1}
+}
+@media print{#tka-root{display:none!important}}
 
 
         /* ===== Gambar pilihan, panel Pengaturan & panduan Word ===== */
@@ -4927,7 +5145,7 @@ const BANK0={
 /* ================= UTIL ================= */
 const ROOT=document.getElementById('tka-root');
 const sI=v=>typeof safeImg==="function"?safeImg(v):"";
-const qimg=q=>{const m=sI(q.img);return m?`<img class="opt-img" style="max-height:16rem;margin:.5rem 0" src="${m}" alt="Gambar soal">`:""};
+const qimg=q=>{const m=sI(q.img);return m?`<img class="opt-img" style="max-height:16rem;margin:.5rem 0;cursor:zoom-in" src="${m}" alt="Gambar soal" onclick="TKA.zoom(this.src)">`:""};
 const oimg=(q,j)=>{const m=sI(q.oimg&&q.oimg[j]);return m?`<img class="opt-img" src="${m}" alt="Gambar pilihan">`:""};
 const $=s=>ROOT.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -4971,47 +5189,156 @@ const saveBank=()=>{if(!ls.s("tka_bank",{bank:BANK,stim:STIM}))alert("⚠️ Mem
 const save=()=>ls.s("tka_run",S);
 const fmt=ms=>{ms=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(ms/60)).padStart(2,"0")+":"+String(ms%60).padStart(2,"0")};
 
-/* ================= HOME ================= */
+/* ================= UI ala ExamBrowser ================= */
+let zf=+ls.g("tka_fs")||1,RES=null,rf="all",warned={},trap=false,skipFs=false,away=false,vt=null,graceUntil=0,lastInt=0,lastRi=-1,toastT=null,toastEl=null;
+const MAXV=5;
+const applyFs=()=>ROOT.style.setProperty("--fs",zf);
+const clock=()=>"🕒 "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+const netTx=()=>navigator.onLine?'📶 <span class="tx">Tersambung</span>':'⚠️ Offline';
+const cq=()=>gP(S.m,S.p).soal[qx()];
+function xtoast(m){if(!toastEl){toastEl=document.createElement("div");toastEl.className="xb-toast";document.body.appendChild(toastEl)}toastEl.textContent=m;toastEl.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove("on"),3400)}
+function kiosk(locked){
+  return `<div class="xb-kiosk"><span class="kb-lock ${locked?"on":""}">${locked?"🔒 Mode Ujian Aman":"🎯 TKA • Simulasi"}</span><span class="kb-sp"></span><span class="kb-i" id="tk-clock">${clock()}</span><span class="kb-i ${navigator.onLine?"":"bad"}" id="tk-net" title="Jika offline, jawaban tetap tersimpan di perangkat">${netTx()}</span><span class="kb-t">${locked?`<button onclick="TKA.fz(-.1)" aria-label="Perkecil huruf">A−</button><button onclick="TKA.fz(.1)" aria-label="Perbesar huruf">A+</button><button onclick="TKA.fs()" aria-label="Layar penuh">⛶</button>`:`<button onclick="TKA.close()">⬅ Menu utama</button>`}</span></div>`;
+}
+
+/* ---- layar penuh ---- */
+const fsOK=()=>!!(document.fullscreenEnabled||document.webkitFullscreenEnabled)&&!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+const inFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function enterFs(){try{pause(3000);const d=document.documentElement,p=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+function exitFs(){try{if(inFs())(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}}
+function fsCheck(){
+  const old=$("#tk-fs");
+  if(!(scr==="exam"&&!ROOT.hidden&&fsOK()&&!inFs()&&!skipFs)){if(old)old.remove();return}
+  if(old)return;
+  const d=document.createElement("div");d.id="tk-fs";d.className="xb-lock";
+  d.innerHTML=`<div class="box"><div class="ic">🔒</div><h2 class="c">Mode Ujian Aman</h2><p class="mu">Ujian berjalan dalam layar penuh. Ketuk tombol di bawah untuk melanjutkan. Waktu tetap berjalan.</p><button onclick="TKA.fsgo()">⛶ Masuk Layar Penuh</button><button id="tk-fsk" class="sec" style="display:none" onclick="TKA.fsskip()">Layar penuh tidak bisa? Lanjutkan saja</button></div>`;
+  ROOT.appendChild(d);
+}
+
+/* ---- deteksi keluar halaman (anti false-positive, selaras dengan ujian utama) ---- */
+const pause=ms=>{graceUntil=Math.max(graceUntil,Date.now()+(ms||4000))};
+["touchstart","pointerdown","click","keydown","input","scroll"].forEach(ev=>window.addEventListener(ev,()=>{lastInt=Date.now()},{passive:true,capture:true}));
+const active=()=>scr==="exam"&&!!S&&!ROOT.hidden&&!away;
+function reallyAway(){if(document.hidden)return true;if(Date.now()-lastInt<1200)return false;return !document.hasFocus()}
+function sched(){
+  if(!active()||vt)return;
+  vt=setTimeout(()=>{vt=null;if(!active()||Date.now()<graceUntil)return;if(reallyAway())strike()},1500);
+}
+function back(){if(vt){clearTimeout(vt);vt=null}pause(1500)}
+function strike(){
+  if(!active())return;
+  away=true;S.vio=(S.vio||0)+1;save();
+  if(S.vio>MAXV){finish("vio");vOverlay("Pelanggaran ke-"+S.vio+". Ujian dikumpulkan otomatis.",true);return}
+  vOverlay(`Kamu meninggalkan halaman ujian (${S.vio}/${MAXV}). ${S.vio===MAXV?"Ini peringatan TERAKHIR! Keluar sekali lagi, ujian otomatis dikumpulkan.":"Sisa kesempatan: "+(MAXV-S.vio)+"."}`,false);
+}
+function vOverlay(msg,final){
+  const o=$("#tk-vio");if(o)o.remove();
+  const d=document.createElement("div");d.id="tk-vio";d.className="xb-lock vio";
+  d.innerHTML=`<div class="box"><div class="ic">🚨</div><h2 class="c">PERINGATAN!</h2><p><b>${esc(msg)}</b></p><p class="mu">Dilarang keluar atau berpindah aplikasi saat ujian berlangsung.</p><button class="er" onclick="TKA.${final?"vres":"vok"}()">${final?"Lihat hasil":"Saya mengerti, lanjutkan ujian"}</button></div>`;
+  ROOT.appendChild(d);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
+}
+document.addEventListener("visibilitychange",()=>{if(ROOT.hidden)return;if(document.hidden)sched();else{back();tick()}});
+window.addEventListener("blur",()=>{if(!ROOT.hidden)sched()});
+window.addEventListener("focus",back);
+window.addEventListener("pageshow",()=>pause(1500));
+window.addEventListener("resize",()=>pause(1500));
+window.addEventListener("orientationchange",()=>pause(2500));
+["fullscreenchange","webkitfullscreenchange"].forEach(ev=>document.addEventListener(ev,()=>{pause(2500);if(!ROOT.hidden&&scr==="exam")fsCheck()}));
+
+/* ---- pembatasan saat ujian ---- */
+const examOn=()=>!ROOT.hidden&&scr==="exam"&&!!S;
+["contextmenu","copy","cut","paste","dragstart","selectstart"].forEach(ev=>document.addEventListener(ev,e=>{if(examOn())e.preventDefault()},true));
+document.addEventListener("keydown",e=>{
+  if(!examOn())return;
+  const k=(e.key||"").toLowerCase(),c=e.ctrlKey||e.metaKey;
+  if(k==="f12"||k==="printscreen"||(c&&e.shiftKey&&["i","j","c","s"].includes(k))||(c&&["u","s","p","c","x","v","a"].includes(k))){e.preventDefault();return}
+  if($("#tk-mdl")||$("#tk-fs")||$("#tk-vio")||$("#tk-zoom")){if(k==="escape")TKA.zx();return}
+  if(c||e.altKey)return;
+  if(k==="arrowright"){e.preventDefault();go(S.cur+1)}
+  else if(k==="arrowleft"){e.preventDefault();go(S.cur-1)}
+  else if(k==="r"){dbt()}
+  else if(/^[a-h]$/.test(k)){
+    const q=cq();if(q.ty==="mj")return;
+    const od=ordOf(qx(),q.o.length),d=L.toLowerCase().indexOf(k);
+    if(d>=0&&d<od.length){q.ty==="pg"?setPG(od[d]):setPK(od[d])}
+  }
+},true);
+window.addEventListener("popstate",()=>{if(examOn()){try{history.pushState({tka:1},"")}catch(e){}xtoast("ℹ️ Tombol kembali dinonaktifkan. Gunakan tombol Kumpulkan bila sudah selesai.")}});
+window.addEventListener("beforeunload",e=>{if(scr==="exam"&&S){e.preventDefault();e.returnValue=""}});
+
+/* ---- pemeriksaan perangkat ---- */
+function sysRows(){
+  let st=true;try{localStorage.setItem("_tk","1");localStorage.removeItem("_tk")}catch(e){st=false}
+  return [
+    [fsOK(),"Layar penuh","Didukung","Tidak didukung (ujian tetap bisa)"],
+    [navigator.onLine,"Koneksi","Tersambung","Offline (jawaban tersimpan di perangkat)"],
+    [st,"Penyimpanan","Siap menyimpan jawaban","Tidak tersedia, jawaban tidak bisa dipulihkan"],
+    [innerWidth>=340,"Ukuran layar",innerWidth+" px","Layar terlalu sempit"]
+  ].map(([ok,l,y,n])=>`<li><span class="d ${ok?"":"w"}">${ok?"✓":"!"}</span><div><b>${l}</b><br><span class="mu">${ok?y:n}</span></div></li>`).join("");
+}
+
+/* ================= BERANDA (LOBI) ================= */
 function keepIn(){const n=$("#tk-nm"),k=$("#tk-kl");if(n)sessionStorage.tkaN=n.value;if(k)sessionStorage.tkaK=k.value}
 function home(){
-  const run=ls.g("tka_run"),hist=(ls.g("tka_results")||[]).slice(-5).reverse();
-  const live=run&&run.end>Date.now()&&BANK[run.m];
+  scr="home";
+  const rn=ls.g("tka_run"),hist=(ls.g("tka_results")||[]).slice(-5).reverse();
+  const live=rn&&rn.end>Date.now()&&BANK[rn.m]&&PS(rn.m).some(p=>p.id===(rn.p||PS(rn.m)[0].id));
   const P=curPk();
-  ROOT.innerHTML=`<div class="wrap"><div class="card">
-  <button class="sec" style="margin-bottom:.7rem" onclick="TKA.close()">⬅ Menu utama</button><br><span class="chip">Tes Kemampuan Akademik • SD/MI</span>
-  <h1>🎯 Simulasi TKA Kelas 6</h1>
-  <p class="mu">Pilih mata uji dan paket soal. Waktu pengerjaan mengikuti paket yang dipilih. Kamu bisa berpindah soal, menandai ragu-ragu, dan mengubah jawaban sebelum waktu habis.</p>
-  ${live?`<div class="card" style="background:var(--wal);margin:.8rem 0"><b>Ada ujian yang belum selesai</b><div class="mu">${esc(run.name)} • ${esc(BANK[run.m].nama)} • ${esc(gP(run.m,run.p).nama)} • sisa ${fmt(run.end-Date.now())}</div><button class="warn" style="margin-top:.6rem" onclick="TKA.resume()">▶ Lanjutkan Ujian</button></div>`:""}
-  <h2>1. Pilih mata uji</h2><div class="row">
-  ${Object.keys(BANK).map(k=>`<button class="mapel ${pick===k?"on":""}" onclick="TKA.sel('${k}')"><div class="ic">${BANK[k].ikon}</div><b>${BANK[k].nama}</b><div class="mu">${PS(k).length} paket soal</div></button>`).join("")}</div>
-  <h2 style="margin-top:1.2rem">2. Pilih paket</h2><div class="row">
-  ${PS(pick).map(p=>`<button class="mapel ${p.id===P.id?"on":""}" onclick="TKA.selp('${p.id}')"><b>📦 ${esc(p.nama)}</b><div class="mu">${p.soal.length} soal • ${p.menit} menit</div></button>`).join("")}</div>
-  <h2 style="margin-top:1.2rem">3. Isi data</h2><div class="row"><input id="tk-nm" list="tk-swl" autocomplete="off" oninput="TKA.swpick(this.value)" placeholder="Nama lengkap" value="${esc(sessionStorage.tkaN||"")}"><input id="tk-kl" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}">${swList()}</div>
-  <button style="width:100%;margin-top:1rem;font-size:1.1rem" onclick="TKA.brief()">Lanjut ➜</button><div style="text-align:center;margin-top:.8rem"><button class="sec" onclick="TKA.adm()">⚙️ Pengaturan Guru</button></div></div>
-  ${hist.length?`<div class="card" style="margin-top:1rem"><h2>Riwayat terakhir</h2>${hist.map(h=>`<div class="rv ${h.nilai>=70?"ok":"no"}"><b>${esc(h.name)}</b> • ${esc(lbl(h))} • <b>${h.nilai}</b> <span class="mu">(${h.skor}/${h.max}) • ${new Date(h.tgl).toLocaleString("id-ID")}</span></div>`).join("")}</div>`:""}</div>`;
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby">
+  <div class="xb-hero"><div><span class="chip">Tes Kemampuan Akademik • SD/MI</span><h1>Simulasi TKA Kelas 6</h1><p>Pilih mata uji dan paket soal, isi data diri, lalu mulai. Kamu bisa berpindah soal, menandai ragu-ragu, dan mengubah jawaban sebelum waktu habis.</p></div><div class="ic">🎯</div></div>
+  ${live?`<div class="xb-resume"><div><b>⏳ Ada ujian yang belum selesai</b><div class="mu">${esc(rn.name)} • ${esc(BANK[rn.m].nama)} • ${esc(gP(rn.m,rn.p).nama)} • sisa <b>${fmt(rn.end-Date.now())}</b>${rn.vio?` • pelanggaran ${rn.vio}/${MAXV}`:""}</div></div><button class="warn" onclick="TKA.resume()">▶ Lanjutkan Ujian</button></div>`:""}
+  <div class="xb-cols"><div>
+    <section class="xb-sec"><h2><span class="n">1</span>Pilih mata uji</h2><div class="xb-grid">
+    ${Object.keys(BANK).map(k=>`<button class="xb-pick ${pick===k?"on":""}" onclick="TKA.sel('${k}')"><div class="ic">${BANK[k].ikon}</div><b>${esc(BANK[k].nama)}</b><small>${PS(k).length} paket soal</small></button>`).join("")}</div></section>
+    <section class="xb-sec"><h2><span class="n">2</span>Pilih paket soal</h2><div class="xb-grid">
+    ${PS(pick).map(p=>`<button class="xb-pick ${p.id===P.id?"on":""}" onclick="TKA.selp('${p.id}')"><div class="ic">📦</div><b>${esc(p.nama)}</b><small>${p.soal.length} soal • ${p.menit} menit</small></button>`).join("")}</div></section>
+    <section class="xb-sec"><h2><span class="n">3</span>Isi data diri</h2><div class="row">
+    <div><label for="tk-nm" style="margin-top:0">Nama lengkap</label><input id="tk-nm" list="tk-swl" autocomplete="off" oninput="TKA.swpick(this.value)" placeholder="Nama lengkap" value="${esc(sessionStorage.tkaN||"")}"></div>
+    <div><label for="tk-kl" style="margin-top:0">Kelas</label><input id="tk-kl" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}"></div>${swList()}</div></section>
+    <button class="xb-cta" onclick="TKA.brief()">Lanjut ➜</button>
+  </div><aside>
+    <section class="xb-sec"><h2>🛡️ Pemeriksaan perangkat</h2><ul class="xb-list">${sysRows()}</ul></section>
+    ${hist.length?`<section class="xb-sec"><h2>🕘 Riwayat terakhir</h2>${hist.map(h=>`<div class="xb-hist ${h.nilai>=70?"ok":"no"}"><b>${esc(h.name)}</b> • <b>${h.nilai}</b><br><span class="mu">${esc(lbl(h))} • ${new Date(h.tgl).toLocaleString("id-ID")}${h.vio?` • ⚠️ ${h.vio} pelanggaran`:""}</span></div>`).join("")}</section>`:""}
+    <button class="sec" style="width:100%" onclick="TKA.adm()">⚙️ Pengaturan Guru</button>
+  </aside></div></div></main></div>`;
+  applyFs();
 }
 function brief(){
   const nE=$("#tk-nm"),kE=$("#tk-kl"),n=(nE?nE.value:(sessionStorage.tkaN||"")).trim(),k=(kE?kE.value:(sessionStorage.tkaK||"")).trim();
-  if(!n){alert("Isi nama lengkap dulu ya.");return}
+  if(!n){xtoast("Isi nama lengkap dulu ya.");if(nE)nE.focus();return}
   sessionStorage.tkaN=n;sessionStorage.tkaK=k;
   const B=BANK[pick],P=curPk();
-  if(!P.soal.length){alert("Soal untuk paket ini belum tersedia.");return}
+  if(!P.soal.length){xtoast("Soal untuk paket ini belum tersedia.");return}
+  scr="brief";
   const cf=CF(),acak=[cf.sq?"soal":"",cf.so?"pilihan jawaban":""].filter(Boolean).join(" dan ");
-  ROOT.innerHTML=`<div class="wrap"><div class="card"><h1>${B.ikon} ${B.nama}</h1>
-  <p class="mu"><span class="chip">📦 ${esc(P.nama)}</span> ${esc(n)} • Kelas ${esc(k)} • ${P.soal.length} soal • ${P.menit} menit</p>
-  <h2>Tiga bentuk soal</h2>
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby narrow"><div class="card">
+  <span class="chip">📦 ${esc(P.nama)}</span><h1 style="margin-top:.5rem">${B.ikon} ${esc(B.nama)}</h1>
+  <p class="mu">${esc(n)} • Kelas ${esc(k||"-")}</p>
+  <div class="xb-stats"><div class="xb-stat"><b>${P.soal.length}</b><small>Soal</small></div><div class="xb-stat"><b>${P.menit}</b><small>Menit</small></div><div class="xb-stat"><b>${P.soal.filter(q=>q.s).length}</b><small>Soal grup</small></div><div class="xb-stat"><b>≥70</b><small>Tuntas</small></div></div>
+  <h2>Aturan ujian</h2><ul class="xb-list">
+   <li><span class="d">1</span><div>Ujian berjalan di <b>layar penuh</b>. Jangan keluar atau berpindah aplikasi.</div></li>
+   <li><span class="d w">2</span><div>Setiap keluar halaman dicatat sebagai pelanggaran. Kamu punya <b>${MAXV} kesempatan</b>; pelanggaran ke-${MAXV+1} membuat ujian dikumpulkan otomatis.</div></li>
+   <li><span class="d r">3</span><div>Waktu <b>terus berjalan</b> walau halaman tertutup. Jawaban tersimpan otomatis dan bisa dilanjutkan bila halaman termuat ulang.</div></li>
+   <li><span class="d">4</span><div>Salin-tempel, klik kanan, dan tombol kembali dinonaktifkan.</div></li>
+   <li><span class="d r">5</span><div>Gunakan <b>Ragu-ragu</b> untuk menandai soal. Saat waktu habis, jawaban dikumpulkan sendiri.${acak?` 🔀 Urutan ${acak} diacak untuk setiap siswa.`:""}</div></li>
+  </ul>
+  <h2 style="margin-top:1.2rem">Tiga bentuk soal</h2>
   <div class="opt"><span class="k">A</span><div><b>Pilihan ganda sederhana</b><br>Pilih <u>satu</u> jawaban yang benar.</div></div>
   <div class="opt sq"><span class="k">✓</span><div><b>Pilihan ganda kompleks</b><br>Pilih <u>lebih dari satu</u> jawaban. Tiap jawaban benar bernilai 1; pilihan salah mengurangi 1.</div></div>
   <div class="opt"><span class="k">⇄</span><div><b>Menjodohkan (Benar/Salah)</b><br>Tentukan pilihan untuk <u>setiap</u> pernyataan. Tiap pasangan yang tepat bernilai 1.</div></div>
-  <p class="mu">Soal grup memakai satu bacaan/data yang sama. Waktu terus berjalan dan jawaban tersimpan otomatis. Saat waktu habis, ujian dikumpulkan sendiri.${acak?` 🔀 Urutan ${acak} diacak untuk setiap siswa.`:""}</p>
-  <div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button><button onclick="TKA.start()">Mulai Ujian ▶</button></div></div></div>`;
+  <p class="mu" style="font-size:.88rem">Pintasan papan ketik: ← → pindah soal, A–H pilih jawaban, R tandai ragu-ragu.</p>
+  <label class="xb-agree"><input type="checkbox" onchange="TKA.chk(this.checked)"><span>Saya sudah membaca dan menyetujui aturan ujian di atas.</span></label>
+  <div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button><button id="tk-go" class="ok" disabled onclick="TKA.start()">Mulai Ujian ▶</button></div>
+  </div></div></main></div>`;
 }
 
 /* ================= UJIAN ================= */
 function start(){
   const P=curPk(),o=mkOrder(P,CF());
-  S={m:pick,p:P.id,name:sessionStorage.tkaN,cls:sessionStorage.tkaK,ans:P.soal.map(init),doubt:[],cur:0,end:Date.now()+P.menit*60000,qo:o.qo,oo:o.oo};
-  save();run();
+  S={m:pick,p:P.id,name:sessionStorage.tkaN,cls:sessionStorage.tkaK,ans:P.soal.map(init),doubt:[],cur:0,t0:Date.now(),end:Date.now()+P.menit*60000,qo:o.qo,oo:o.oo,vio:0};
+  RES=null;rf="all";skipFs=false;away=false;lastRi=-1;
+  if(!save())xtoast("⚠️ Penyimpanan perangkat penuh atau nonaktif. Jawaban tidak bisa dipulihkan bila halaman dimuat ulang.");
+  enterFs();begin();
 }
 function resume(){
   S=ls.g("tka_run");if(!S)return;
@@ -5019,75 +5346,168 @@ function resume(){
   if(!S.p)S.p=PS(S.m)[0].id;
   const P=PS(S.m).find(p=>p.id===S.p);
   if(!P||P.soal.length!==S.ans.length){alert("Paket soal ini sudah diubah atau dihapus, jadi ujian tidak bisa dilanjutkan.");ls.d("tka_run");S=null;home();return}
-  run();
+  if(S.end<=Date.now()){finish("time");return}
+  S.cur=Math.min(S.cur||0,P.soal.length-1);S.vio=S.vio||0;
+  RES=null;skipFs=false;away=false;lastRi=-1;
+  enterFs();begin();
 }
-function run(){scr="exam";clearInterval(tmr);tmr=setInterval(tick,1000);render()}
+function begin(){
+  scr="exam";const l=S.end-Date.now();warned={m5:l<=300000,m1:l<=60000};pause(4000);
+  if(!trap){trap=true;try{history.pushState({tka:1},"")}catch(e){}}
+  startTimer();render();
+}
+function startTimer(){clearInterval(tmr);tmr=setInterval(tick,1000)}
 function tick(){
+  if(ROOT.hidden)return;
+  const c=$("#tk-clock"),n=$("#tk-net");
+  if(c)c.textContent=clock();
+  if(n){const h=netTx();if(n.innerHTML!==h)n.innerHTML=h;n.classList.toggle("bad",!navigator.onLine)}
+  if(scr!=="exam"||!S)return;
   const left=S.end-Date.now(),e=$("#tk-tm");
-  if(e){e.textContent=fmt(left);e.classList.toggle("low",left<5*60000)}
-  if(left<=0)finish(true);
+  if(e){e.textContent=fmt(left);e.parentNode.classList.toggle("low",left<5*60000)}
+  if(left<=0){finish("time");return}
+  if(left<=60000&&!warned.m1){warned.m1=true;warned.m5=true;xtoast("⏰ Sisa waktu kurang dari 1 menit!")}
+  else if(left<=300000&&!warned.m5){warned.m5=true;xtoast("⏰ Sisa waktu 5 menit.")}
 }
 function render(){
-  const B=BANK[S.m],P=gP(S.m,S.p),qs=P.soal,i=S.cur,qi=qx(),q=qs[qi],a=S.ans[qi],last=i===qs.length-1;
+  const B=BANK[S.m],P=gP(S.m,S.p),qs=P.soal,n=qs.length,i=S.cur,qi=qx(),q=qs[qi],a=S.ans[qi],last=i===n-1;
   const od=ordOf(qi,q.ty==="mj"?q.p.length:q.o.length);
-  let body="";
-  if(q.ty==="pg")body=od.map((j,d)=>`<div class="opt ${a===j?"on":""}" onclick="TKA.setPG(${j})"><span class="k">${L[d]}</span><span>${esc(q.o[j])}${oimg(q,j)}</span></div>`).join("");
-  if(q.ty==="pk")body=`<div class="mu">Pilih lebih dari satu jawaban.</div>`+od.map((j,d)=>`<div class="opt sq ${a.includes(j)?"on":""}" onclick="TKA.setPK(${j})"><span class="k">${a.includes(j)?"✓":L[d]}</span><span>${esc(q.o[j])}${oimg(q,j)}</span></div>`).join("");
-  if(q.ty==="mj")body=`<table><tr><th>Pernyataan</th>${q.h.map(h=>`<th>${esc(h)}</th>`).join("")}</tr>${od.map(r=>{const p=q.p[r];return `<tr><td>${esc(p.t)}</td>${q.h.map((h,c)=>`<td><button class="mj ${a[r]===c?"on":""}" onclick="TKA.setMJ(${r},${c})">${a[r]===c?"●":"○"}</button></td>`).join("")}</tr>`}).join("")}</table>`;
-  const nav=qs.map((_,n)=>{const x=S.qo?S.qo[n]:n;return `<button class="${S.doubt.includes(x)?"d":done(qs[x],S.ans[x])?"a":""} ${n===i?"c":""}" onclick="TKA.go(${n})">${n+1}</button>`}).join("");
-  ROOT.innerHTML=`<div class="bar"><b>${B.ikon} ${esc(S.name)} • ${esc(P.nama)}</b><button onclick="TKA.fz(-.1)">A−</button><button onclick="TKA.fz(.1)">A+</button><button onclick="TKA.fs()">⛶</button><span id="tk-tm">${fmt(S.end-Date.now())}</span></div>
-  <div class="wrap"><div class="main"><div class="card">
-   <div class="mu" style="margin-bottom:.5rem"><span class="chip">Soal ${i+1} dari ${qs.length}</span> ${q.s?'<span class="chip" style="background:var(--wal);color:#92400E">Soal grup</span>':""} ${S.doubt.includes(qi)?"🟡 Ragu-ragu":""}</div>
-   <div class="qa ${q.s?"g":""}">${q.s?`<div class="stim">${esc(STIM[q.s])}</div>`:""}<div><h2 style="font-weight:600">${esc(q.t)}</h2>${qimg(q)}${body}</div></div>
-   <div class="foot"><button class="sec" ${i?"":"disabled"} onclick="TKA.go(${i-1})">⬅ Sebelumnya</button><button class="warn" onclick="TKA.dbt()">${S.doubt.includes(qi)?"Batal Ragu":"Ragu-ragu"}</button>${last?`<button onclick="TKA.confirmEnd()">Selesai ✔</button>`:`<button onclick="TKA.go(${i+1})">Selanjutnya ➜</button>`}</div>
-  </div><div class="card"><b>Daftar soal</b><div class="nav" style="margin-top:.6rem">${nav}</div><div class="mu" style="font-size:.8rem;margin-top:.7rem">🟦 dijawab • 🟨 ragu • ⬜ kosong</div><button style="width:100%;margin-top:.8rem" onclick="TKA.confirmEnd()">Kumpulkan</button></div></div></div>`;
+  let body="",hint="";
+  if(q.ty==="pg"){
+    hint="Pilih satu jawaban yang benar.";
+    body=od.map((j,d)=>`<button type="button" class="xb-opt ${a===j?"on":""}" role="radio" aria-checked="${a===j}" onclick="TKA.setPG(${j})"><span class="k">${L[d]}</span><span class="t">${esc(q.o[j])}${oimg(q,j)}</span></button>`).join("");
+  }else if(q.ty==="pk"){
+    hint="Pilih lebih dari satu jawaban.";
+    body=od.map((j,d)=>`<button type="button" class="xb-opt sq ${a.includes(j)?"on":""}" role="checkbox" aria-checked="${a.includes(j)}" onclick="TKA.setPK(${j})"><span class="k">${a.includes(j)?"✓":L[d]}</span><span class="t">${esc(q.o[j])}${oimg(q,j)}</span></button>`).join("");
+  }else{
+    hint="Tentukan pilihan untuk setiap pernyataan.";
+    body=`<div class="xb-mj">${od.map(r=>{const p=q.p[r];return `<div class="xb-mjr ${a[r]!==null?"done":""}"><div class="t">${esc(p.t)}</div><div class="bt">${q.h.map((h,c)=>`<button type="button" class="xb-mjb ${a[r]===c?"on":""}" onclick="TKA.setMJ(${r},${c})">${esc(h)}</button>`).join("")}</div></div>`}).join("")}</div>`;
+  }
+  const ord=S.qo||qs.map((_,x)=>x);
+  let na=0,nd=0;ord.forEach(x=>{if(done(qs[x],S.ans[x]))na++;if(S.doubt.includes(x))nd++});
+  const nav=ord.map((x,k)=>`<button class="${S.doubt.includes(x)?"d":done(qs[x],S.ans[x])?"a":""} ${k===i?"c":""}" onclick="TKA.go(${k})" aria-label="Soal ${k+1}">${k+1}</button>`).join("");
+  const left=S.end-Date.now(),tn={pg:"Pilihan ganda",pk:"PG kompleks",mj:"Menjodohkan"}[q.ty],dbt=S.doubt.includes(qi);
+  const old=$(".xb-qs"),sc=old&&lastRi===i?old.scrollTop:0;lastRi=i;
+  ROOT.innerHTML=`<div class="xb exam">${kiosk(true)}
+  <div class="xb-head"><div class="who"><span class="av">${esc((S.name||"?").trim().charAt(0).toUpperCase())}</span><div><b>${esc(S.name)}</b><small>Kelas ${esc(S.cls||"-")} • ${B.ikon} ${esc(B.nama)} • ${esc(P.nama)}</small></div></div>
+   <div class="prog"><div class="pt"><span>Terjawab <b>${na}</b> / ${n}</span><span>${nd?`🚩 ${nd} ragu`:""}${S.vio?` ⚠️ ${S.vio}/${MAXV}`:""}</span></div><div class="pb"><i style="width:${Math.round(na/n*100)}%"></i></div></div>
+   <div class="tm ${left<300000?"low":""}">⏱ <span id="tk-tm">${fmt(left)}</span></div></div>
+  <div class="xb-body"><section class="xb-qs"><article class="xb-q">
+   <div class="xb-qmeta"><span class="chip">Soal ${i+1} dari ${n}</span><span class="chip">${tn}</span>${q.s?'<span class="chip wa">Soal grup</span>':""}${dbt?'<span class="chip wa">🚩 Ragu-ragu</span>':""}</div>
+   <div class="xb-split ${q.s?"g":""}">${q.s?`<aside class="xb-stim"><div class="lb">📄 Bacaan / Data</div>${esc(STIM[q.s])}</aside>`:""}
+    <div class="xb-qb"><h2 class="xb-qt">${esc(q.t)}</h2>${qimg(q)}<div class="xb-hint">${hint}</div>${body}${done(q,a)?`<button type="button" class="xb-clear" onclick="TKA.clrAns()">✖ Hapus jawaban</button>`:""}</div></div>
+  </article></section>
+  <aside class="xb-side" id="tk-side"><h3><span>Daftar Soal</span><span class="mu" style="font-weight:600">${na}/${n}</span></h3><div class="nav">${nav}</div>
+   <div class="xb-leg"><div><i class="a"></i>Dijawab (${na})</div><div><i class="d"></i>Ragu-ragu (${nd})</div><div><i></i>Kosong (${n-na})</div></div>
+   <button class="ok" style="width:100%" onclick="TKA.confirmEnd()">✔ Kumpulkan Jawaban</button></aside></div>
+  <div class="xb-bd" id="tk-bd" onclick="TKA.side()"></div>
+  <footer class="xb-foot"><button class="sec" ${i?"":"disabled"} onclick="TKA.go(${i-1})">⬅ <span class="lb">Sebelumnya</span></button><button class="warn" aria-label="Tandai ragu-ragu" onclick="TKA.dbt()">🚩 <span class="lb">${dbt?"Batal ragu":"Ragu-ragu"}</span></button><button class="sec xb-navbtn" onclick="TKA.side()">☰ ${i+1}/${n}</button>${last?`<button class="ok" onclick="TKA.confirmEnd()">Selesai ✔</button>`:`<button onclick="TKA.go(${i+1})"><span class="lb">Selanjutnya</span><span class="sh">Lanjut</span> ➜</button>`}</footer></div>`;
+  const nq=$(".xb-qs");if(nq)nq.scrollTop=sc;
+  applyFs();fsCheck();
 }
-function go(n){S.cur=n;save();render();ROOT.scrollTo(0,0)}
+function go(k){const n=gP(S.m,S.p).soal.length;if(k<0||k>=n)return;S.cur=k;save();render()}
 function setPG(j){S.ans[qx()]=j;save();render()}
 function setPK(j){const a=S.ans[qx()],x=a.indexOf(j);x<0?a.push(j):a.splice(x,1);save();render()}
 function setMJ(r,c){S.ans[qx()][r]=c;save();render()}
+function clrAns(){S.ans[qx()]=init(cq());save();render()}
 function dbt(){const k=qx(),x=S.doubt.indexOf(k);x<0?S.doubt.push(k):S.doubt.splice(x,1);save();render()}
-let zf=1;function fz(d){zf=Math.min(1.5,Math.max(.8,zf+d));document.documentElement.style.fontSize=(16*zf)+"px"}
-function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+function fz(d){zf=Math.min(1.6,Math.max(.85,Math.round((zf+d)*100)/100));ls.s("tka_fs",zf);applyFs()}
+function fs(){if(inFs()){skipFs=true;exitFs()}else{skipFs=false;enterFs()}}
 function confirmEnd(){
-  const B=gP(S.m,S.p),n=B.soal.filter((q,i)=>done(q,S.ans[i])).length,m=document.createElement("div");
-  m.className="modal";m.id="tk-mdl";
-  m.innerHTML=`<div class="card"><h2>Kumpulkan jawaban?</h2><p>Terjawab <b>${n}</b> dari ${B.soal.length} soal.${n<B.soal.length?` <b style="color:var(--er)">${B.soal.length-n} soal masih kosong.</b>`:""}${S.doubt.length?` ${S.doubt.length} soal ditandai ragu-ragu.`:""}</p><div class="foot"><button class="sec" onclick="TKA.cm()">Periksa lagi</button><button onclick="TKA.finish()">Ya, kumpulkan</button></div></div>`;
+  if($("#tk-mdl"))return;
+  const P=gP(S.m,S.p),qs=P.soal,ord=S.qo||qs.map((_,x)=>x),empty=[],dbts=[];
+  ord.forEach((x,k)=>{if(!done(qs[x],S.ans[x]))empty.push(k);if(S.doubt.includes(x))dbts.push(k)});
+  const chips=(arr,c)=>arr.length?`<div class="xb-miss">${arr.map(k=>`<button class="${c}" onclick="TKA.jump(${k})">${k+1}</button>`).join("")}</div>`:"";
+  const m=document.createElement("div");m.className="xb-modal";m.id="tk-mdl";
+  m.innerHTML=`<div class="xb-dlg"><h2>Kumpulkan jawaban?</h2><p>Terjawab <b>${qs.length-empty.length}</b> dari ${qs.length} soal.</p>
+  ${empty.length?`<p style="color:var(--er);margin-bottom:0"><b>${empty.length} soal masih kosong</b> (ketuk untuk membuka):</p>${chips(empty,"")}`:""}
+  ${dbts.length?`<p style="margin-bottom:0"><b>${dbts.length} soal</b> ditandai ragu-ragu:</p>${chips(dbts,"d")}`:""}
+  <p class="mu" style="font-size:.88rem">Setelah dikumpulkan, jawaban tidak bisa diubah.</p>
+  <div class="foot"><button class="sec" onclick="TKA.cm()">Periksa lagi</button><button class="ok" onclick="TKA.finish()">Ya, kumpulkan</button></div></div>`;
   ROOT.appendChild(m);
 }
 
 /* ================= HASIL ================= */
+const stOf=(q,a)=>{if(!done(q,a))return"kos";const p=pts(q,a),m=maxP(q);return p>=m?"ok":p>0?"par":"no"};
 function finish(auto){
-  clearInterval(tmr);
+  if(!S||scr==="result")return;
+  scr="result";away=false;if(vt){clearTimeout(vt);vt=null}
   const B=BANK[S.m],P=gP(S.m,S.p),qs=P.soal;let sk=0,mx=0;const per={pg:[0,0],pk:[0,0],mj:[0,0]};
   qs.forEach((q,i)=>{const p=pts(q,S.ans[i]),m=maxP(q);sk+=p;mx+=m;per[q.ty][0]+=p;per[q.ty][1]+=m});
-  const nilai=Math.round(sk/mx*100);
-  const r={name:S.name,cls:S.cls,m:S.m,p:P.id,pn:P.nama,skor:+sk.toFixed(1),max:mx,nilai,tgl:Date.now(),auto:!!auto};
-  ls.s("tka_results",(ls.g("tka_results")||[]).concat(r));ls.d("tka_run");
-  const d=$("#tk-mdl");if(d)d.remove();
-  scr="result";
+  const nilai=mx?Math.round(sk/mx*100):0;
+  const dur=Math.max(0,Math.min(Date.now(),S.end)-(S.t0||(S.end-P.menit*60000)));
+  const r={name:S.name,cls:S.cls,m:S.m,p:P.id,pn:P.nama,skor:+sk.toFixed(1),max:mx,nilai,tgl:Date.now(),auto:!!auto,vio:S.vio||0,dur};
+  if(!ls.s("tka_results",(ls.g("tka_results")||[]).concat(r)))xtoast("⚠️ Hasil tidak bisa disimpan di perangkat ini (memori penuh).");
+  ls.d("tka_run");
+  ["#tk-mdl","#tk-fs","#tk-vio"].forEach(s=>{const d=$(s);if(d)d.remove()});
+  skipFs=true;exitFs();
+  RES={r,per,auto};
+  showResult();
+}
+function showResult(){
+  const{r,per,auto}=RES,B=BANK[S.m],P=gP(S.m,S.p),qs=P.soal,ord=S.qo||qs.map((_,i)=>i);
   const dp=(qi,j)=>{const o=S.oo&&S.oo[qi];return o?o.indexOf(j):j};
   const lt=(qi,j)=>L[dp(qi,j)];
   const srt=(qi,arr)=>arr.slice().sort((x,y)=>dp(qi,x)-dp(qi,y));
   const key=(q,qi)=>q.ty==="pg"?`${lt(qi,q.a)}. ${q.o[q.a]||"(gambar)"}`:q.ty==="pk"?srt(qi,q.ks).map(k=>`${lt(qi,k)}. ${q.o[k]||"(gambar)"}`).join("; "):q.p.map(p=>`${p.t} → ${q.h[p.k]}`).join("; ");
   const mine=(q,a,qi)=>!done(q,a)?"(tidak dijawab)":q.ty==="pg"?`${lt(qi,a)}. ${q.o[a]||"(gambar)"}`:q.ty==="pk"?srt(qi,a).map(k=>`${lt(qi,k)}. ${q.o[k]||"(gambar)"}`).join("; "):q.p.map((p,i)=>`${p.t} → ${a[i]===null?"-":q.h[a[i]]}`).join("; ");
   const nm={pg:"Pilihan ganda",pk:"PG kompleks",mj:"Menjodohkan"};
-  const ord=S.qo||qs.map((_,i)=>i);
-  ROOT.innerHTML=`<div class="wrap"><div class="card" style="text-align:center">${auto?`<span class="chip" style="background:var(--wal)">⏰ Waktu habis, jawaban dikumpulkan otomatis</span>`:""}
-  <h2 class="c">${esc(S.name)} • Kelas ${esc(S.cls)}</h2><div class="mu">${esc(B.nama)} • ${esc(P.nama)}</div>
-  <div class="big" style="margin:.8rem 0">${nilai}</div><div class="mu">Skor ${r.skor} dari ${mx}</div>
-  <div class="row" style="margin-top:1rem">${Object.keys(per).filter(k=>per[k][1]).map(k=>`<div class="card" style="background:var(--prl)"><b>${nm[k]}</b><div>${+per[k][0].toFixed(1)} / ${per[k][1]}</div></div>`).join("")}</div>
-  <div class="foot"><button class="sec" onclick="TKA.home()">🏠 Beranda</button><button onclick="TKA.again('${S.m}','${P.id}')">🔁 Ulangi</button></div></div>
-  <div class="card" style="margin-top:1rem"><h2>Pembahasan</h2>${ord.map((qi,n)=>{const q=qs[qi],p=pts(q,S.ans[qi]),m=maxP(q);return `<div class="rv ${p===m?"ok":"no"}"><b>${n+1}. ${esc(q.t)}</b> <span class="chip">${+p.toFixed(1)}/${m}</span><div class="mu">Jawabanmu: ${esc(mine(q,S.ans[qi],qi))}</div><div>✅ Kunci: ${esc(key(q,qi))}</div><div class="mu">💡 ${esc(q.b||"")}</div></div>`}).join("")}</div></div>`;
-  ROOT.scrollTo(0,0);
+  const cnt={ok:0,par:0,no:0,kos:0};qs.forEach((q,i)=>cnt[stOf(q,S.ans[i])]++);
+  const C=2*Math.PI*52,nilai=r.nilai,tuntas=nilai>=70,col=tuntas?"var(--ok)":nilai>=50?"var(--wa)":"var(--er)";
+  const pred=nilai>=85?"Sangat baik! 🎉":tuntas?"Tuntas, pertahankan! 👍":nilai>=50?"Hampir tuntas, ayo berlatih lagi 💪":"Perlu belajar lagi, jangan menyerah 📚";
+  const mm=Math.floor((r.dur||0)/60000),ss=Math.floor(((r.dur||0)%60000)/1000);
+  const fl=[["all","Semua",qs.length],["ok","Benar",cnt.ok],["par","Sebagian",cnt.par],["no","Salah",cnt.no],["kos","Kosong",cnt.kos]];
+  const items=ord.map((qi,n)=>({qi,n,q:qs[qi],st:stOf(qs[qi],S.ans[qi])})).filter(x=>rf==="all"||x.st===rf);
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby narrow">
+  <div class="card">
+   ${auto==="time"?`<p><span class="chip wa">⏰ Waktu habis, jawaban dikumpulkan otomatis</span></p>`:auto==="vio"?`<p><span class="chip er">🚨 Dikumpulkan otomatis karena pelanggaran</span></p>`:""}
+   <h2 class="c" style="margin-bottom:0">${esc(S.name)} • Kelas ${esc(S.cls||"-")}</h2><div class="mu" style="text-align:center">${B.ikon} ${esc(B.nama)} • ${esc(P.nama)}</div>
+   <div class="xb-score" style="margin-top:1rem"><div class="xb-ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"/><circle cx="60" cy="60" r="52" style="stroke:${col}" stroke-dasharray="${(nilai/100*C).toFixed(1)} ${C.toFixed(1)}"/></svg><div class="num"><div><b style="color:${col}">${nilai}</b><br><small>Skor ${r.skor}/${r.max}</small></div></div></div>
+    <div class="xb-bars"><div style="font-weight:800;font-size:1.05rem">${pred}</div>${Object.keys(per).filter(k=>per[k][1]).map(k=>{const pc=Math.round(per[k][0]/per[k][1]*100);return `<div class="xb-bar"><div class="l"><span>${nm[k]}</span><span>${+per[k][0].toFixed(1)} / ${per[k][1]}</span></div><div class="b"><i style="width:${pc}%"></i></div></div>`}).join("")}</div></div>
+   <div class="xb-sum"><div class="g"><b>${cnt.ok}</b>Benar</div><div class="y"><b>${cnt.par}</b>Sebagian</div><div class="r"><b>${cnt.no}</b>Salah</div><div><b>${cnt.kos}</b>Kosong</div></div>
+   <p class="mu" style="text-align:center;margin-top:.8rem">⏱ Waktu dipakai ${mm} menit ${ss} detik${r.vio?` • ⚠️ ${r.vio} pelanggaran`:""}</p>
+   <div class="foot"><button class="sec" onclick="TKA.home()">🏠 Beranda</button><button onclick="TKA.again('${S.m}','${P.id}')">🔁 Ulangi</button></div></div>
+  <div class="card" style="margin-top:1rem" id="tk-rev"><h2>Pembahasan</h2>
+   <div class="xb-flt">${fl.map(([k,l,c])=>`<button class="${rf===k?"":"sec"}" onclick="TKA.rf('${k}')">${l} (${c})</button>`).join("")}</div>
+   ${items.length?items.map(({qi,n,q,st})=>{const p=pts(q,S.ans[qi]),m=maxP(q);return `<div class="rv ${st==="ok"?"ok":"no"}" ${st==="par"?'style="border-color:var(--wa)"':""}><b>${n+1}. ${esc(q.t)}</b> <span class="chip ${st==="ok"?"ok":st==="par"?"wa":"er"}">${+p.toFixed(1)}/${m}</span>${qimg(q)}<div class="mu">Jawabanmu: ${esc(mine(q,S.ans[qi],qi))}</div><div>✅ Kunci: ${esc(key(q,qi))}</div>${q.b?`<div class="mu">💡 ${esc(q.b)}</div>`:""}</div>`}).join(""):`<p class="mu">Tidak ada soal pada kategori ini.</p>`}
+  </div></div></main></div>`;
+  applyFs();
 }
 
-window.addEventListener("beforeunload",e=>{if(scr==="exam"){e.preventDefault();e.returnValue=""}});
-
-function open(){ROOT.hidden=false;document.body.style.overflow="hidden";const r=ls.g("tka_run");(scr==="exam"&&S&&S.end>Date.now())?render():home()}
-function close(){A.ok=false;if(scr==="exam"){clearInterval(tmr);scr="home"}ROOT.hidden=true;document.body.style.overflow="";document.documentElement.style.fontSize="";zf=1}
-window.TKA={open,close,home,resume,brief,start,fz,fs,go,setPG,setPK,setMJ,dbt,confirmEnd,finish,
- sel:k=>{keepIn();pick=k;home()},selp:id=>{keepIn();pickP[pick]=id;home()},again:(k,p)=>{pick=k;if(p)pickP[k]=p;brief()},cm:()=>{const d=$("#tk-mdl");if(d)d.remove()}};
+/* ================= BUKA / TUTUP ================= */
+function open(){
+  ROOT.hidden=false;document.body.style.overflow="hidden";applyFs();
+  clearInterval(tmr);tmr=setInterval(tick,1000);
+  if(scr==="exam"&&S&&S.end>Date.now()){render();return}
+  if(scr==="result"&&RES&&S){showResult();return}
+  const rn=ls.g("tka_run");
+  /* ujian yang waktunya habis saat halaman ditutup dikumpulkan otomatis agar tidak menggantung */
+  if(rn&&rn.end<=Date.now()&&BANK[rn.m]){
+    const P=PS(rn.m).find(p=>p.id===(rn.p||PS(rn.m)[0].id));
+    if(P&&P.soal.length===rn.ans.length){S=rn;if(!S.p)S.p=P.id;finish("time");return}
+    ls.d("tka_run");
+  }
+  home();
+}
+function close(){
+  A.ok=false;
+  if(scr==="exam"&&S&&S.end>Date.now())return; /* ujian berjalan tidak bisa ditutup */
+  clearInterval(tmr);tmr=null;exitFs();
+  ["#tk-fs","#tk-vio","#tk-mdl"].forEach(s=>{const d=$(s);if(d)d.remove()});
+  scr="home";ROOT.hidden=true;document.body.style.overflow="";
+}
+window.TKA={open,close,home,resume,brief,start,fz,fs,go,setPG,setPK,setMJ,dbt,confirmEnd,finish,clrAns,
+ sel:k=>{keepIn();pick=k;home()},selp:id=>{keepIn();pickP[pick]=id;home()},again:(k,p)=>{pick=k;if(p)pickP[k]=p;brief()},cm:()=>{const d=$("#tk-mdl");if(d)d.remove()},
+ jump:k=>{const d=$("#tk-mdl");if(d)d.remove();go(k)},
+ chk:v=>{const b=$("#tk-go");if(b)b.disabled=!v},
+ side:()=>{const s=$("#tk-side"),b=$("#tk-bd");if(s)s.classList.toggle("open");if(b)b.classList.toggle("on",s.classList.contains("open"))},
+ fsgo:()=>{skipFs=false;enterFs();setTimeout(()=>{const b=$("#tk-fsk");if(b&&!inFs())b.style.display="inline-flex"},800)},
+ fsskip:()=>{skipFs=true;pause(2000);const d=$("#tk-fs");if(d)d.remove()},
+ vok:()=>{const d=$("#tk-vio");if(d)d.remove();away=false;pause(1500);fsCheck()},
+ vres:()=>{const d=$("#tk-vio");if(d)d.remove()},
+ rf:k=>{rf=k;showResult();const e=$("#tk-rev");if(e)ROOT.scrollTo(0,e.offsetTop-50)},
+ zoom:src=>{if($("#tk-zoom")||!src)return;const d=document.createElement("div");d.id="tk-zoom";d.className="xb-zoom";d.onclick=()=>TKA.zx();d.innerHTML=`<button class="sec" aria-label="Tutup">✕ Tutup</button><img src="${esc(src)}" alt="Gambar diperbesar">`;ROOT.appendChild(d)},
+ zx:()=>{const d=$("#tk-zoom");if(d)d.remove()}};
 
 
 /* ===== PENGATURAN GURU ===== */
@@ -5096,7 +5516,7 @@ const blank=v=>v==="mj"?{ty:"mj",t:"",h:["Benar","Salah"],p:[{t:"",k:0},{t:"",k:
 function adm(){
   scr="adm";if(A.ok)return panel();
   const ts=(typeof Storage!=="undefined"&&Storage.loadTeachers)?Storage.loadTeachers():[];
-  ROOT.innerHTML=`<div class="wrap"><div class="card"><h1>⚙️ Pengaturan TKA</h1><p class="mu">Khusus guru. Masuk memakai PIN halaman guru.</p>${ts.length?`<label>Pendidik</label><select id="tk-t">${ts.map(t=>`<option value="${esc(t.id)}">${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select><label>PIN</label><input id="tk-p" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')TKA.lg()">`:`<p>Belum ada pendidik terdaftar. Daftarkan dulu lewat halaman Guru.</p>`}<div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button>${ts.length?`<button onclick="TKA.lg()">Masuk</button>`:""}</div></div></div>`;
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><h1>⚙️ Pengaturan TKA</h1><p class="mu">Khusus guru. Masuk memakai PIN halaman guru.</p>${ts.length?`<label>Pendidik</label><select id="tk-t">${ts.map(t=>`<option value="${esc(t.id)}">${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select><label>PIN</label><input id="tk-p" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')TKA.lg()">`:`<p>Belum ada pendidik terdaftar. Daftarkan dulu lewat halaman Guru.</p>`}<div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button>${ts.length?`<button onclick="TKA.lg()">Masuk</button>`:""}</div></div></div></main></div>`;
 }
 async function lg(){
   const id=$("#tk-t").value,pin=$("#tk-p").value;let ok=false;
@@ -5112,7 +5532,7 @@ async function lg(){
 function panel(){
   if(!A.ok)return adm();
   const t=A.tab;
-  ROOT.innerHTML=`<div class="wrap"><div class="card"><div class="foot" style="margin:0 0 .8rem"><button class="sec" onclick="TKA.out()">⬅ Keluar</button><button class="${t==="st"?"":"sec"}" onclick="TKA.tab('st')">📊 Statistik</button><button class="${t==="sl"||t==="ed"?"":"sec"}" onclick="TKA.tab('sl')">✏️ Soal</button><button class="${t==="sw"?"":"sec"}" onclick="TKA.tab('sw')">👥 Siswa</button><button class="${t==="cf"?"":"sec"}" onclick="TKA.tab('cf')">🔀 Pengaturan</button></div>${t==="st"?stat():t==="sl"?soalList():t==="sw"?siswa():t==="cf"?cfg():editor()}</div></div>`;
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><div class="foot" style="margin:0 0 .8rem"><button class="sec" onclick="TKA.out()">⬅ Keluar</button><button class="${t==="st"?"":"sec"}" onclick="TKA.tab('st')">📊 Statistik</button><button class="${t==="sl"||t==="ed"?"":"sec"}" onclick="TKA.tab('sl')">✏️ Soal</button><button class="${t==="sw"?"":"sec"}" onclick="TKA.tab('sw')">👥 Siswa</button><button class="${t==="cf"?"":"sec"}" onclick="TKA.tab('cf')">🔀 Pengaturan</button></div>${t==="st"?stat():t==="sl"?soalList():t==="sw"?siswa():t==="cf"?cfg():editor()}</div></div></main></div>`;
 }
 function pie(d){
   const T=d.reduce((a,x)=>a+x.v,0);if(!T)return'<p class="mu">Belum ada data.</p>';
