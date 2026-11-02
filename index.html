@@ -5185,10 +5185,44 @@ const pnOf=r=>r.pn||(BANK[r.m]?gP(r.m,r.p).nama:"Paket 1");
 const lbl=r=>(BANK[r.m]?BANK[r.m].nama:r.m)+" • "+pnOf(r);
 /* ===== Aturan: satu paket hanya boleh dikerjakan SEKALI per siswa (nama + kelas). Mengulang hanya setelah guru menekan Reset. ===== */
 const nk=s=>String(s||"").toLowerCase().replace(/\s+/g," ").trim();
-const kk=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
+const kk=s=>{const x=String(s||"").toLowerCase().replace(/\s+/g,"");return x==="-"?"":x};
 const sudah=(n,k,m,p)=>(ls.g("tka_results")||[]).some(r=>nk(r.name)===nk(n)&&kk(r.cls)===kk(k)&&r.m===m&&pidOf(r)===p);
 const sedang=(n,k,m,p)=>{const rn=ls.g("tka_run");return !!(rn&&rn.end>Date.now()&&rn.m===m&&(rn.p||(BANK[m]?PS(m)[0].id:""))===p&&nk(rn.name)===nk(n)&&kk(rn.cls)===kk(k))};
 const TOLAK="🔒 Paket ini sudah kamu kerjakan dan hanya bisa dikerjakan satu kali.\n\nJika perlu mengulang, minta guru untuk menekan tombol Reset.";
+/*TKA-CLOUD-START*/
+/* ===== Penyimpanan di server (Google Apps Script) =====
+   Hasil TKA dikirim ke server lewat jalur yang sama dengan ulangan harian (saveResult/resultExists/getResults/deleteResult).
+   ID hasil dibuat tetap dari nama+kelas+mata uji+paket, jadi server menolak pengerjaan kedua dari perangkat mana pun.
+   Bila server tidak terjangkau, aplikasi memakai catatan di perangkat. */
+const cloud=()=>typeof CLOUD!=="undefined"&&!!CLOUD.on;
+const teachersList=()=>{try{return(typeof Storage!=="undefined"&&Storage.loadTeachers)?Storage.loadTeachers():[]}catch(e){return[]}};
+const tidOf=()=>sessionStorage.tkaT||(typeof state!=="undefined"&&state&&state.tid)||(teachersList()[0]||{}).id||"";
+const slug=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+const rid=r=>"TKA_"+r.m+"_"+pidOf(r)+"_"+slug(kk(r.cls))+"_"+slug(nk(r.name));
+const toSrv=r=>{const t=teachersList().find(x=>x.id===tidOf())||{};return{id:rid(r),name:r.name,cls:String(r.cls||"").trim()||"-",tid:tidOf(),tname:t.name||"",mapel:"TKA",uh:"TKA|"+r.m+"|"+pidOf(r),status:"done",score:r.nilai,startTime:new Date(r.tgl).toISOString(),tka:{m:r.m,p:pidOf(r),pn:r.pn,skor:r.skor,max:r.max,nilai:r.nilai,tgl:r.tgl,auto:!!r.auto,vio:r.vio||0,dur:r.dur||0}}};
+const fromSrv=x=>{const t=x.tka||{},pr=String(x.uh||"").split("|"),m=t.m||pr[1],p=t.p||pr[2],nilai=t.nilai!=null?t.nilai:Math.round(+x.score||0);
+  return{name:x.name,cls:x.cls==="-"?"":x.cls,m,p,pn:t.pn||(BANK[m]?gP(m,p).nama:"Paket 1"),skor:t.skor!=null?t.skor:nilai,max:t.max!=null?t.max:100,nilai,tgl:t.tgl||Date.parse(x.startTime)||0,auto:!!t.auto,vio:t.vio||0,dur:t.dur||0}};
+const sameId=(r,n,k,m,p)=>nk(r.name)===nk(n)&&kk(r.cls)===kk(k)&&r.m===m&&pidOf(r)===p;
+const srcAll=()=>{const loc=ls.g("tka_results")||[];if(!(cloud()&&A.srv))return loc;const ids={};A.srv.forEach(x=>{ids[rid(x)]=1});return A.srv.concat(loc.filter(x=>!ids[rid(x)]))};
+/* true = siswa boleh memulai paket ini */
+async function kunci(n,k,m,p){
+  const id=rid({name:n,cls:k,m,p}),loc=(ls.g("tka_results")||[]).find(r=>sameId(r,n,k,m,p));
+  if(!cloud()||!CLOUD.uid||!tidOf())return !loc;
+  try{if(outboxRead().some(x=>x.id===id))return false}catch(e){}
+  try{
+    const ada=await Promise.race([gs("resultExists",id),new Promise((_,no)=>setTimeout(()=>no(new Error("timeout")),8000))]);
+    if(ada)return false;
+    if(loc){
+      if(!loc.up){try{cloudSaveResult(toSrv(loc))}catch(e){}return false} /* hasil lama hanya di perangkat: kirim ke server, tetap terkunci */
+      ls.s("tka_results",(ls.g("tka_results")||[]).filter(r=>!sameId(r,n,k,m,p))) /* sudah ada di server lalu dihapus guru = reset */
+    }
+    return true;
+  }catch(e){return !loc}
+}
+const tkTeacher=()=>{const ts=teachersList();if(!cloud()||ts.length<2)return"";const cur=tidOf();
+  return`<div style="margin-top:.6rem"><label for="tk-td">Pendidik</label><select id="tk-td" onchange="sessionStorage.tkaT=this.value">${ts.map(t=>`<option value="${esc(t.id)}" ${t.id===cur?"selected":""}>${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select></div>`};
+const srvNote=()=>!cloud()?`<p class="mu" style="font-size:.85rem">Mode lokal: hasil hanya tersimpan di perangkat ini.</p>`:A.srv?`<p class="mu" style="font-size:.85rem">☁️ Terhubung ke server. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Muat ulang</button></p>`:`<p class="mu" style="font-size:.85rem">⚠️ Data server belum bisa dimuat, yang tampil hanya data perangkat ini. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Coba lagi</button></p>`;
+/*TKA-CLOUD-END*/
 const sm=a=>{const v=a.map(r=>r.nilai),n=v.length;return{n,avg:n?Math.round(v.reduce((x,y)=>x+y,0)/n):0,hi:n?Math.max(...v):0,lo:n?Math.min(...v):0,ok:v.filter(x=>x>=70).length}};
 function loadBank(){const c=ls.g("tka_bank");BANK=mig(c&&c.bank?c.bank:clone(BANK0));STIM=c&&c.stim?c.stim:clone(STIM0)}
 const saveBank=()=>{if(!ls.s("tka_bank",{bank:BANK,stim:STIM}))alert("⚠️ Memori penuh, soal terakhir mungkin tidak tersimpan. Kurangi jumlah atau ukuran gambar.")};loadBank();
@@ -5300,7 +5334,7 @@ function home(){
     ${PS(pick).map(p=>`<button class="xb-pick ${p.id===P.id?"on":""}" onclick="TKA.selp('${p.id}')"><div class="ic">📦</div><b>${esc(p.nama)}</b><small>${p.soal.length} soal • ${p.menit} menit</small></button>`).join("")}</div></section>
     <section class="xb-sec"><h2><span class="n">3</span>Isi data diri</h2><div class="row">
     <div><label for="tk-nm" style="margin-top:0">Nama lengkap</label><input id="tk-nm" list="tk-swl" autocomplete="off" oninput="TKA.swpick(this.value)" placeholder="Nama lengkap" value="${esc(sessionStorage.tkaN||"")}"></div>
-    <div><label for="tk-kl" style="margin-top:0">Kelas</label><input id="tk-kl" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}"></div>${swList()}</div></section>
+    <div><label for="tk-kl" style="margin-top:0">Kelas</label><input id="tk-kl" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}"></div>${swList()}</div>${tkTeacher()}</section>
     <button class="xb-cta" onclick="TKA.brief()">Lanjut ➜</button>
   </div><aside>
     <section class="xb-sec"><h2>🛡️ Pemeriksaan perangkat</h2><ul class="xb-list">${sysRows()}</ul></section>
@@ -5309,14 +5343,16 @@ function home(){
   </aside></div></div></main></div>`;
   applyFs();
 }
-function brief(){
+async function brief(){
   const nE=$("#tk-nm"),kE=$("#tk-kl"),n=(nE?nE.value:(sessionStorage.tkaN||"")).trim(),k=(kE?kE.value:(sessionStorage.tkaK||"")).trim();
   if(!n){xtoast("Isi nama lengkap dulu ya.");if(nE)nE.focus();return}
   sessionStorage.tkaN=n;sessionStorage.tkaK=k;
   const B=BANK[pick],P=curPk();
   if(!P.soal.length){xtoast("Soal untuk paket ini belum tersedia.");return}
   if(sedang(n,k,pick,P.id)){alert("Ujianmu pada paket ini masih berjalan. Tekan tombol Lanjutkan Ujian di beranda.");return}
-  if(sudah(n,k,pick,P.id)){alert(TOLAK);return}
+  if(cloud())xtoast("⏳ Memeriksa status paket...");
+  if(!(await kunci(n,k,pick,P.id))){alert(TOLAK);return}
+  if(scr==="exam")return;
   scr="brief";
   const cf=CF(),acak=[cf.sq?"soal":"",cf.so?"pilihan jawaban":""].filter(Boolean).join(" dan ");
   ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby narrow"><div class="card">
@@ -5446,8 +5482,9 @@ function finish(auto){
   qs.forEach((q,i)=>{const p=pts(q,S.ans[i]),m=maxP(q);sk+=p;mx+=m;per[q.ty][0]+=p;per[q.ty][1]+=m});
   const nilai=mx?Math.round(sk/mx*100):0;
   const dur=Math.max(0,Math.min(Date.now(),S.end)-(S.t0||(S.end-P.menit*60000)));
-  const r={name:S.name,cls:S.cls,m:S.m,p:P.id,pn:P.nama,skor:+sk.toFixed(1),max:mx,nilai,tgl:Date.now(),auto:!!auto,vio:S.vio||0,dur};
+  const r={name:S.name,cls:S.cls,m:S.m,p:P.id,pn:P.nama,skor:+sk.toFixed(1),max:mx,nilai,tgl:Date.now(),auto:!!auto,vio:S.vio||0,dur,up:(cloud()&&CLOUD.uid&&tidOf())?1:0};
   if(!ls.s("tka_results",(ls.g("tka_results")||[]).concat(r)))xtoast("⚠️ Hasil tidak bisa disimpan di perangkat ini (memori penuh).");
+  if(r.up){try{cloudSaveResult(toSrv(r))}catch(e){}}
   ls.d("tka_run");
   ["#tk-mdl","#tk-fs","#tk-vio"].forEach(s=>{const d=$(s);if(d)d.remove()});
   skipFs=true;exitFs();
@@ -5529,16 +5566,29 @@ function adm(){
   const ts=(typeof Storage!=="undefined"&&Storage.loadTeachers)?Storage.loadTeachers():[];
   ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><h1>⚙️ Pengaturan TKA</h1><p class="mu">Khusus guru. Masuk memakai PIN halaman guru.</p>${ts.length?`<label>Pendidik</label><select id="tk-t">${ts.map(t=>`<option value="${esc(t.id)}">${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select><label>PIN</label><input id="tk-p" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')TKA.lg()">`:`<p>Belum ada pendidik terdaftar. Daftarkan dulu lewat halaman Guru.</p>`}<div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button>${ts.length?`<button onclick="TKA.lg()">Masuk</button>`:""}</div></div></div></main></div>`;
 }
+async function pull(){
+  if(!cloud()||!A.token)return true;
+  try{
+    const r=await gs("getResults",A.token,"");
+    A.srv=(r.results||[]).filter(x=>String(x.uh||"").indexOf("TKA|")===0).map(fromSrv);
+  }catch(e){
+    if(typeof isAuthErr==="function"&&isAuthErr(e)){alert("Sesi berakhir. Silakan masuk lagi.");return false}
+    A.srv=null;
+  }
+  return true;
+}
 async function lg(){
-  const id=$("#tk-t").value,pin=$("#tk-p").value;let ok=false;
+  const id=$("#tk-t").value,pin=$("#tk-p").value;let ok=false,tok=null;
   try{
     if(typeof CLOUD!=="undefined"&&CLOUD.on){
       if(!CLOUD.uid){alert("Masih menghubungkan ke server. Coba sebentar lagi.");return}
-      const r=await gs("login",id,pin);if(r.error==="locked"){alert("Terlalu banyak percobaan. Coba lagi 10 menit lagi.");return}ok=!!r.ok;
+      const r=await gs("login",id,pin);if(r.error==="locked"){alert("Terlalu banyak percobaan. Coba lagi 10 menit lagi.");return}ok=!!r.ok;tok=r.token||null;
     }else{const t=Storage.loadTeachers().find(x=>x.id===id);ok=!!t&&String(t.pin)===pin}
   }catch(e){alert("PIN tidak bisa diperiksa. Periksa koneksi internet.");return}
   if(!ok){alert("PIN salah.");$("#tk-p").value="";return}
-  A.ok=true;A.tid=id;A.tab="st";panel();
+  A.ok=true;A.tid=id;A.token=tok;A.srv=null;A.tab="st";
+  if(cloud()&&tok){if((await pull())===false){A.ok=false;adm();return}}
+  panel();
 }
 function panel(){
   if(!A.ok)return adm();
@@ -5552,7 +5602,7 @@ function pie(d){
   return`<div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 200 200" width="200" height="200">${s}</svg><div>${d.map(x=>`<div><span style="display:inline-block;width:.9rem;height:.9rem;border-radius:4px;background:${x.c};vertical-align:middle"></span> ${x.l}: <b>${+x.v.toFixed(1)}</b> (${Math.round(x.v/T*100)}%)</div>`).join("")}</div></div>`;
 }
 function stBase(){
-  const all=ls.g("tka_results")||[];
+  const all=srcAll();
   if(!A.fm||(A.fm!=="all"&&!BANK[A.fm]))A.fm="all";
   const byM=all.filter(r=>A.fm==="all"||r.m===A.fm);
   const pks=A.fm==="all"?[]:PS(A.fm);
@@ -5572,7 +5622,7 @@ function stat(){
   const rowsK=kl.map(k=>{const s=sm(byP.filter(r=>clsOf(r)===k));return`<tr><td><b>${esc(k)}</b></td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td><td>${s.ok} (${Math.round(s.ok/s.n*100)}%)</td><td style="min-width:6rem"><div style="background:var(--bd);border-radius:6px;height:.6rem"><div style="width:${s.avg}%;background:var(--pr);height:100%;border-radius:6px"></div></div></td></tr>`}).join("");
   const g={};byM.filter(r=>A.fk==="all"||clsOf(r)===A.fk).forEach(r=>{const k=r.m+"|"+pidOf(r);(g[k]=g[k]||{m:r.m,l:pnOf(r),a:[]}).a.push(r)});
   const rowsP=Object.keys(g).sort().map(k=>{const x=g[k],s=sm(x.a);return`<tr><td>${esc(BANK[x.m]?BANK[x.m].nama:x.m)}</td><td>${esc(x.l)}</td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td></tr>`}).join("");
-  return`<h2>📊 Statistik hasil pengerjaan</h2>
+  return`<h2>📊 Statistik hasil pengerjaan</h2>${srvNote()}
   <label>Mata uji</label><div class="foot" style="margin:0 0 .6rem">${fb("all","Semua")}${fb("mat","Matematika")}${fb("bin","B. Indonesia")}</div>
   ${pks.length?`<label>Paket</label><div class="foot" style="margin:0 0 .6rem">${fpb("all","Semua paket")}${pks.map(p=>fpb(p.id,"📦 "+esc(p.nama))).join("")}</div>`:""}
   ${kl.length?`<label>Kelas</label><div class="foot" style="margin:0 0 1rem">${fkb(-1,"Semua kelas")}${kl.map((k,i)=>fkb(i,esc(k))).join("")}</div>`:""}
@@ -5581,7 +5631,7 @@ function stat(){
   <h2 style="margin-top:1rem">📦 Statistik per paket</h2><div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Peserta</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th></tr>${rowsP}</table></div>
   <h2 style="margin-top:1.2rem">Sebaran kategori nilai</h2>${pie([{l:"Sangat baik (90–100)",v:c(r=>r.nilai>=90),c:"#22C55E"},{l:"Baik (75–89)",v:c(r=>r.nilai>=75&&r.nilai<90),c:"#3B82F6"},{l:"Cukup (60–74)",v:c(r=>r.nilai>=60&&r.nilai<75),c:"#F59E0B"},{l:"Perlu bimbingan (<60)",v:c(r=>r.nilai<60),c:"#EF4444"}])}
   <h2 style="margin-top:1.2rem">Ketepatan jawaban (poin)</h2>${pie([{l:"Poin benar",v:sk,c:"#22C55E"},{l:"Poin hilang",v:mx-sk,c:"#EF4444"}])}
-  <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Paket</th><th>Nilai</th><th>Tanggal</th><th>Aksi</th></tr>${R.slice().reverse().slice(0,200).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td>${esc(pnOf(r))}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td><td><button class="sec" onclick="TKA.rsr(${r.tgl})" title="Hapus hasil agar siswa bisa mengerjakan paket ini sekali lagi">🔄 Reset</button></td></tr>`).join("")}</table></div>
+  <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Paket</th><th>Nilai</th><th>Tanggal</th><th>Aksi</th></tr>${R.slice().reverse().slice(0,200).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td>${esc(pnOf(r))}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td><td><button class="sec" onclick="TKA.rsr('${rid(r)}')" title="Hapus hasil agar siswa bisa mengerjakan paket ini sekali lagi">🔄 Reset</button></td></tr>`).join("")}</table></div>
   <p class="mu" style="font-size:.85rem">Setiap paket hanya bisa dikerjakan satu kali per siswa. Tekan <b>Reset</b> pada baris siswa agar ia boleh mengerjakan paket itu sekali lagi (nilai lama dihapus).</p>
   <button class="sec" style="margin-top:1rem" onclick="TKA.clr()">🗑 Hapus semua hasil TKA</button>`:`<p class="mu">${byP.length?"Tidak ada hasil untuk kelas ini.":"Belum ada siswa yang menyelesaikan TKA di perangkat ini untuk pilihan ini."}</p>`}`;
 }
@@ -5771,12 +5821,27 @@ function swsave(){
 }
 
 Object.assign(TKA,{adm,lg,
- out:()=>{A.ok=false;home()},tab:t=>{A.tab=t;panel()},fm:k=>{A.fm=k;A.fp="all";panel()},mp:k=>{A.mp=k;panel()},
+ out:()=>{A.ok=false;A.token=null;A.srv=null;home()},tab:t=>{A.tab=t;panel()},fm:k=>{A.fm=k;A.fp="all";panel()},mp:k=>{A.mp=k;panel()},
  mn:v=>{curP().menit=Math.max(1,parseInt(v)||75);saveBank()},
- clr:()=>{if(confirm("Hapus semua hasil TKA di perangkat ini?\n\nSemua siswa akan bisa mengerjakan ulang semua paket.")){ls.d("tka_results");panel()}},
- rsr:t=>{const all=ls.g("tka_results")||[],i=all.findIndex(r=>r.tgl===t);if(i<0){panel();return}const r=all[i];
+ clr:async()=>{
+  if(!confirm("Hapus SEMUA hasil TKA"+(cloud()&&A.srv?" (di server dan di perangkat ini)":" di perangkat ini")+"?\n\nSemua siswa akan bisa mengerjakan ulang semua paket."))return;
+  if(cloud()&&A.token&&A.srv){
+    const ids=A.srv.map(rid);let gagal=0;
+    for(let q=0;q<ids.length;q+=4)await Promise.all(ids.slice(q,q+4).map(id=>gs("deleteResult",A.token,id).catch(()=>{gagal++})));
+    if(gagal)alert(gagal+" hasil gagal dihapus di server. Coba lagi.");
+    await pull();
+  }
+  ls.d("tka_results");panel()},
+ rl:async()=>{if((await pull())===false){A.ok=false;adm();return}panel()},
+ rsr:async id=>{
+  const r=srcAll().find(x=>rid(x)===id);if(!r){panel();return}
   if(!confirm("Reset hasil "+r.name+" (Kelas "+(r.cls||"-")+")\n"+lbl(r)+" • nilai "+r.nilai+"?\n\nNilai ini akan dihapus dan siswa dapat mengerjakan paket ini satu kali lagi."))return;
-  all.splice(i,1);ls.s("tka_results",all);panel()},
+  if(cloud()&&A.token&&A.srv&&A.srv.some(x=>rid(x)===id)){
+    try{await gs("deleteResult",A.token,id)}
+    catch(e){if(typeof isAuthErr==="function"&&isAuthErr(e)){alert("Sesi berakhir. Silakan masuk lagi.");A.ok=false;adm();return}alert("Gagal menghapus di server. Periksa koneksi lalu coba lagi.");return}
+    await pull();
+  }
+  ls.s("tka_results",(ls.g("tka_results")||[]).filter(x=>rid(x)!==id));panel()},
  qadd:()=>{D=blank("pg");EI=-1;A.tab="ed";panel()},
  qedit:i=>{D=clone(curP().soal[i]);D.s=D.s||"";D.b=D.b||"";EI=i;A.tab="ed";panel()},
  qdel:i=>{if(confirm("Hapus soal nomor "+(i+1)+"?")){curP().soal.splice(i,1);saveBank();panel()}},
