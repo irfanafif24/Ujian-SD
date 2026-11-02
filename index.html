@@ -5226,9 +5226,44 @@ async function kunci(n,k,m,p){
   }catch(e){return !loc}
 }
 const tkTeacher=()=>{const ts=teachersList();if(!cloud()||ts.length<2)return"";const cur=tidOf();
-  return`<div style="margin-top:.6rem"><label for="tk-td">Pendidik</label><select id="tk-td" onchange="sessionStorage.tkaT=this.value">${ts.map(t=>`<option value="${esc(t.id)}" ${t.id===cur?"selected":""}>${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select></div>`};
+  return`<div style="margin-top:.6rem"><label for="tk-td">Pendidik</label><select id="tk-td" onchange="sessionStorage.tkaT=this.value;TKA.rsf()">${ts.map(t=>`<option value="${esc(t.id)}" ${t.id===cur?"selected":""}>${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select></div>`};
 const srvNote=()=>!cloud()?`<p class="mu" style="font-size:.85rem">Mode lokal: hasil hanya tersimpan di perangkat ini.</p>`:A.srv?`<p class="mu" style="font-size:.85rem">☁️ Terhubung ke server. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Muat ulang</button></p>`:`<p class="mu" style="font-size:.85rem">⚠️ Data server belum bisa dimuat, yang tampil hanya data perangkat ini. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Coba lagi</button></p>`;
 /*TKA-CLOUD-END*/
+/* ===== Validasi nama siswa terhadap data siswa (huruf besar/kecil bebas) ===== */
+const RS={};
+const rosterOf=tid=>{
+  const out=[],seen={};
+  const add=a=>(Array.isArray(a)?a:[]).forEach(s=>{if(!s||!s.name)return;const id=nk(s.name)+"|"+kk(s.cls);if(!seen[id]){seen[id]=1;out.push({name:String(s.name).trim().replace(/\s+/g," "),cls:String(s.cls||"").trim()})}});
+  add(RS[tid]);
+  try{if(typeof state!=="undefined"&&typeof config!=="undefined"&&state.tid===tid)add(config.roster)}catch(e){}
+  try{add((Storage.loadConfig(tid)||{}).roster)}catch(e){}
+  try{add(ls.g("ujian_siswa_"+tid))}catch(e){}
+  return out;
+};
+const rosterNow=()=>rosterOf(tidOf());
+async function rosterFetch(){
+  const tid=tidOf();if(!cloud()||!tid)return;
+  try{const r=await gs("getConfig",tid,"");if(r&&r.exists&&r.config&&Array.isArray(r.config.roster))RS[tid]=r.config.roster}catch(e){}
+}
+function swHint(v,fin){
+  const k=$("#tk-kl"),h=$("#tk-nh"),x=String(v||"").trim(),rs=rosterNow();
+  if(k)k.readOnly=false;
+  if(h){h.textContent="";h.style.color=""}
+  if(!rs.length||!x)return;
+  const m=rs.filter(s=>nk(s.name)===nk(x)),cl=[...new Set(m.map(s=>kk(s.cls)))];
+  if(m.length&&cl.length===1){
+    if(k){k.value=m[0].cls;k.readOnly=true}
+    if(h){h.textContent="✅ Nama sesuai data • Kelas "+(m[0].cls||"-");h.style.color="var(--ok)"}
+  }else if(m.length){
+    if(h){h.textContent="ℹ️ Ada lebih dari satu siswa dengan nama ini. Isi kelasmu dengan benar.";h.style.color="var(--mu)"}
+  }else if(fin&&h){
+    h.textContent="❌ Nama belum sesuai data siswa. Tulis nama lengkap persis seperti di data.";h.style.color="var(--er)";
+  }
+}
+function rosterInit(){
+  const v=sessionStorage.tkaN;if(v)swHint(v,false);
+  rosterFetch().then(()=>{const e=$("#tk-nm");if(e&&scr==="home")swHint(e.value,false)});
+}
 const sm=a=>{const v=a.map(r=>r.nilai),n=v.length;return{n,avg:n?Math.round(v.reduce((x,y)=>x+y,0)/n):0,hi:n?Math.max(...v):0,lo:n?Math.min(...v):0,ok:v.filter(x=>x>=70).length}};
 function loadBank(){const c=ls.g("tka_bank");BANK=mig(c&&c.bank?c.bank:clone(BANK0));STIM=c&&c.stim?c.stim:clone(STIM0)}
 const saveBank=()=>{if(!ls.s("tka_bank",{bank:BANK,stim:STIM}))alert("⚠️ Memori penuh, soal terakhir mungkin tidak tersimpan. Kurangi jumlah atau ukuran gambar.")};loadBank();
@@ -5339,19 +5374,31 @@ function home(){
     <section class="xb-sec"><h2><span class="n">2</span>Pilih paket soal</h2><div class="xb-grid">
     ${PS(pick).map(p=>`<button class="xb-pick ${p.id===P.id?"on":""}" onclick="TKA.selp('${p.id}')"><div class="ic">📦</div><b>${esc(p.nama)}</b><small>${p.soal.length} soal • ${p.menit} menit</small></button>`).join("")}</div></section>
     <section class="xb-sec"><h2><span class="n">3</span>Isi data diri</h2><div class="row">
-    <div><label for="tk-nm" style="margin-top:0">Nama lengkap</label><input id="tk-nm" list="tk-swl" autocomplete="off" oninput="TKA.swpick(this.value)" placeholder="Nama lengkap" value="${esc(sessionStorage.tkaN||"")}"></div>
-    <div><label for="tk-kl" style="margin-top:0">Kelas</label><input id="tk-kl" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}"></div>${swList()}</div>${tkTeacher()}</section>
+    <div><label for="tk-nm" style="margin-top:0">Nama lengkap</label><input id="tk-nm" autocomplete="off" autocapitalize="words" spellcheck="false" oninput="TKA.swpick(this.value)" onblur="TKA.swchk(this.value)" placeholder="Ketik nama lengkap" value="${esc(sessionStorage.tkaN||"")}"><div id="tk-nh" style="min-height:1.3rem;font-size:.85rem;margin:-.1rem 0 .3rem" aria-live="polite"></div></div>
+    <div><label for="tk-kl" style="margin-top:0">Kelas</label><input id="tk-kl" autocomplete="off" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}"></div></div>${tkTeacher()}</section>
     <button class="xb-cta" onclick="TKA.brief()">Lanjut ➜</button>
   </div><aside>
     <section class="xb-sec"><h2>🛡️ Pemeriksaan perangkat</h2><ul class="xb-list">${sysRows()}</ul></section>
     ${hist.length?`<section class="xb-sec"><h2>🕘 Riwayat terakhir</h2>${hist.map(h=>`<div class="xb-hist ${h.nilai>=70?"ok":"no"}"><b>${esc(h.name)}</b> • <b>${h.nilai}</b><br><span class="mu">${esc(lbl(h))} • ${new Date(h.tgl).toLocaleString("id-ID")}${h.vio?` • ⚠️ ${h.vio} pelanggaran`:""}</span></div>`).join("")}</section>`:""}
     <button class="sec" style="width:100%" onclick="TKA.adm()">⚙️ Pengaturan Guru</button>
   </aside></div></div></main></div>`;
-  applyFs();
+  applyFs();rosterInit();
 }
 async function brief(){
-  const nE=$("#tk-nm"),kE=$("#tk-kl"),n=(nE?nE.value:(sessionStorage.tkaN||"")).trim(),k=(kE?kE.value:(sessionStorage.tkaK||"")).trim();
+  const nE=$("#tk-nm"),kE=$("#tk-kl");let n=(nE?nE.value:(sessionStorage.tkaN||"")).trim(),k=(kE?kE.value:(sessionStorage.tkaK||"")).trim();
   if(!n){xtoast("Isi nama lengkap dulu ya.");if(nE)nE.focus();return}
+  if(!rosterNow().length&&cloud())await Promise.race([rosterFetch(),new Promise(r=>setTimeout(r,6000))]);
+  const rs=rosterNow();
+  if(rs.length){
+    const m=rs.filter(x=>nk(x.name)===nk(n));
+    const hit=m.length===1?m[0]:(m.length>1?m.find(x=>kk(x.cls)===kk(k))||null:null);
+    if(!hit){
+      swHint(n,true);
+      alert("❌ Nama tidak ditemukan di data siswa."+(m.length>1?"\n\nAda lebih dari satu siswa dengan nama ini, isi kelas dengan benar.":"\n\nTulis nama lengkap persis seperti di data (huruf besar/kecil bebas).")+"\n\nJika kamu yakin sudah benar, minta guru memeriksa data siswa.");
+      if(nE)nE.focus();return;
+    }
+    n=hit.name;k=hit.cls;if(nE)nE.value=n;if(kE){kE.value=k;kE.readOnly=true}
+  }
   sessionStorage.tkaN=n;sessionStorage.tkaK=k;
   const B=BANK[pick],P=curPk();
   if(!P.soal.length){xtoast("Soal untuk paket ini belum tersedia.");return}
@@ -5875,7 +5922,9 @@ Object.assign(TKA,{wimp,swimp,swexp,swsave,
   if(!confirm("Hapus SEMUA data siswa Kelas "+k+" ("+n+" siswa)?\n\nSiswa kelas lain tidak terpengaruh. Tindakan ini juga berlaku di tab Siswa & Rapor dasbor guru. Hasil TKA yang sudah masuk tidak dihapus."))return;
   swSave(S.filter(s=>s.cls!==k));A.sk="all";A.sf=swEmpty();panel()},
  swclr:()=>{if(confirm("Hapus SEMUA data siswa? Tindakan ini juga berlaku di tab Siswa & Rapor dasbor guru.")){swSave([]);panel()}},
- swpick:v=>{const x=String(v||"").trim().toLowerCase();if(!x)return;const m=allSw().filter(s=>String(s.name).toLowerCase()===x);if(m.length===1){const k=$("#tk-kl");if(k&&m[0].cls)k.value=m[0].cls}}
+ swpick:v=>swHint(v,false),
+ swchk:v=>swHint(v,true),
+ rsf:async()=>{const e=$("#tk-nm");if(e)swHint(e.value,false);await rosterFetch();const f=$("#tk-nm");if(f&&scr==="home")swHint(f.value,false)}
 });
 
 Object.assign(TKA,{
