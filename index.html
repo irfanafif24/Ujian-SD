@@ -734,6 +734,22 @@ body::after{content:none}
         .wg-pre { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.82rem; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; white-space: pre-wrap; margin: 8px 0; }
         .wg-det ul { margin: 8px 0 0 18px; }
         .wg-det li { margin-bottom: 4px; }
+    
+        /* ===== Halaman Pilih Mode (pertama dibuka) ===== */
+        .landing { max-width: 520px; margin: 0 auto; min-height: calc(100vh - 32px); display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 8px 0; }
+        .landing-hero { text-align: center; margin-bottom: 8px; }
+        .landing-hero .lh-ic { font-size: 3.5rem; line-height: 1; margin-bottom: 8px; }
+        .landing-hero h1 { margin: 0 0 6px; font-size: 1.6rem; }
+        .landing-hero p { color: var(--text-muted); margin: 0; }
+        .mode-btn { display: flex; align-items: center; gap: 16px; width: 100%; text-align: left; padding: 20px; margin: 0; border-radius: 22px; background: var(--card); color: var(--text-main); border: 3px solid var(--border); box-shadow: var(--shadow); min-height: 96px; }
+        .mode-btn:hover { border-color: var(--primary); }
+        .mode-btn .mb-ic { flex: none; width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 2rem; background: var(--primary-light); }
+        .mode-btn.tka .mb-ic { background: var(--warning-light); }
+        .mode-btn .mb-tx { display: block; flex: 1; }
+        .mode-btn .mb-tx b { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+        .mode-btn .mb-tx small { display: block; font-weight: 500; font-size: .92rem; color: var(--text-muted); line-height: 1.35; }
+        .mode-btn .mb-go { flex: none; font-size: 1.5rem; color: var(--text-muted); }
+        .landing-foot { text-align: center; color: var(--text-muted); font-size: .85rem; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -1018,7 +1034,7 @@ body::after{content:none}
         const teacherLabel = (t) => `${t.name}`;
         
         let state = {
-            page: 'home', studentName: '', studentClass: '', questions: [], currentQ: 0,
+            page: 'landing', studentName: '', studentClass: '', questions: [], currentQ: 0,
             result: null, timerInterval: null, adminTab: 'rank',
             endTime: 0, isExamActive: false, showConfirmModal: false, showQuestionModal: false, 
             showClearModal: false, resetTarget: null, showDeleteModal: false, deleteTargetIdx: null, showBulkDeleteModal: false, bulkConfirm: '',
@@ -1275,7 +1291,8 @@ body::after{content:none}
             document.body.className = state.page === 'exam' ? 'exam-mode' : '';
             const app = document.getElementById('app');
             app.className = 'container' + (state.page === 'exam' ? ' exam-wide' : (state.page === 'admin' || state.page === 'master') ? ' admin-wide' : '');
-            if (state.page === 'home') home(app);
+            if (state.page === 'landing') landing(app);
+            else if (state.page === 'home') home(app);
             else if (state.page === 'exam') exam(app);
             else if (state.page === 'admin-auth') adminAuth(app);
             else if (state.page === 'admin') admin(app);
@@ -1306,12 +1323,37 @@ body::after{content:none}
 
         function pickMapel(m) { saveHomeInputs(); state.studentMapel = m; render(); }
 
+        function landing(app) {
+            const ttl = (typeof config !== 'undefined' && config && config.title) ? config.title : 'Ujian Sekolah Dasar';
+            app.innerHTML = `
+                <div class="landing">
+                    <div class="landing-hero">
+                        <div class="lh-ic">📝</div>
+                        <h1>${esc(ttl)}</h1>
+                        <p>Kamu mau mengerjakan apa hari ini?</p>
+                    </div>
+                    <button type="button" class="mode-btn" onclick="state.page='home'; render(); window.scrollTo(0,0);">
+                        <span class="mb-ic">📚</span>
+                        <span class="mb-tx"><b>Ulangan Harian</b><small>Kerjakan ulangan dari gurumu dengan token</small></span>
+                        <span class="mb-go">›</span>
+                    </button>
+                    <button type="button" class="mode-btn tka" onclick="TKA.open()">
+                        <span class="mb-ic">🎯</span>
+                        <span class="mb-tx"><b>TKA</b><small>Simulasi Tes Kemampuan Akademik</small></span>
+                        <span class="mb-go">›</span>
+                    </button>
+                    <div class="landing-foot">Pilih salah satu untuk memulai</div>
+                </div>
+            `;
+        }
+
         function home(app) {
             initTid();
             const teachers = Storage.loadTeachers();
             app.innerHTML = `
                 <div class="home-wrap">
                     <div class="home-top">
+                        <button class="chip" onclick="state.page='landing'; render();">← Menu Utama</button>
                         <button class="chip" onclick="state.page='master-auth'; render();">Admin / Guru Mapel</button>
                         <button class="chip" onclick="openAdminAuth()">Guru</button>
                     </div>
@@ -1349,7 +1391,6 @@ body::after{content:none}
                         </section>
 
                         <button class="success btn-start" onclick="prepareExam()">Mulai Ujian</button>
-                        <button type="button" class="btn-start" style="margin-top:12px;background:#f59e0b;color:#111" onclick="TKA.open()">🎯 Simulasi TKA</button>
                     </div>
                 </div>
             `;
