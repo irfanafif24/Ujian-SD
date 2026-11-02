@@ -690,6 +690,23 @@ h1,h2,h3{color:var(--text-main)}
 @media (prefers-color-scheme:dark){:root{--border:#334155;--primary-light:#1E2A5A}}
 .qm-hero h3{color:#fff}
 body::after{content:none}
+
+/* ===== TKA ===== */
+#tka-root{--bg:#F3F6F9;--card:#fff;--tx:#1E293B;--mu:#64748B;--pr:#3B82F6;--prh:#2563EB;--prl:#EFF6FF;--ok:#22C55E;--okl:#DCFCE7;--er:#EF4444;--erl:#FEE2E2;--wa:#F59E0B;--wal:#FEF3C7;--bd:#CBD5E1;--sh:0 4px 12px -2px rgba(0,0,0,.08)}@media(prefers-color-scheme:dark){#tka-root{--bg:#0F172A;--card:#1E293B;--tx:#F8FAFC;--mu:#94A3B8;--prl:#1E3A5F;--okl:#14532D;--erl:#7F1D1D;--wal:#78350F;--bd:#475569}}#tka-root,#tka-root *{box-sizing:border-box}#tka-root{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);line-height:1.5}#tka-root button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:.7rem 1.1rem;font-weight:700;background:var(--pr);color:#fff}#tka-root button:hover{background:var(--prh)}#tka-root button:disabled{opacity:.4;cursor:not-allowed}#tka-root button.sec{background:var(--card);color:var(--tx);border:2px solid var(--bd)}#tka-root button.warn{background:var(--wa);color:#111}#tka-root input{font:inherit;width:100%;padding:.7rem .9rem;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx)}#tka-root .wrap{max-width:960px;margin:0 auto;padding:1rem}#tka-root .card{background:var(--card);border-radius:18px;box-shadow:var(--sh);padding:1.25rem}#tka-root h1{font-size:1.6rem;margin:.2rem 0}#tka-root h2{margin:.2rem 0 .6rem;font-size:1.2rem}#tka-root .mu{color:var(--mu)}#tka-root .row{display:flex;gap:.75rem;flex-wrap:wrap}#tka-root .row>*{flex:1 1 220px}#tka-root .mapel{border:3px solid var(--bd);border-radius:16px;padding:1rem;text-align:left;background:var(--card);color:var(--tx)}#tka-root .mapel.on{border-color:var(--pr);background:var(--prl)}#tka-root .mapel .ic{font-size:2.2rem}#tka-root .chip{display:inline-block;padding:.15rem .6rem;border-radius:99px;background:var(--prl);color:var(--pr);font-size:.8rem;font-weight:700}#tka-root .bar{position:sticky;top:0;z-index:5;background:var(--pr);color:#fff;display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;flex-wrap:wrap}#tka-root .bar b{flex:1}#tka-root .bar button{background:rgba(255,255,255,.2);padding:.35rem .7rem}#tka-root #tm{font-variant-numeric:tabular-nums;font-size:1.25rem;font-weight:800;background:rgba(0,0,0,.25);padding:.2rem .7rem;border-radius:10px}#tka-root #tm.low{background:var(--er);animation:tkbl 1s infinite}@keyframes tkbl{50%{opacity:.6}}#tka-root .main{display:grid;grid-template-columns:1fr 230px;gap:1rem;align-items:start}#tka-root .qa{display:grid;gap:1rem}#tka-root .qa.g{grid-template-columns:1fr 1fr}#tka-root .stim{background:var(--wal);border-radius:14px;padding:1rem;max-height:60vh;overflow:auto;white-space:pre-line}#tka-root .opt{display:flex;gap:.7rem;align-items:center;border:2px solid var(--bd);border-radius:14px;padding:.7rem .9rem;margin:.5rem 0;cursor:pointer;background:var(--card)}#tka-root .opt.on{border-color:var(--pr);background:var(--prl)}#tka-root .k{flex:none;width:2rem;height:2rem;display:grid;place-items:center;border-radius:50%;background:var(--bd);font-weight:800;color:#111}#tka-root .opt.sq .k{border-radius:8px}#tka-root .opt.on .k{background:var(--pr);color:#fff}#tka-root table{width:100%;border-collapse:collapse}#tka-root td,#tka-root th{padding:.5rem;border-bottom:1px solid var(--bd);text-align:center}#tka-root td:first-child,#tka-root th:first-child{text-align:left}#tka-root .mj{border:2px solid var(--bd);border-radius:10px;padding:.3rem .9rem;background:var(--card);color:var(--tx)}#tka-root .mj.on{background:var(--pr);color:#fff;border-color:var(--pr)}#tka-root .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}#tka-root .nav button{padding:.5rem 0;background:var(--card);color:var(--tx);border:2px solid var(--bd)}#tka-root .nav .a{background:var(--pr);color:#fff;border-color:var(--pr)}#tka-root .nav .d{background:var(--wa);color:#111;border-color:var(--wa)}#tka-root .nav .c{outline:3px solid var(--tx)}#tka-root .foot{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}#tka-root .foot>*{flex:1}#tka-root .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:1rem;z-index:9}#tka-root .modal .card{max-width:420px;width:100%}#tka-root .big{font-size:4rem;font-weight:900;color:var(--pr);line-height:1}#tka-root .rv{border-left:6px solid var(--bd);padding:.5rem .9rem;margin:.7rem 0;background:var(--card);border-radius:0 12px 12px 0}#tka-root .rv.ok{border-color:var(--ok)}#tka-root .rv.no{border-color:var(--er)}@media(max-width:760px){#tka-root .main,#tka-root .qa.g{grid-template-columns:1fr}#tka-root .nav{grid-template-columns:repeat(8,1fr)}}#tka-root{position:fixed;inset:0;z-index:9000;overflow:auto;font-size:1rem;line-height:1.5;text-align:left}
+#tka-root[hidden]{display:none}
+#tka-root h1,#tka-root h2{text-align:left;color:var(--tx)}
+#tka-root h2.c{text-align:center}
+#tka-root p{margin:.4rem 0}
+#tka-root button{width:auto;min-height:0;box-shadow:none;transform:none;font-family:inherit;font-size:1rem;font-weight:700;transition:none}
+#tka-root .mapel{text-align:left}#tka-root .mapel.on{background:var(--prl)}
+#tka-root .card{border:0;margin:0}
+#tka-root .nav button{font-size:.95rem}
+#tka-root input{margin:0;font-weight:500}
+#tka-root table{margin:0}
+#tka-root textarea,#tka-root select{width:100%;font:inherit;padding:.6rem .8rem;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);margin:0 0 .4rem}
+#tka-root label{display:block;font-weight:700;margin:.8rem 0 .3rem;color:var(--tx)}
+#tka-root input[type=radio],#tka-root input[type=checkbox]{width:1.3rem;height:1.3rem;padding:0;flex:none}
+
 </style>
 </head>
 <body>
@@ -1285,6 +1302,7 @@ body::after{content:none}
                         </section>
 
                         <button class="success btn-start" onclick="prepareExam()">Mulai Ujian</button>
+                        <button type="button" class="btn-start" style="margin-top:12px;background:#f59e0b;color:#111" onclick="TKA.open()">🎯 Simulasi TKA</button>
                     </div>
                 </div>
             `;
@@ -4528,5 +4546,258 @@ body::after{content:none}
         else bootApp();
         window.addEventListener('load', bootApp);
     </script>
+<div id="tka-root" hidden></div>
+<script>
+(function(){
+
+/* ================= BANK SOAL =================
+   ty: pg = pilihan ganda sederhana (a = indeks kunci)
+       pk = pilihan ganda kompleks (ks = indeks kunci)
+       mj = menjodohkan / benar-salah (h = pilihan kolom, p = [{t, k}] k = indeks kolom benar)
+   s : kode stimulus (soal grup) -> isi di STIM
+   Tambah soal sampai 30 per mapel seperti TKA asli. */
+const STIM0={
+ s1:"Data penjualan buku Toko Ceria dalam satu minggu:\nSenin: 12 buku\nSelasa: 15 buku\nRabu: 9 buku\nKamis: 18 buku\nJumat: 21 buku",
+ s2:"Bank Sampah di Sekolah Kami\n\nSampah plastik membutuhkan ratusan tahun untuk terurai. Karena itu, sekolah kami memulai program Bank Sampah. Setiap Jumat, siswa membawa botol dan kantong plastik bekas dari rumah. Sampah ditimbang, lalu ditukar dengan poin tabungan. Dalam tiga bulan, sekolah berhasil mengumpulkan 240 kilogram plastik."
+};
+const BANK0={
+ mat:{nama:"Matematika & Numerasi",ikon:"🔢",menit:75,soal:[
+  {ty:"pg",t:"Hasil dari 3/4 + 1/2 adalah ...",o:["1/4","4/6","1 1/4","2"],a:2,b:"3/4 + 2/4 = 5/4 = 1 1/4."},
+  {ty:"pg",t:"Keliling persegi panjang dengan panjang 12 cm dan lebar 8 cm adalah ...",o:["40 cm","96 cm","20 cm","32 cm"],a:0,b:"K = 2 × (12 + 8) = 40 cm."},
+  {ty:"pk",t:"Pilih SEMUA bilangan yang habis dibagi 6.",o:["18","20","24","30","32"],ks:[0,2,3],b:"18, 24, dan 30 habis dibagi 6."},
+  {ty:"mj",t:"Tentukan pernyataan berikut Benar atau Salah.",h:["Benar","Salah"],p:[{t:"25% sama dengan 1/4",k:0},{t:"0,5 lebih besar dari 3/4",k:1},{t:"Faktor dari 12 ada 6 bilangan",k:0}],b:"0,5 < 0,75. Faktor 12: 1, 2, 3, 4, 6, 12."},
+  {ty:"pg",s:"s1",t:"Berapa jumlah buku yang terjual selama satu minggu?",o:["65","70","75","80"],a:2,b:"12 + 15 + 9 + 18 + 21 = 75."},
+  {ty:"pk",s:"s1",t:"Pilih SEMUA pernyataan yang benar berdasarkan data.",o:["Penjualan tertinggi pada hari Jumat","Penjualan terendah pada hari Selasa","Rata-rata penjualan per hari 15 buku","Penjualan Kamis lebih banyak daripada Selasa"],ks:[0,2,3],b:"Terendah adalah Rabu (9). Rata-rata 75 ÷ 5 = 15."}
+ ]},
+ bin:{nama:"Bahasa Indonesia & Literasi",ikon:"📖",menit:75,soal:[
+  {ty:"pg",s:"s2",t:"Judul yang paling tepat untuk teks tersebut adalah ...",o:["Plastik Si Perusak","Bank Sampah Sekolah Kami","Belajar Menimbang","Hari Jumat Ceria"],a:1,b:"Seluruh teks membahas program Bank Sampah."},
+  {ty:"pk",s:"s2",t:"Pilih SEMUA pernyataan yang sesuai dengan teks.",o:["Siswa membawa sampah setiap Jumat","Sampah ditukar dengan uang tunai","Terkumpul 240 kg plastik dalam tiga bulan","Plastik terurai dalam beberapa hari"],ks:[0,2],b:"Sampah ditukar poin tabungan, bukan uang tunai."},
+  {ty:"mj",s:"s2",t:"Tentukan pernyataan berikut Benar atau Salah menurut teks.",h:["Benar","Salah"],p:[{t:"Bank Sampah dimulai karena plastik lama terurai",k:0},{t:"Program berlangsung selama enam bulan",k:1},{t:"Sampah ditimbang sebelum ditukar poin",k:0}],b:"Program berjalan tiga bulan."},
+  {ty:"pg",s:"s2",t:"Makna kata terurai dalam teks adalah ...",o:["bersatu","hancur menjadi bagian kecil","dibakar","dibuang"],a:1,b:"Terurai = hancur menjadi bagian-bagian kecil."},
+  {ty:"pg",t:"Kata baku yang tepat adalah ...",o:["ijin","izin","iin","ijjin"],a:1,b:"Menurut KBBI yang baku adalah izin."},
+  {ty:"pg",t:"Kalimat yang menggunakan tanda baca dengan benar adalah ...",o:["Ibu membeli apel jeruk, dan mangga.","Ibu membeli apel, jeruk, dan mangga.","Ibu, membeli apel jeruk dan mangga.","Ibu membeli, apel jeruk, dan, mangga."],a:1,b:"Rincian dipisah koma; sebelum dan ada koma."}
+ ]}
+};
+
+/* ================= UTIL ================= */
+const ROOT=document.getElementById('tka-root');
+const $=s=>ROOT.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const L="ABCDEFGH";
+const ls={g:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+let S=null,tmr=null,scr="home",pick="mat",showNav=true;
+const init=q=>q.ty==="pk"?[]:q.ty==="mj"?q.p.map(()=>null):null;
+const done=(q,a)=>q.ty==="pg"?a!==null:q.ty==="pk"?a.length>0:a.some(v=>v!==null);
+const maxP=q=>q.ty==="pg"?1:q.ty==="pk"?q.ks.length:q.p.length;
+function pts(q,a){
+  if(!done(q,a))return 0;
+  if(q.ty==="pg")return a===q.a?1:0;
+  if(q.ty==="pk"){let b=0,s=0;a.forEach(x=>q.ks.includes(x)?b++:s++);return Math.max(0,b-s)}
+  return q.p.filter((p,i)=>a[i]===p.k).length;
+}
+let BANK,STIM;const clone=o=>JSON.parse(JSON.stringify(o));
+function loadBank(){const c=ls.g("tka_bank");BANK=c&&c.bank?c.bank:clone(BANK0);STIM=c&&c.stim?c.stim:clone(STIM0)}
+const saveBank=()=>ls.s("tka_bank",{bank:BANK,stim:STIM});loadBank();
+const save=()=>ls.s("tka_run",S);
+const fmt=ms=>{ms=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(ms/60)).padStart(2,"0")+":"+String(ms%60).padStart(2,"0")};
+
+/* ================= HOME ================= */
+function home(){
+  const run=ls.g("tka_run"),hist=(ls.g("tka_results")||[]).slice(-5).reverse();
+  const live=run&&run.end>Date.now();
+  ROOT.innerHTML=`<div class="wrap"><div class="card">
+  <button class="sec" style="margin-bottom:.7rem" onclick="TKA.close()">⬅ Menu utama</button><br><span class="chip">Tes Kemampuan Akademik • SD/MI</span>
+  <h1>🎯 Simulasi TKA Kelas 6</h1>
+  <p class="mu">Dua mata uji wajib, masing-masing 75 menit. Kamu bisa berpindah soal, menandai ragu-ragu, dan mengubah jawaban sebelum waktu habis.</p>
+  ${live?`<div class="card" style="background:var(--wal);margin:.8rem 0"><b>Ada ujian yang belum selesai</b><div class="mu">${esc(run.name)} • ${esc(BANK[run.m].nama)} • sisa ${fmt(run.end-Date.now())}</div><button class="warn" style="margin-top:.6rem" onclick="TKA.resume()">▶ Lanjutkan Ujian</button></div>`:""}
+  <h2>1. Pilih mata uji</h2><div class="row">
+  ${Object.keys(BANK).map(k=>`<button class="mapel ${pick===k?"on":""}" onclick="TKA.sel('${k}')"><div class="ic">${BANK[k].ikon}</div><b>${BANK[k].nama}</b><div class="mu">${BANK[k].soal.length} soal • ${BANK[k].menit} menit</div></button>`).join("")}</div>
+  <h2 style="margin-top:1.2rem">2. Isi data</h2><div class="row"><input id="tk-nm" placeholder="Nama lengkap" value="${esc(sessionStorage.tkaN||"")}"><input id="tk-kl" placeholder="Kelas (mis. 6A)" value="${esc(sessionStorage.tkaK||"6")}"></div>
+  <button style="width:100%;margin-top:1rem;font-size:1.1rem" onclick="TKA.brief()">Lanjut ➜</button><div style="text-align:center;margin-top:.8rem"><button class="sec" onclick="TKA.adm()">⚙️ Pengaturan Guru</button></div></div>
+  ${hist.length?`<div class="card" style="margin-top:1rem"><h2>Riwayat terakhir</h2>${hist.map(h=>`<div class="rv ${h.nilai>=70?"ok":"no"}"><b>${esc(h.name)}</b> • ${esc(BANK[h.m].nama)} • <b>${h.nilai}</b> <span class="mu">(${h.skor}/${h.max}) • ${new Date(h.tgl).toLocaleString("id-ID")}</span></div>`).join("")}</div>`:""}</div>`;
+}
+function brief(){
+  const n=$("#tk-nm").value.trim(),k=$("#tk-kl").value.trim();
+  if(!n){alert("Isi nama lengkap dulu ya.");return}
+  sessionStorage.tkaN=n;sessionStorage.tkaK=k;
+  if(!BANK[pick].soal.length){alert("Soal untuk mata uji ini belum tersedia.");return}
+  const B=BANK[pick];
+  ROOT.innerHTML=`<div class="wrap"><div class="card"><h1>${B.ikon} ${B.nama}</h1>
+  <p class="mu">${esc(n)} • Kelas ${esc(k)} • ${B.soal.length} soal • ${B.menit} menit</p>
+  <h2>Tiga bentuk soal</h2>
+  <div class="opt"><span class="k">A</span><div><b>Pilihan ganda sederhana</b><br>Pilih <u>satu</u> jawaban yang benar.</div></div>
+  <div class="opt sq"><span class="k">✓</span><div><b>Pilihan ganda kompleks</b><br>Pilih <u>lebih dari satu</u> jawaban. Tiap jawaban benar bernilai 1; pilihan salah mengurangi 1.</div></div>
+  <div class="opt"><span class="k">⇄</span><div><b>Menjodohkan (Benar/Salah)</b><br>Tentukan pilihan untuk <u>setiap</u> pernyataan. Tiap pasangan yang tepat bernilai 1.</div></div>
+  <p class="mu">Soal grup memakai satu bacaan/data yang sama. Waktu terus berjalan dan jawaban tersimpan otomatis. Saat waktu habis, ujian dikumpulkan sendiri.</p>
+  <div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button><button onclick="TKA.start()">Mulai Ujian ▶</button></div></div></div>`;
+}
+
+/* ================= UJIAN ================= */
+function start(){
+  const B=BANK[pick];
+  S={m:pick,name:sessionStorage.tkaN,cls:sessionStorage.tkaK,ans:B.soal.map(init),doubt:[],cur:0,end:Date.now()+B.menit*60000};
+  save();run();
+}
+function resume(){S=ls.g("tka_run");if(S)run()}
+function run(){scr="exam";clearInterval(tmr);tmr=setInterval(tick,1000);render()}
+function tick(){
+  const left=S.end-Date.now(),e=$("#tk-tm");
+  if(e){e.textContent=fmt(left);e.classList.toggle("low",left<5*60000)}
+  if(left<=0)finish(true);
+}
+function render(){
+  const B=BANK[S.m],q=B.soal[S.cur],a=S.ans[S.cur],i=S.cur,last=i===B.soal.length-1;
+  let body="";
+  if(q.ty==="pg")body=q.o.map((o,j)=>`<div class="opt ${a===j?"on":""}" onclick="TKA.setPG(${j})"><span class="k">${L[j]}</span><span>${esc(o)}</span></div>`).join("");
+  if(q.ty==="pk")body=`<div class="mu">Pilih lebih dari satu jawaban.</div>`+q.o.map((o,j)=>`<div class="opt sq ${a.includes(j)?"on":""}" onclick="TKA.setPK(${j})"><span class="k">${a.includes(j)?"✓":L[j]}</span><span>${esc(o)}</span></div>`).join("");
+  if(q.ty==="mj")body=`<table><tr><th>Pernyataan</th>${q.h.map(h=>`<th>${esc(h)}</th>`).join("")}</tr>${q.p.map((p,r)=>`<tr><td>${esc(p.t)}</td>${q.h.map((h,c)=>`<td><button class="mj ${a[r]===c?"on":""}" onclick="TKA.setMJ(${r},${c})">${a[r]===c?"●":"○"}</button></td>`).join("")}</tr>`).join("")}</table>`;
+  const nav=B.soal.map((x,n)=>`<button class="${S.doubt.includes(n)?"d":done(x,S.ans[n])?"a":""} ${n===i?"c":""}" onclick="TKA.go(${n})">${n+1}</button>`).join("");
+  ROOT.innerHTML=`<div class="bar"><b>${B.ikon} ${esc(S.name)}</b><button onclick="TKA.fz(-.1)">A−</button><button onclick="TKA.fz(.1)">A+</button><button onclick="TKA.fs()">⛶</button><span id="tk-tm">${fmt(S.end-Date.now())}</span></div>
+  <div class="wrap"><div class="main"><div class="card">
+   <div class="mu" style="margin-bottom:.5rem"><span class="chip">Soal ${i+1} dari ${B.soal.length}</span> ${q.s?'<span class="chip" style="background:var(--wal);color:#92400E">Soal grup</span>':""} ${S.doubt.includes(i)?"🟡 Ragu-ragu":""}</div>
+   <div class="qa ${q.s?"g":""}">${q.s?`<div class="stim">${esc(STIM[q.s])}</div>`:""}<div><h2 style="font-weight:600">${esc(q.t)}</h2>${body}</div></div>
+   <div class="foot"><button class="sec" ${i?"":"disabled"} onclick="TKA.go(${i-1})">⬅ Sebelumnya</button><button class="warn" onclick="TKA.dbt()">${S.doubt.includes(i)?"Batal Ragu":"Ragu-ragu"}</button>${last?`<button onclick="TKA.confirmEnd()">Selesai ✔</button>`:`<button onclick="TKA.go(${i+1})">Selanjutnya ➜</button>`}</div>
+  </div><div class="card"><b>Daftar soal</b><div class="nav" style="margin-top:.6rem">${nav}</div><div class="mu" style="font-size:.8rem;margin-top:.7rem">🟦 dijawab • 🟨 ragu • ⬜ kosong</div><button style="width:100%;margin-top:.8rem" onclick="TKA.confirmEnd()">Kumpulkan</button></div></div></div>`;
+}
+function go(n){S.cur=n;save();render();ROOT.scrollTo(0,0)}
+function setPG(j){S.ans[S.cur]=j;save();render()}
+function setPK(j){const a=S.ans[S.cur],x=a.indexOf(j);x<0?a.push(j):a.splice(x,1);save();render()}
+function setMJ(r,c){S.ans[S.cur][r]=c;save();render()}
+function dbt(){const x=S.doubt.indexOf(S.cur);x<0?S.doubt.push(S.cur):S.doubt.splice(x,1);save();render()}
+let zf=1;function fz(d){zf=Math.min(1.5,Math.max(.8,zf+d));document.documentElement.style.fontSize=(16*zf)+"px"}
+function fs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}}
+function confirmEnd(){
+  const B=BANK[S.m],n=B.soal.filter((q,i)=>done(q,S.ans[i])).length,m=document.createElement("div");
+  m.className="modal";m.id="tk-mdl";
+  m.innerHTML=`<div class="card"><h2>Kumpulkan jawaban?</h2><p>Terjawab <b>${n}</b> dari ${B.soal.length} soal.${n<B.soal.length?` <b style="color:var(--er)">${B.soal.length-n} soal masih kosong.</b>`:""}${S.doubt.length?` ${S.doubt.length} soal ditandai ragu-ragu.`:""}</p><div class="foot"><button class="sec" onclick="TKA.cm()">Periksa lagi</button><button onclick="TKA.finish()">Ya, kumpulkan</button></div></div>`;
+  ROOT.appendChild(m);
+}
+
+/* ================= HASIL ================= */
+function finish(auto){
+  clearInterval(tmr);
+  const B=BANK[S.m];let sk=0,mx=0;const per={pg:[0,0],pk:[0,0],mj:[0,0]};
+  B.soal.forEach((q,i)=>{const p=pts(q,S.ans[i]),m=maxP(q);sk+=p;mx+=m;per[q.ty][0]+=p;per[q.ty][1]+=m});
+  const nilai=Math.round(sk/mx*100);
+  const r={name:S.name,cls:S.cls,m:S.m,skor:+sk.toFixed(1),max:mx,nilai,tgl:Date.now(),auto:!!auto};
+  ls.s("tka_results",(ls.g("tka_results")||[]).concat(r));ls.d("tka_run");
+  const d=$("#tk-mdl");if(d)d.remove();
+  scr="result";
+  const key=q=>q.ty==="pg"?`${L[q.a]}. ${q.o[q.a]}`:q.ty==="pk"?q.ks.map(k=>`${L[k]}. ${q.o[k]}`).join("; "):q.p.map(p=>`${p.t} → ${q.h[p.k]}`).join("; ");
+  const mine=(q,a)=>!done(q,a)?"(tidak dijawab)":q.ty==="pg"?`${L[a]}. ${q.o[a]}`:q.ty==="pk"?a.slice().sort().map(k=>`${L[k]}. ${q.o[k]}`).join("; "):q.p.map((p,i)=>`${p.t} → ${a[i]===null?"-":q.h[a[i]]}`).join("; ");
+  const nm={pg:"Pilihan ganda",pk:"PG kompleks",mj:"Menjodohkan"};
+  ROOT.innerHTML=`<div class="wrap"><div class="card" style="text-align:center">${auto?`<span class="chip" style="background:var(--wal)">⏰ Waktu habis, jawaban dikumpulkan otomatis</span>`:""}
+  <h2 class="c">${esc(S.name)} • Kelas ${esc(S.cls)}</h2><div class="mu">${B.nama}</div>
+  <div class="big" style="margin:.8rem 0">${nilai}</div><div class="mu">Skor ${r.skor} dari ${mx}</div>
+  <div class="row" style="margin-top:1rem">${Object.keys(per).filter(k=>per[k][1]).map(k=>`<div class="card" style="background:var(--prl)"><b>${nm[k]}</b><div>${+per[k][0].toFixed(1)} / ${per[k][1]}</div></div>`).join("")}</div>
+  <div class="foot"><button class="sec" onclick="TKA.home()">🏠 Beranda</button><button onclick="TKA.again('${S.m}')">🔁 Ulangi</button></div></div>
+  <div class="card" style="margin-top:1rem"><h2>Pembahasan</h2>${B.soal.map((q,i)=>{const p=pts(q,S.ans[i]),m=maxP(q);return `<div class="rv ${p===m?"ok":"no"}"><b>${i+1}. ${esc(q.t)}</b> <span class="chip">${+p.toFixed(1)}/${m}</span><div class="mu">Jawabanmu: ${esc(mine(q,S.ans[i]))}</div><div>✅ Kunci: ${esc(key(q))}</div><div class="mu">💡 ${esc(q.b||"")}</div></div>`}).join("")}</div></div>`;
+  ROOT.scrollTo(0,0);
+}
+
+window.addEventListener("beforeunload",e=>{if(scr==="exam"){e.preventDefault();e.returnValue=""}});
+
+function open(){ROOT.hidden=false;document.body.style.overflow="hidden";const r=ls.g("tka_run");(scr==="exam"&&S&&S.end>Date.now())?render():home()}
+function close(){A.ok=false;if(scr==="exam"){clearInterval(tmr);scr="home"}ROOT.hidden=true;document.body.style.overflow="";document.documentElement.style.fontSize="";zf=1}
+window.TKA={open,close,home,resume,brief,start,fz,fs,go,setPG,setPK,setMJ,dbt,confirmEnd,finish,
+ sel:k=>{pick=k;home()},again:k=>{pick=k;brief()},cm:()=>{const d=$("#tk-mdl");if(d)d.remove()}};
+
+
+/* ===== PENGATURAN GURU ===== */
+let A={ok:false,tab:"st",mp:"mat",fm:"all"},D=null,EI=-1;
+const blank=v=>v==="mj"?{ty:"mj",t:"",h:["Benar","Salah"],p:[{t:"",k:0},{t:"",k:0},{t:"",k:0}],b:"",s:""}:v==="pk"?{ty:"pk",t:"",o:["","","",""],ks:[],b:"",s:""}:{ty:"pg",t:"",o:["","","",""],a:0,b:"",s:""};
+function adm(){
+  scr="adm";if(A.ok)return panel();
+  const ts=(typeof Storage!=="undefined"&&Storage.loadTeachers)?Storage.loadTeachers():[];
+  ROOT.innerHTML=`<div class="wrap"><div class="card"><h1>⚙️ Pengaturan TKA</h1><p class="mu">Khusus guru. Masuk memakai PIN halaman guru.</p>${ts.length?`<label>Pendidik</label><select id="tk-t">${ts.map(t=>`<option value="${esc(t.id)}">${esc(typeof teacherLabel==="function"?teacherLabel(t):t.name)}</option>`).join("")}</select><label>PIN</label><input id="tk-p" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')TKA.lg()">`:`<p>Belum ada pendidik terdaftar. Daftarkan dulu lewat halaman Guru.</p>`}<div class="foot"><button class="sec" onclick="TKA.home()">⬅ Kembali</button>${ts.length?`<button onclick="TKA.lg()">Masuk</button>`:""}</div></div></div>`;
+}
+async function lg(){
+  const id=$("#tk-t").value,pin=$("#tk-p").value;let ok=false;
+  try{
+    if(typeof CLOUD!=="undefined"&&CLOUD.on){
+      if(!CLOUD.uid){alert("Masih menghubungkan ke server. Coba sebentar lagi.");return}
+      const r=await gs("login",id,pin);if(r.error==="locked"){alert("Terlalu banyak percobaan. Coba lagi 10 menit lagi.");return}ok=!!r.ok;
+    }else{const t=Storage.loadTeachers().find(x=>x.id===id);ok=!!t&&String(t.pin)===pin}
+  }catch(e){alert("PIN tidak bisa diperiksa. Periksa koneksi internet.");return}
+  if(!ok){alert("PIN salah.");$("#tk-p").value="";return}
+  A.ok=true;A.tab="st";panel();
+}
+function panel(){
+  if(!A.ok)return adm();
+  const t=A.tab;
+  ROOT.innerHTML=`<div class="wrap"><div class="card"><div class="foot" style="margin:0 0 .8rem"><button class="sec" onclick="TKA.out()">⬅ Keluar</button><button class="${t==="st"?"":"sec"}" onclick="TKA.tab('st')">📊 Statistik</button><button class="${t!=="st"?"":"sec"}" onclick="TKA.tab('sl')">✏️ Soal</button></div>${t==="st"?stat():t==="sl"?soalList():editor()}</div></div>`;
+}
+function pie(d){
+  const T=d.reduce((a,x)=>a+x.v,0);if(!T)return'<p class="mu">Belum ada data.</p>';
+  let a0=-Math.PI/2,s="";const P=(a)=>`${100+90*Math.cos(a)} ${100+90*Math.sin(a)}`;
+  d.forEach(x=>{if(!x.v)return;const a1=a0+x.v/T*2*Math.PI;s+=x.v===T?`<circle cx="100" cy="100" r="90" fill="${x.c}"/>`:`<path d="M100 100L${P(a0)}A90 90 0 ${a1-a0>Math.PI?1:0} 1 ${P(a1)}Z" fill="${x.c}" stroke="#fff" stroke-width="2"/>`;a0=a1});
+  return`<div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 200 200" width="200" height="200">${s}</svg><div>${d.map(x=>`<div><span style="display:inline-block;width:.9rem;height:.9rem;border-radius:4px;background:${x.c};vertical-align:middle"></span> ${x.l}: <b>${+x.v.toFixed(1)}</b> (${Math.round(x.v/T*100)}%)</div>`).join("")}</div></div>`;
+}
+function stat(){
+  const R=(ls.g("tka_results")||[]).filter(r=>A.fm==="all"||r.m===A.fm),n=R.length;
+  const c=(f)=>R.filter(f).length,sk=R.reduce((a,r)=>a+r.skor,0),mx=R.reduce((a,r)=>a+r.max,0);
+  const fb=(k,l)=>`<button class="${A.fm===k?"":"sec"}" onclick="TKA.fm('${k}')">${l}</button>`;
+  return`<h2>📊 Statistik hasil pengerjaan</h2><div class="foot" style="margin:0 0 1rem">${fb("all","Semua")}${fb("mat","Matematika")}${fb("bin","B. Indonesia")}</div>
+  ${n?`<div class="row" style="margin-bottom:1rem"><div class="card" style="background:var(--prl)">Peserta<br><b style="font-size:1.6rem">${n}</b></div><div class="card" style="background:var(--prl)">Rata-rata nilai<br><b style="font-size:1.6rem">${Math.round(R.reduce((a,r)=>a+r.nilai,0)/n)}</b></div><div class="card" style="background:var(--prl)">Tertinggi / Terendah<br><b style="font-size:1.6rem">${Math.max(...R.map(r=>r.nilai))} / ${Math.min(...R.map(r=>r.nilai))}</b></div></div>
+  <h2>Sebaran kategori nilai</h2>${pie([{l:"Sangat baik (90–100)",v:c(r=>r.nilai>=90),c:"#22C55E"},{l:"Baik (75–89)",v:c(r=>r.nilai>=75&&r.nilai<90),c:"#3B82F6"},{l:"Cukup (60–74)",v:c(r=>r.nilai>=60&&r.nilai<75),c:"#F59E0B"},{l:"Perlu bimbingan (<60)",v:c(r=>r.nilai<60),c:"#EF4444"}])}
+  <h2 style="margin-top:1.2rem">Ketepatan jawaban (poin)</h2>${pie([{l:"Poin benar",v:sk,c:"#22C55E"},{l:"Poin hilang",v:mx-sk,c:"#EF4444"}])}
+  <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Nilai</th><th>Tanggal</th></tr>${R.slice().reverse().slice(0,50).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td></tr>`).join("")}</table></div>
+  <button class="sec" style="margin-top:1rem" onclick="TKA.clr()">🗑 Hapus semua hasil TKA</button>`:`<p class="mu">Belum ada siswa yang menyelesaikan TKA di perangkat ini.</p>`}`;
+}
+function soalList(){
+  const m=BANK[A.mp];
+  return`<h2>✏️ Kelola soal</h2><div class="foot" style="margin:0 0 .8rem">${Object.keys(BANK).map(k=>`<button class="${A.mp===k?"":"sec"}" onclick="TKA.mp('${k}')">${BANK[k].ikon} ${BANK[k].nama}</button>`).join("")}</div>
+  <label>Durasi (menit)</label><input type="number" min="1" value="${m.menit}" onchange="TKA.mn(this.value)">
+  <div style="margin:.8rem 0"><b>${m.soal.length} soal</b></div>
+  ${m.soal.map((q,i)=>`<div class="rv"><span class="chip">${i+1} • ${q.ty==="pg"?"PG":q.ty==="pk"?"PG kompleks":"Menjodohkan"}</span> ${q.s?"📎":""} ${esc(q.t.slice(0,90))}<div style="display:flex;gap:.4rem;margin-top:.4rem"><button class="sec" ${i?"":"disabled"} onclick="TKA.qmv(${i},-1)">▲</button><button class="sec" ${i<m.soal.length-1?"":"disabled"} onclick="TKA.qmv(${i},1)">▼</button><button onclick="TKA.qedit(${i})">✏️ Edit</button><button class="sec" onclick="TKA.qdel(${i})">🗑</button></div></div>`).join("")}
+  <div class="foot"><button onclick="TKA.qadd()">➕ Tambah soal</button><button class="sec" onclick="TKA.rst()">↩ Kembalikan soal contoh</button></div>`;
+}
+function editor(){
+  const q=D,pk=q.ty==="pk";
+  const opt=()=>q.o.map((o,i)=>`<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0"><input type="${pk?"checkbox":"radio"}" name="tk-k" ${(pk?q.ks.includes(i):q.a===i)?"checked":""} onchange="TKA.dk(${i})"><span class="k">${L[i]}</span><input value="${esc(o)}" oninput="TKA.dopt(${i},this.value)"><button class="sec" style="flex:none" onclick="TKA.dx(${i})">✕</button></div>`).join("")+`<button class="sec" onclick="TKA.da()">+ Pilihan</button>`;
+  const mj=()=>`<label>Pilihan kolom</label><div style="display:flex;gap:.5rem">${q.h.map((x,c)=>`<input value="${esc(x)}" onchange="TKA.dh(${c},this.value)">`).join("")}</div><label>Pernyataan dan jawaban benar</label>`+q.p.map((p,i)=>`<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0"><input value="${esc(p.t)}" oninput="TKA.dp(${i},this.value)"><select style="width:auto" onchange="TKA.dq(${i},this.value)">${q.h.map((x,c)=>`<option value="${c}" ${p.k===c?"selected":""}>${esc(x)}</option>`).join("")}</select><button class="sec" style="flex:none" onclick="TKA.dy(${i})">✕</button></div>`).join("")+`<button class="sec" onclick="TKA.dz()">+ Pernyataan</button>`;
+  return`<h2>${EI<0?"Tambah":"Edit"} soal • ${BANK[A.mp].nama}</h2>
+  <label>Jenis soal</label><select onchange="TKA.dty(this.value)"><option value="pg" ${q.ty==="pg"?"selected":""}>Pilihan ganda sederhana</option><option value="pk" ${pk?"selected":""}>Pilihan ganda kompleks</option><option value="mj" ${q.ty==="mj"?"selected":""}>Menjodohkan (Benar/Salah)</option></select>
+  <label>Bacaan atau data (soal grup)</label><select onchange="TKA.dst(this.value)"><option value="">Tanpa bacaan</option>${Object.keys(STIM).map(k=>`<option value="${k}" ${q.s===k?"selected":""}>${esc(STIM[k].slice(0,50))}…</option>`).join("")}<option value="__new" ${q.s==="__new"?"selected":""}>➕ Bacaan baru…</option></select>
+  ${q.s==="__new"?`<textarea rows="5" placeholder="Tulis bacaan atau data" oninput="TKA.dstx(this.value)">${esc(q._n||"")}</textarea>`:q.s?`<div class="stim" style="max-height:8rem">${esc(STIM[q.s])}</div>`:""}
+  <label>Pertanyaan</label><textarea rows="3" oninput="TKA.ds('t',this.value)">${esc(q.t)}</textarea>
+  <label>${q.ty==="mj"?"":pk?"Pilihan jawaban (centang semua yang benar)":"Pilihan jawaban (pilih satu yang benar)"}</label>${q.ty==="mj"?mj():opt()}
+  <label>Pembahasan (opsional)</label><textarea rows="2" oninput="TKA.ds('b',this.value)">${esc(q.b||"")}</textarea>
+  <div class="foot"><button class="sec" onclick="TKA.ecx()">Batal</button><button onclick="TKA.esv()">💾 Simpan soal</button></div>`;
+}
+function esv(){
+  const q=D;let err="";
+  if(!q.t.trim())err="Pertanyaan belum diisi.";
+  else if(q.ty!=="mj"&&q.o.some(o=>!o.trim()))err="Semua pilihan jawaban harus diisi.";
+  else if(q.ty==="pk"&&!q.ks.length)err="Centang minimal satu jawaban benar.";
+  else if(q.ty==="mj"&&(q.h.some(x=>!x.trim())||q.p.some(p=>!p.t.trim())))err="Isi semua kolom dan pernyataan.";
+  else if(q.s==="__new"&&!(q._n||"").trim())err="Bacaan baru belum diisi.";
+  if(err){alert(err);return}
+  const o=clone(q);
+  if(o.s==="__new"){o.s="u"+Date.now();STIM[o.s]=q._n.trim()}
+  delete o._n;if(!o.s)delete o.s;if(!(o.b||"").trim())delete o.b;
+  const L2=BANK[A.mp].soal;EI<0?L2.push(o):L2[EI]=o;
+  saveBank();A.tab="sl";panel();
+}
+Object.assign(TKA,{adm,lg,
+ out:()=>{A.ok=false;home()},tab:t=>{A.tab=t;panel()},fm:k=>{A.fm=k;panel()},mp:k=>{A.mp=k;panel()},
+ mn:v=>{BANK[A.mp].menit=Math.max(1,parseInt(v)||75);saveBank()},
+ clr:()=>{if(confirm("Hapus semua hasil TKA di perangkat ini?")){ls.d("tka_results");panel()}},
+ qadd:()=>{D=blank("pg");EI=-1;A.tab="ed";panel()},
+ qedit:i=>{D=clone(BANK[A.mp].soal[i]);D.s=D.s||"";D.b=D.b||"";EI=i;A.tab="ed";panel()},
+ qdel:i=>{if(confirm("Hapus soal nomor "+(i+1)+"?")){BANK[A.mp].soal.splice(i,1);saveBank();panel()}},
+ qmv:(i,d)=>{const a=BANK[A.mp].soal,j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];saveBank();panel()},
+ rst:()=>{if(confirm("Kembalikan semua soal ke soal contoh? Soal buatan Anda akan hilang.")){ls.d("tka_bank");loadBank();panel()}},
+ ecx:()=>{A.tab="sl";panel()},esv,
+ dty:v=>{const o=D,n=blank(v);n.t=o.t;n.b=o.b;n.s=o.s;n._n=o._n;D=n;panel()},
+ ds:(f,v)=>{D[f]=v},dstx:v=>{D._n=v},dst:v=>{D.s=v;panel()},dopt:(i,v)=>{D.o[i]=v},
+ dk:i=>{if(D.ty==="pk"){const x=D.ks.indexOf(i);x<0?D.ks.push(i):D.ks.splice(x,1)}else D.a=i},
+ da:()=>{if(D.o.length<8){D.o.push("");panel()}},
+ dx:i=>{if(D.o.length<=2)return;D.o.splice(i,1);if(D.ty==="pg")D.a=D.a===i?0:D.a>i?D.a-1:D.a;else D.ks=D.ks.filter(k=>k!==i).map(k=>k>i?k-1:k);panel()},
+ dh:(c,v)=>{D.h[c]=v;panel()},dp:(i,v)=>{D.p[i].t=v},dq:(i,v)=>{D.p[i].k=+v},
+ dz:()=>{D.p.push({t:"",k:0});panel()},dy:i=>{if(D.p.length>1){D.p.splice(i,1);panel()}}
+});
+})();
+</script>
 </body>
 </html>
