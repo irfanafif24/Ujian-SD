@@ -750,6 +750,16 @@ body::after{content:none}
         .mode-btn .mb-tx small { display: block; font-weight: 500; font-size: .92rem; color: var(--text-muted); line-height: 1.35; }
         .mode-btn .mb-go { flex: none; font-size: 1.5rem; color: var(--text-muted); }
         .landing-foot { text-align: center; color: var(--text-muted); font-size: .85rem; margin-top: 8px; }
+    
+        /* ===== PG Kompleks Kategori (Benar/Salah, Sesuai/Tidak sesuai) ===== */
+        .kat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        .kat-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--card); border: 2px solid var(--border); border-radius: 16px; padding: 12px 14px; }
+        .kat-row.done { border-color: var(--primary); background: var(--primary-light); }
+        .kat-t { flex: 1 1 220px; min-width: 0; font-weight: 500; overflow-wrap: anywhere; }
+        .kat-btns { display: flex; gap: 8px; flex: 0 0 auto; }
+        .kat-b { width: auto; margin: 0; min-height: 44px; padding: 8px 16px; font-size: .95rem; background: var(--bg); color: var(--text-main); border: 2px solid var(--border); box-shadow: none; }
+        .kat-b.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+        @media (max-width: 480px) { .kat-btns { width: 100%; } .kat-b { flex: 1; } }
     </style>
 </head>
 <body>
@@ -826,6 +836,7 @@ body::after{content:none}
         function initAns(q) {
             if (!q) return '';
             if (q.ty === 'pk') return [];
+            if (q.ty === 'pkk') return Array((q.o || []).length).fill(null);
             if (q.ty === 'mj') return Array((q.p || []).length).fill(null);
             if (q.ty === 'fl') return { m: [], t: 0 };
             if (q.ty === 'dd') return Array(ddParse(q.t || '').ans.length).fill(null);
@@ -837,6 +848,7 @@ body::after{content:none}
             if (q.ty === 'pg' || !q.ty) return ans !== '';
             if (q.ty === 'is') return String(ans).trim().length > 0;
             if (q.ty === 'pk') return Array.isArray(ans) && ans.length > 0;
+            if (q.ty === 'pkk') return Array.isArray(ans) && ans.some(v => v !== null && v !== undefined);
             if (q.ty === 'mj') return Array.isArray(ans) && ans.some(v => v !== null && v !== undefined && v !== '');
             if (q.ty === 'fl') return ans && typeof ans === 'object' && Array.isArray(ans.m) && ans.m.length > 0;
             if (q.ty === 'dd') return Array.isArray(ans) && ans.some(v => v);
@@ -901,6 +913,7 @@ body::after{content:none}
         // Poin maksimal soal: menjodohkan = jumlah pasangan, pilihan kompleks = jumlah kunci benar, jenis lain = 1
         function maxPts(q) {
             if (q && q.ty === 'mj') return Math.max(1, (q.p || []).length);
+            if (q && q.ty === 'pkk') return Math.max(1, (q.o || []).length);
             if (q && q.ty === 'pk') return Math.max(1, new Set((q.ks || []).map(Number)).size);
             return 1;
         }
@@ -921,6 +934,13 @@ body::after{content:none}
                 let benarDipilih = 0, salahDipilih = 0;
                 setAns.forEach(a => { if (setKeys.has(a)) benarDipilih++; else salahDipilih++; });
                 return Math.max(0, benarDipilih - salahDipilih);
+            }
+            if (q.ty === 'pkk') {
+                if (!Array.isArray(ans) || !Array.isArray(q.kv)) return 0;
+                // Seperti TKA: tiap pernyataan yang dijawab sesuai kunci bernilai 1 poin.
+                let c = 0;
+                (q.o || []).forEach((_, i) => { if (ans[i] !== null && ans[i] !== undefined && Number(ans[i]) === Number(q.kv[i])) c++; });
+                return c;
             }
             if (q.ty === 'dd') {
                 const A = ddParse(q.t || '').ans; if (!Array.isArray(ans) || !A.length) return 0;
@@ -1095,6 +1115,22 @@ body::after{content:none}
                         }).join('')}
                     </div>
                 `;
+            } else if (q.ty === 'pkk') {
+                const hd = (Array.isArray(q.h) && q.h.length === 2) ? q.h : ['Benar', 'Salah'];
+                const stm = q.o || [];
+                const ua = Array.isArray(currentAns) ? currentAns : Array(stm.length).fill(null);
+                return `
+                    <div style="margin-bottom: 10px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+                        💡 <i>Pilih ${esc(hd[0])} atau ${esc(hd[1])} untuk SETIAP pernyataan.</i>
+                    </div>
+                    <div class="kat-list">
+                        ${stm.map((st, r) => `
+                            <div class="kat-row ${ua[r] !== null && ua[r] !== undefined ? 'done' : ''}">
+                                <div class="kat-t"><b>${r + 1}.</b> ${esc(st)}</div>
+                                <div class="kat-btns">${hd.map((h, c) => `<button type="button" class="kat-b ${ua[r] === c ? 'on' : ''}" onclick="setPKKAnswer(${idx},${r},${c})">${ua[r] === c ? '✓ ' : ''}${esc(h)}</button>`).join('')}</div>
+                            </div>`).join('')}
+                    </div>
+                `;
             } else if (q.ty === 'mj') {
                 if (!q._om) {
                     let rightItems = (q.p || []).map(p => p.r).concat(Array.isArray(q.dc) ? q.dc.filter(x => String(x || '').trim() !== '') : []);
@@ -1240,6 +1276,13 @@ body::after{content:none}
             const pos = list.indexOf(origIdx);
             if (pos >= 0) list.splice(pos, 1);
             else list.push(origIdx);
+            saveAnswer(qIdx, list);
+        }
+
+        function setPKKAnswer(qIdx, r, c) {
+            const q = state.questions[qIdx];
+            const list = Array.isArray(state.result.ans[qIdx]) ? [...state.result.ans[qIdx]] : Array((q.o || []).length).fill(null);
+            list[r] = c;
             saveAnswer(qIdx, list);
         }
 
@@ -1783,6 +1826,7 @@ body::after{content:none}
             const parts = [];
             if (q.tx) parts.push(q.tx);
             parts.push(q.ty === 'dd' ? String(q.t).replace(/\{[^}]*\}/g, ' titik titik ') : q.t);
+            if (q.ty === 'pkk') (q.o || []).forEach((st, i) => parts.push((i + 1) + '. ' + st));
             if (q.ty === 'pg' || q.ty === 'pk') {
                 const ord = q._optOrder || (q.o || []).map((_, i) => i);
                 ord.forEach((oi, di) => parts.push(String.fromCharCode(65 + di) + '. ' + q.o[oi]));
@@ -2140,6 +2184,12 @@ body::after{content:none}
             } else if (ty === 'pk') {
                 body = line('Jawaban siswa', answered ? (Array.isArray(a) ? a : []).map(opt).join(', ') : none);
                 if (st !== 'benar') body += line('Jawaban benar', [...new Set((q.ks || []).map(Number))].map(opt).join(', '));
+            } else if (ty === 'pkk') {
+                const hd = (Array.isArray(q.h) && q.h.length === 2) ? q.h : ['Benar', 'Salah'];
+                (q.o || []).forEach((st, k) => {
+                    const u = Array.isArray(a) ? a[k] : null, kk = Number(q.kv && q.kv[k]), okp = u != null && Number(u) === kk;
+                    body += line(esc(st), `${u != null ? esc(hd[u]) : '<i style="font-weight:400">kosong</i>'} ${mark(okp)}${okp ? '' : ' <span style="font-weight:400;color:var(--text-muted)">(seharusnya: ' + esc(hd[kk]) + ')</span>'}`);
+                });
             } else if (ty === 'mj') {
                 (q.p || []).forEach((p, k) => {
                     const u = Array.isArray(a) ? a[k] : null, okp = u != null && nm(u) === nm(p.r);
@@ -2175,6 +2225,7 @@ body::after{content:none}
                 <p style="color:var(--text-muted)">Data jawaban rinci siswa ini tidak tersedia (soal sudah dihapus atau berubah, atau hasil dikirim sebelum fitur ini ada).</p>
                 <button class="secondary" onclick="closeDetail()" style="margin-bottom:0">Tutup</button></div></div>`;
             const items = qs.map((q, i) => qaDetail(q, (r.ans || {})[i], i));
+            const tPts = qs.reduce((n, q, i) => n + (has(q, (r.ans || {})[i]) ? pts(q, (r.ans || {})[i]) : 0), 0), tMax = qs.reduce((n, q) => n + maxPts(q), 0);
             const cnt = (k) => items.filter(x => x.st === k).length;
             const grp = Storage.loadResults().filter(x => x.tid === r.tid && grpKey(x) === grpKey(r)).sort((a, b) => (b.score || 0) - (a.score || 0));
             const rank = grp.findIndex(x => x.id === r.id) + 1;
@@ -2184,7 +2235,7 @@ body::after{content:none}
             return `<div class="modal-overlay"><div class="modal-card" style="max-width:640px">
                 <h3 style="margin-bottom:4px">🔍 Keterangan Hasil</h3>
                 <p style="text-align:center;margin-bottom:4px"><b>${esc(r.name)}</b> · Kelas ${esc(r.cls)}<br><span style="color:var(--text-muted);font-size:0.9rem">${esc(sessLabel(r))}</span></p>
-                <p style="text-align:center;margin-bottom:0">Nilai <b style="color:var(--primary);font-size:1.3rem">${r.score || 0}</b> · Peringkat <b>${rank}</b> dari ${grp.length} siswa</p>
+                <p style="text-align:center;margin-bottom:0">Nilai <b style="color:var(--primary);font-size:1.3rem">${r.score || 0}</b> · Skor <b>${Math.round(tPts * 100) / 100}</b> dari ${tMax} poin · Peringkat <b>${rank}</b> dari ${grp.length} siswa</p>
                 <div class="dt-sum" style="justify-content:center">
                     <span class="dt-s-benar">✓ Benar: ${cnt('benar')}</span>
                     <span class="dt-s-salah">✗ Salah: ${cnt('salah')}</span>
@@ -2288,7 +2339,8 @@ body::after{content:none}
         // ===== Tampilan & hapus massal halaman Edit Soal =====
         const QT = {
             pg: { n: 'Pilihan Ganda', ic: '🔘', c: '#6366f1', l: '#eef2ff' },
-            pk: { n: 'Pilihan Kompleks', ic: '☑️', c: '#8b5cf6', l: '#f5f3ff' },
+            pk: { n: 'PG Kompleks MCMA', ic: '☑️', c: '#8b5cf6', l: '#f5f3ff' },
+            pkk: { n: 'PG Kompleks Kategori', ic: '🗂️', c: '#14b8a6', l: '#f0fdfa' },
             is: { n: 'Isian Singkat', ic: '✏️', c: '#f59e0b', l: '#fffbeb' },
             dd: { n: 'Seret & Lepas', ic: '🧩', c: '#0ea5e9', l: '#f0f9ff' },
             mj: { n: 'Menjodohkan', ic: '🔗', c: '#10b981', l: '#ecfdf5' },
@@ -3281,13 +3333,14 @@ body::after{content:none}
         const Q_GUIDE = {
             pg: { n: 'Pilihan Ganda (PG)', d: 'Siswa memilih satu jawaban benar dari beberapa opsi.', s: ['Tulis pertanyaan di kolom Teks Pertanyaan.', 'Isi opsi jawaban (minimal 2). Pakai tombol + Tambah Opsi atau X untuk mengatur jumlahnya.', 'Pilih Kunci Jawaban Benar dari daftar.'], e: 'Pertanyaan: Berapa hasil 5 + 7? Opsi: 10, 11, 12, 13. Kunci: Opsi 3.', t: 'Benar = 1 poin, salah = 0. Gambar dan teks sisipan boleh ditambahkan.' },
             is: { n: 'Isian Singkat (IS)', d: 'Siswa mengetik jawaban singkat sendiri.', s: ['Tulis pertanyaan.', 'Isi Kunci Jawaban. Beri tanda | atau kata "atau" untuk beberapa variasi jawaban yang dianggap benar.'], e: 'Pertanyaan: Ibukota Indonesia adalah... Kunci: jakarta|dki jakarta', t: 'Huruf besar/kecil, spasi (ganda maupun tanpa spasi), tanda baca di ujung, dan format angka (3,5 = 3.5) tidak dibedakan. Jika jawaban siswa atau kunci memakai kata "atau", cukup satu bagian yang cocok dianggap benar. Ejaan huruf tetap harus sama. Benar = 1 poin.' },
-            pk: { n: 'Pilihan Kompleks (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Setiap jawaban benar yang dicentang siswa bernilai 1 poin, jadi soal dengan 3 kunci bernilai maksimal 3 poin. Setiap pilihan yang salah mengurangi 1 poin (nilai soal tidak kurang dari 0).' },
+            pk: { n: 'Pilihan Ganda Kompleks MCMA (PK)', d: 'Siswa memilih lebih dari satu jawaban benar.', s: ['Tulis pertanyaan, misalnya "Pilih SEMUA yang benar".', 'Isi opsi jawaban.', 'Centang kotak di samping semua opsi yang benar.'], e: 'Pertanyaan: Pilih bilangan genap. Opsi: 2, 3, 4, 5. Centang: 2 dan 4.', t: 'Setiap jawaban benar yang dicentang siswa bernilai 1 poin, jadi soal dengan 3 kunci bernilai maksimal 3 poin. Setiap pilihan yang salah mengurangi 1 poin (nilai soal tidak kurang dari 0).' },
+            pkk: { n: 'Pilihan Ganda Kompleks Kategori (PKK)', d: 'Siswa menilai setiap pernyataan: Benar/Salah atau Sesuai/Tidak sesuai.', s: ['Tulis pertanyaan atau teks pengantar, misalnya "Tentukan benar atau salah tiap pernyataan berikut".', 'Pilih Jenis Kategori: Benar / Salah atau Sesuai / Tidak sesuai.', 'Tulis tiap pernyataan, lalu pilih kunci jawabannya di sebelahnya.', 'Tambah pernyataan dengan tombol + Tambah Pernyataan.'], e: 'Pernyataan: 2 + 3 = 5 (kunci Benar). 4 x 2 = 6 (kunci Salah).', t: 'Sama seperti penilaian TKA: tiap pernyataan yang dijawab sesuai kunci bernilai 1 poin, jadi soal dengan 4 pernyataan bernilai maksimal 4 poin. Nilai akhir = total poin dibagi total poin maksimal x 100.' },
             mj: { n: 'Menjodohkan (MJ)', d: 'Siswa memasangkan item kiri dengan item kanan yang tepat.', s: ['Tulis instruksi, misalnya "Jodohkan negara dengan ibukotanya".', 'Isi Pasangan Data: kolom kiri dan kanan harus pasangan yang benar.', 'Tambah pasangan dengan tombol + Tambah Pasangan Baru.', 'Tambahkan Jawaban Pengecoh bila perlu; tombol Hapus Soal menghapus item kiri tetapi jawabannya tetap ada sebagai pengecoh.'], e: 'Kiri: Indonesia, kanan: Jakarta. Kiri: Jepang, kanan: Tokyo.', t: 'Setiap pasangan yang benar bernilai 1 poin (soal dengan 4 pasangan bernilai maksimal 4 poin). Tulis item kanan dengan jelas.' },
             fl: { n: 'Flashcard (FL)', d: 'Permainan kartu terbalik: siswa mencari pasangan kartu yang sama.', s: ['Tulis instruksi singkat.', 'Isi Pasangan Data: tiap pasangan menjadi dua kartu yang harus dicocokkan.'], e: 'Kiri: 3 + 4, kanan: 7. Kiri: 2 x 5, kanan: 10.', t: 'Nilai = jumlah pasangan yang ditemukan dibagi total pasangan. Pakai 4 sampai 8 pasangan agar layar tidak penuh.' },
             dd: { n: 'Melengkapi Kalimat Seret & Lepas (DD)', d: 'Siswa menyeret kata ke kotak kosong di dalam kalimat.', s: ['Tulis kalimat di Teks Pertanyaan, lalu beri tanda kurung kurawal { } pada kata yang harus diisi siswa.', 'Isi Kata Pengecoh (opsional) dipisah koma agar pilihan lebih beragam.', 'Gambar dan teks sisipan (opsional) tampil di atas kalimat, sama seperti tipe PG, PK, dan IS.'], e: 'Ibu pergi ke {pasar} membeli {sayur}. Pengecoh: sekolah, buku.', t: 'Kalimat itu sendiri tampil ke siswa dengan kotak kosong, jadi jawaban di dalam { } tidak terlihat. Nilai sebagian: tiap kotak benar dihitung proporsional. Di HP, ketuk kata lalu ketuk kotaknya.' }
         };
         function qGuideHtml(fq) {
-            const types = ['pg', 'is', 'pk', 'mj', 'fl', 'dd'], g = Q_GUIDE[state.qGuide];
+            const types = ['pg', 'is', 'pk', 'pkk', 'mj', 'fl', 'dd'], g = Q_GUIDE[state.qGuide];
             return `<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 12px"><b>📖 Panduan:</b>
                 ${types.map(t => `<button class="${state.qGuide === t ? 'success' : 'secondary'}" onclick="state.qGuide=(state.qGuide==='${t}'?null:'${t}');render()" style="${smallBtn}">${t.toUpperCase()}</button>`).join('')}</div>
                 ${g ? `<div style="border:1px dashed var(--border);border-radius:16px;padding:12px 14px;margin-bottom:12px;font-size:0.9rem">
@@ -3379,9 +3432,18 @@ body::after{content:none}
         function changeFormType(ty) {
             state.formQuestion.ty = ty; if (state.qGuide) state.qGuide = ty;
             if (ty === 'pk' && !state.formQuestion.ks) state.formQuestion.ks = [];
+            if (ty === 'pkk') {
+                const f = state.formQuestion;
+                if (!Array.isArray(f.h) || f.h.length !== 2) f.h = ['Benar', 'Salah'];
+                if (!Array.isArray(f.o) || !f.o.length) f.o = ['', '', ''];
+                f.kv = f.o.map((_, i) => (f.kv && Number(f.kv[i]) === 1) ? 1 : 0);
+            }
             if ((ty === 'mj' || ty === 'fl') && (!state.formQuestion.p || state.formQuestion.p.length===0)) state.formQuestion.p = [{l:'', r:''}];
             render();
         }
+        function setFormKatH(v) { state.formQuestion.h = v === 1 ? ['Sesuai', 'Tidak sesuai'] : ['Benar', 'Salah']; render(); }
+        function addFormStmt() { const f = state.formQuestion; f.o.push(''); f.kv = f.kv || []; f.kv.push(0); render(); }
+        function rmFormStmt(i) { const f = state.formQuestion; f.o.splice(i, 1); if (Array.isArray(f.kv)) f.kv.splice(i, 1); render(); }
         function addFormOpt() { state.formQuestion.o.push(''); render(); }
         function rmFormOpt(i) { state.formQuestion.o.splice(i, 1); if (Array.isArray(state.formQuestion.oimg)) state.formQuestion.oimg.splice(i, 1); render(); }
         function optImgCtl(i) {
@@ -3446,7 +3508,7 @@ body::after{content:none}
 
                         <label>Tipe Soal</label>
                         <div class="qm-types">
-                            ${['pg', 'pk', 'is', 'dd', 'mj', 'fl'].map(t => `<button type="button" class="qm-type-btn ${fq.ty === t ? 'on' : ''}" style="--qc:${QT[t].c};--ql:${QT[t].l}" onclick="changeFormType('${t}')"><span>${QT[t].ic}</span><b>${t.toUpperCase()}</b><small>${QT[t].n}</small></button>`).join('')}
+                            ${['pg', 'pk', 'pkk', 'is', 'dd', 'mj', 'fl'].map(t => `<button type="button" class="qm-type-btn ${fq.ty === t ? 'on' : ''}" style="--qc:${QT[t].c};--ql:${QT[t].l}" onclick="changeFormType('${t}')"><span>${QT[t].ic}</span><b>${t.toUpperCase()}</b><small>${QT[t].n}</small></button>`).join('')}
                         </div>
 
                         <label>Teks Pertanyaan / Instruksi</label>
@@ -3480,7 +3542,7 @@ body::after{content:none}
                         ` : ''}
 
                         ${fq.ty === 'pk' ? `
-                            <label>Pilihan Jawaban & Kunci (Centang yang benar)</label>
+                            <label>Pilihan Jawaban & Kunci MCMA (Centang semua yang benar)</label>
                             ${(fq.o || []).map((opt, i) => {
                                 let isK = (fq.ks || []).includes(i);
                                 return `
@@ -3492,6 +3554,29 @@ body::after{content:none}
                                 </div>`;
                             }).join('')}
                             <button class="secondary" onclick="addFormOpt()" style="padding:8px; font-size:0.9rem;">+ Tambah Opsi Baru</button>
+                        ` : ''}
+
+                        ${fq.ty === 'pkk' ? `
+                            <label>Jenis Kategori</label>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+                                <button type="button" class="${(fq.h || [])[0] !== 'Sesuai' ? 'success' : 'secondary'}" onclick="setFormKatH(0)" style="${smallBtn}">Benar / Salah</button>
+                                <button type="button" class="${(fq.h || [])[0] === 'Sesuai' ? 'success' : 'secondary'}" onclick="setFormKatH(1)" style="${smallBtn}">Sesuai / Tidak sesuai</button>
+                            </div>
+                            <label>Pernyataan & Kunci Jawaban</label>
+                            ${(fq.o || []).map((st, i) => {
+                                const hh = (Array.isArray(fq.h) && fq.h.length === 2) ? fq.h : ['Benar', 'Salah'];
+                                const kv = Number((fq.kv || [])[i]) === 1 ? 1 : 0;
+                                return `
+                                <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
+                                    <input type="text" placeholder="Pernyataan ${i + 1}" value="${esc(st)}" oninput="state.formQuestion.o[${i}]=this.value" style="margin-bottom:0; flex:1 1 200px;">
+                                    <select onchange="state.formQuestion.kv[${i}]=parseInt(this.value)" style="margin-bottom:0; width:auto; min-width:9rem;">
+                                        <option value="0" ${kv === 0 ? 'selected' : ''}>${esc(hh[0])}</option>
+                                        <option value="1" ${kv === 1 ? 'selected' : ''}>${esc(hh[1])}</option>
+                                    </select>
+                                    <button class="danger" onclick="rmFormStmt(${i})" style="width:auto; margin-bottom:0; padding:10px;">X</button>
+                                </div>`;
+                            }).join('')}
+                            <button class="secondary" onclick="addFormStmt()" style="padding:8px; font-size:0.9rem;">+ Tambah Pernyataan</button>
                         ` : ''}
 
                         ${fq.ty === 'dd' ? `<p style="color:var(--text-muted);font-size:0.85rem">Tulis kalimat/teks di atas, lalu beri tanda kurung kurawal pada kata yang harus diisi siswa. Contoh: <b>Ibu pergi ke {pasar} membeli {sayur}.</b></p>
@@ -3538,6 +3623,7 @@ body::after{content:none}
         const IMP_SAMPLE = [
             ['PG', 'Matematika', 1, 'CONTOH: Berapa hasil dari 5 + 7?', '10', '11', '12', '13', '', '', 'C', ''],
             ['PK', 'Matematika', 1, 'CONTOH: Pilih SEMUA bilangan genap!', '2', '3', '4', '7', '8', '', 'A,C,E', ''],
+            ['PKK', 'Matematika', 1, 'CONTOH: Tentukan benar atau salah tiap pernyataan!', '2 + 3 = 5 => Benar', '4 x 2 = 6 => Salah', '10 - 4 = 6 => Benar', '', '', '', '', ''],
             ['IS', 'Bahasa Indonesia', 1, 'CONTOH: Ibukota negara Indonesia adalah ...', '', '', '', '', '', '', 'jakarta|dki jakarta', ''],
             ['DD', 'Bahasa Indonesia', 1, 'CONTOH: Ibu pergi ke {pasar} untuk membeli {sayur}.', '', '', '', '', '', '', '', 'sekolah, buku'],
             ['MJ', 'IPAS', 1, 'CONTOH: Jodohkan hewan dengan makanannya!', 'Kucing => Ikan', 'Sapi => Rumput', 'Ayam => Jagung', '', '', '', '', ''],
@@ -3546,7 +3632,8 @@ body::after{content:none}
         const IMP_GUIDE = [
             ['Jenis soal', 'Kode (kolom Tipe)', 'Cara mengisi'],
             ['Pilihan Ganda', 'PG', 'Isi Pertanyaan dan Opsi 1 sampai 6 (minimal 2 opsi). Kolom Kunci diisi satu huruf: A = Opsi 1, B = Opsi 2, dst.'],
-            ['Pilihan Kompleks', 'PK', 'Sama seperti PG, tetapi Kunci diisi semua huruf yang benar dipisah koma, misalnya A,C,E. Tiap jawaban benar bernilai 1 poin (contoh A,C,E = maksimal 3 poin).'],
+            ['Pilihan Ganda Kompleks Kategori', 'PKK', 'Setiap kolom Opsi diisi satu pernyataan dengan format pernyataan => kunci. Kunci: Benar atau Salah, atau Sesuai atau Tidak sesuai (pilih satu jenis saja dalam satu soal), misalnya 2 + 3 = 5 => Benar. Minimal 2 pernyataan, tiap pernyataan bernilai 1 poin.'],
+            ['Pilihan Ganda Kompleks MCMA', 'PK', 'Sama seperti PG, tetapi Kunci diisi semua huruf yang benar dipisah koma, misalnya A,C,E. Tiap jawaban benar bernilai 1 poin (contoh A,C,E = maksimal 3 poin).'],
             ['Isian Singkat', 'IS', 'Kunci diisi jawaban yang benar. Beberapa variasi jawaban dipisah tanda |, misalnya jakarta|dki jakarta. Kolom Opsi dikosongkan.'],
             ['Melengkapi Kalimat (seret dan lepas)', 'DD', 'Tulis kalimat di Pertanyaan dan beri kurung kurawal pada kata jawaban, misalnya Ibu ke {pasar}. Kata pengecoh (opsional) ditulis di kolom Pengecoh, dipisah koma.'],
             ['Menjodohkan', 'MJ', 'Setiap kolom Opsi diisi satu pasangan dengan format kiri => kanan, misalnya Kucing => Ikan. Minimal 2 pasangan.'],
@@ -3609,7 +3696,7 @@ body::after{content:none}
             const ci = { ty: col('tipe'), mp: col('mapel'), uh: col('uh'), t: col('pertanyaan'), k: col('kunci'), d: col('pengecoh'), o: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => col('opsi' + n)), kl: col('kelas'), tx: col('bacaan') };
             if (ci.t < 0) return { fatal: 'Kolom "Pertanyaan" tidak ditemukan. Gunakan file dari tombol Unduh Format.' };
             const get = (r, i) => i < 0 ? '' : String(r[i] == null ? '' : r[i]).trim();
-            const TY = { pg: 'pg', pilihanganda: 'pg', is: 'is', isian: 'is', isiansingkat: 'is', pk: 'pk', pilihankompleks: 'pk', mj: 'mj', menjodohkan: 'mj', fl: 'fl', flashcard: 'fl', dd: 'dd', seretlepas: 'dd', melengkapikalimat: 'dd' };
+            const TY = { pg: 'pg', pilihanganda: 'pg', is: 'is', isian: 'is', isiansingkat: 'is', pk: 'pk', mcma: 'pk', pilihankompleks: 'pk', pilihankompleksmcma: 'pk', pkk: 'pkk', kategori: 'pkk', komplekskategori: 'pkk', pilihankomplekskategori: 'pkk', mj: 'mj', menjodohkan: 'mj', fl: 'fl', flashcard: 'fl', dd: 'dd', seretlepas: 'dd', melengkapikalimat: 'dd' };
             const pos = s => { s = String(s).trim().toUpperCase(); if (/^[A-F]$/.test(s)) return s.charCodeAt(0) - 65; if (/^[1-6]$/.test(s)) return Number(s) - 1; return -1; };
             const out = { qs: [], errs: [], sample: 0, dup: 0 };
             const seen = new Set((config.questions || []).map(q => JSON.stringify([q.ty || 'pg', q.mp || '', qUH(q), q.t])));
@@ -3620,7 +3707,7 @@ body::after{content:none}
                 if (/^contoh\s*:/i.test(t)) { out.sample++; continue; }
                 const err = (m) => out.errs.push(no + ': ' + m);
                 const rawTy = get(r, ci.ty), ty = TY[norm(rawTy)];
-                if (!ty) { err(rawTy ? 'Tipe "' + rawTy + '" tidak dikenal (pakai PG, PK, IS, DD, MJ, atau FL)' : 'Tipe kosong'); continue; }
+                if (!ty) { err(rawTy ? 'Tipe "' + rawTy + '" tidak dikenal (pakai PG, PK, PKK, IS, DD, MJ, atau FL)' : 'Tipe kosong'); continue; }
                 if (!t) { err('Pertanyaan kosong'); continue; }
                 let mp = dm; const rawMp = get(r, ci.mp);
                 if (rawMp) { mp = MAPEL.find(m => norm(m) === norm(rawMp)); if (!mp) { err('Mapel "' + rawMp + '" tidak ada di daftar mapel'); continue; } }
@@ -3648,6 +3735,12 @@ body::after{content:none}
                     if (!idx.length || idx.some(x => x < 0)) { err('Kunci PK harus huruf opsi yang terisi, dipisah koma (contoh A,C)'); continue; }
                     q.o = filled.map(x => x.v); q.ks = [...new Set(idx)].sort((a, b) => a - b);
                     { const oi = filled.map(x => oim[x.j] || ''); if (oi.some(Boolean)) q.oimg = oi; }
+                } else if (ty === 'pkk') {
+                    const VB = { benar: [0, 0], salah: [0, 1], sesuai: [1, 0], tidaksesuai: [1, 1] };
+                    const sp = filled.map(x => { const k = x.v.lastIndexOf('=>'); if (k < 0) return null; const vv = VB[norm(x.v.slice(k + 2))], st = x.v.slice(0, k).trim(); return (vv && st) ? { s: st, g: vv[0], c: vv[1] } : null; });
+                    if (sp.length < 2 || sp.some(x => !x)) { err('PKK butuh minimal 2 pernyataan berformat pernyataan => Benar/Salah atau Sesuai/Tidak sesuai'); continue; }
+                    if (new Set(sp.map(x => x.g)).size > 1) { err('PKK: pakai satu jenis saja dalam satu soal, Benar/Salah atau Sesuai/Tidak sesuai'); continue; }
+                    q.o = sp.map(x => x.s); q.kv = sp.map(x => x.c); q.h = sp[0].g ? ['Sesuai', 'Tidak sesuai'] : ['Benar', 'Salah'];
                 } else if (ty === 'is') {
                     if (!kunci) { err('Kunci jawaban IS kosong'); continue; }
                     q.k = kunci;
@@ -3823,6 +3916,13 @@ body::after{content:none}
             if (fq.ty === 'dd' && !ddParse(fq.t).ans.length) { toast("⚠️ Beri tanda { } pada kata jawaban, contoh: Ibu ke {pasar}"); return; }
             fq.uh = fq.uh || 1; state.qUH = fq.uh; state.qMapel = fq.mp; if (!fq.kl) delete fq.kl;
             if (fq.ty === 'pk' && (!fq.ks || fq.ks.length === 0)) { toast("⚠️ Pilih minimal 1 kunci jawaban yang benar!"); return; }
+            if (fq.ty === 'pkk') {
+                const keep = [];
+                (fq.o || []).forEach((st, i) => { if (String(st || '').trim()) keep.push({ s: String(st).trim(), k: Number((fq.kv || [])[i]) === 1 ? 1 : 0 }); });
+                if (keep.length < 2) { toast("⚠️ Isi minimal 2 pernyataan!"); return; }
+                fq.o = keep.map(x => x.s); fq.kv = keep.map(x => x.k);
+                if (!Array.isArray(fq.h) || fq.h.length !== 2) fq.h = ['Benar', 'Salah'];
+            } else { delete fq.kv; delete fq.h; }
             if ((fq.ty === 'mj' || fq.ty === 'fl') && (!fq.p || fq.p.length === 0)) { toast("⚠️ Masukkan minimal 1 pasangan!"); return; }
 
             if (fq.ty === 'mj') {
