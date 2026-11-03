@@ -5230,6 +5230,8 @@ const tkTeacher=()=>{const ts=teachersList();if(!cloud()||ts.length<2)return"";c
 const srvNote=()=>!cloud()?`<p class="mu" style="font-size:.85rem">Mode lokal: hasil hanya tersimpan di perangkat ini.</p>`:A.srv?`<p class="mu" style="font-size:.85rem">☁️ Terhubung ke server. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Muat ulang</button></p>`:`<p class="mu" style="font-size:.85rem">⚠️ Data server belum bisa dimuat, yang tampil hanya data perangkat ini. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Coba lagi</button></p>`;
 /*TKA-CLOUD-END*/
 /* ===== Validasi nama siswa terhadap data siswa (huruf besar/kecil bebas) ===== */
+const KELAS_TKA=["6A","6B"];const kelasOK=c=>KELAS_TKA.some(x=>kk(x)===kk(c));
+const TOLAK_KELAS="🚫 TKA ini hanya untuk siswa Kelas 6A dan 6B.";
 const RS={},RT={};let tokV="";
 const tkNorm=x=>String(x||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 const tkKey=(m,p,c)=>m+"|"+p+"|"+(c||"");
@@ -5268,7 +5270,7 @@ function swHint(v,fin){
   const m=rs.filter(s=>nk(s.name)===nk(x)),cl=[...new Set(m.map(s=>kk(s.cls)))];
   if(m.length&&cl.length===1){
     if(k){k.value=m[0].cls;k.readOnly=true}
-    if(h){h.textContent="✅ Nama sesuai data • Kelas "+(m[0].cls||"-");h.style.color="var(--ok)"}
+    if(h){if(kelasOK(m[0].cls)){h.textContent="✅ Nama sesuai data • Kelas "+(m[0].cls||"-");h.style.color="var(--ok)"}else{h.textContent="🚫 Kelas "+(m[0].cls||"-")+" tidak termasuk. TKA hanya untuk Kelas 6A dan 6B.";h.style.color="var(--er)"}}
   }else if(m.length){
     if(h){h.textContent="ℹ️ Ada lebih dari satu siswa dengan nama ini. Isi kelasmu dengan benar.";h.style.color="var(--mu)"}
   }else if(fin&&h){
@@ -5415,6 +5417,7 @@ async function brief(){
     n=hit.name;k=hit.cls;if(nE)nE.value=n;if(kE){kE.value=k;kE.readOnly=true}
   }
   sessionStorage.tkaN=n;sessionStorage.tkaK=k;
+  if(!kelasOK(k)){alert(TOLAK_KELAS+(k?"\n\nKelasmu: "+k:"\n\nIsi kelas dengan 6A atau 6B."));if(kE&&!kE.readOnly)kE.focus();return}
   const B=BANK[pick],P=curPk();
   if(!P.soal.length){xtoast("Soal untuk paket ini belum tersedia.");return}
   if(sedang(n,k,pick,P.id)){alert("Ujianmu pada paket ini masih berjalan. Tekan tombol Lanjutkan Ujian di beranda.");return}
@@ -5730,14 +5733,14 @@ function stat(){
   const fkb=(i,l)=>`<button class="${(i<0?A.fk==="all":A.fk===kl[i])?"":"sec"}" onclick="TKA.fk(${i})">${l}</button>`;
   const rowsK=kl.map(k=>{const s=sm(byP.filter(r=>clsOf(r)===k));return`<tr><td><b>${esc(k)}</b></td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td><td>${s.ok} (${Math.round(s.ok/s.n*100)}%)</td><td style="min-width:6rem"><div style="background:var(--bd);border-radius:6px;height:.6rem"><div style="width:${s.avg}%;background:var(--pr);height:100%;border-radius:6px"></div></div></td></tr>`}).join("");
   const g={};byM.filter(r=>A.fk==="all"||clsOf(r)===A.fk).forEach(r=>{const k=r.m+"|"+pidOf(r);(g[k]=g[k]||{m:r.m,l:pnOf(r),a:[]}).a.push(r)});
-  const rowsP=Object.keys(g).sort().map(k=>{const x=g[k],s=sm(x.a);return`<tr><td>${esc(BANK[x.m]?BANK[x.m].nama:x.m)}</td><td>${esc(x.l)}</td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td></tr>`}).join("");
+  const rowsP=Object.keys(g).sort().map(k=>{const x=g[k],s=sm(x.a);return`<tr><td>${esc(BANK[x.m]?BANK[x.m].nama:x.m)}</td><td>${esc(x.l)}</td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td><td><button class="sec" onclick="TKA.rsp('${x.m}','${k.split("|")[1]}')" title="Hapus semua hasil paket ini agar siswa bisa mengerjakan lagi">🔄 Reset paket</button></td></tr>`}).join("");
   return`<h2>📊 Statistik hasil pengerjaan</h2>${srvNote()}
   <label>Mata uji</label><div class="foot" style="margin:0 0 .6rem">${fb("all","Semua")}${fb("mat","Matematika")}${fb("bin","B. Indonesia")}</div>
   ${pks.length?`<label>Paket</label><div class="foot" style="margin:0 0 .6rem">${fpb("all","Semua paket")}${pks.map(p=>fpb(p.id,"📦 "+esc(p.nama))).join("")}</div>`:""}
   ${kl.length?`<label>Kelas</label><div class="foot" style="margin:0 0 1rem">${fkb(-1,"Semua kelas")}${kl.map((k,i)=>fkb(i,esc(k))).join("")}</div>`:""}
   ${byP.length?`<h2 style="margin-top:1rem">🏫 Statistik per kelas</h2><div style="overflow:auto"><table><tr><th>Kelas</th><th>Peserta</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th><th>Nilai ≥ 70</th><th>Grafik</th></tr>${rowsK}</table></div><button class="sec" style="margin:.6rem 0 1rem" onclick="TKA.stx()">⬇️ Unduh statistik per kelas (CSV)</button>`:""}
   ${n?`<div class="row" style="margin-bottom:1rem"><div class="card" style="background:var(--prl)">Peserta<br><b style="font-size:1.6rem">${n}</b></div><div class="card" style="background:var(--prl)">Rata-rata nilai<br><b style="font-size:1.6rem">${Math.round(R.reduce((a,r)=>a+r.nilai,0)/n)}</b></div><div class="card" style="background:var(--prl)">Tertinggi / Terendah<br><b style="font-size:1.6rem">${Math.max(...R.map(r=>r.nilai))} / ${Math.min(...R.map(r=>r.nilai))}</b></div></div>
-  <h2 style="margin-top:1rem">📦 Statistik per paket</h2><div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Peserta</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th></tr>${rowsP}</table></div>
+  <h2 style="margin-top:1rem">📦 Statistik per paket</h2><div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Peserta</th><th>Rata-rata</th><th>Tertinggi</th><th>Terendah</th><th>Aksi</th></tr>${rowsP}</table></div>
   <h2 style="margin-top:1.2rem">Sebaran kategori nilai</h2>${pie([{l:"Sangat baik (90–100)",v:c(r=>r.nilai>=90),c:"#22C55E"},{l:"Baik (75–89)",v:c(r=>r.nilai>=75&&r.nilai<90),c:"#3B82F6"},{l:"Cukup (60–74)",v:c(r=>r.nilai>=60&&r.nilai<75),c:"#F59E0B"},{l:"Perlu bimbingan (<60)",v:c(r=>r.nilai<60),c:"#EF4444"}])}
   <h2 style="margin-top:1.2rem">Ketepatan jawaban (poin)</h2>${pie([{l:"Poin benar",v:sk,c:"#22C55E"},{l:"Poin hilang",v:mx-sk,c:"#EF4444"}])}
   <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Paket</th><th>Nilai</th><th>Tanggal</th><th>Aksi</th></tr>${R.slice().reverse().slice(0,200).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td>${esc(pnOf(r))}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td><td><button class="sec" onclick="TKA.rsr('${rid(r)}')" title="Hapus hasil agar siswa bisa mengerjakan paket ini sekali lagi">🔄 Reset</button></td></tr>`).join("")}</table></div>
@@ -5984,7 +5987,7 @@ Object.assign(TKA,{wimp,swimp,swexp,swsave,
 });
 
 /* ===== TOKEN TKA (guru): per mata uji + paket + kelas ===== */
-const tokClasses=()=>[...new Set(rosterOf(A.tid).map(x=>x.cls).filter(Boolean))].sort(nC);
+const tokClasses=()=>KELAS_TKA.slice();
 async function tokPull(){
   A.tk=clone(tokLocal(A.tid));
   if(!cloud()||!A.token)return;
@@ -6021,12 +6024,25 @@ function tokTab(){
   A.tkl=keys;
   return`<h2>🔑 Token TKA</h2>
   <p class="mu">Setiap paket soal punya token sendiri. Dalam satu kelas, token paket yang sama berlaku untuk semua siswa. Bagikan token ke siswa saat ujian dimulai; siswa memasukkannya setelah menekan Lanjut.</p>
-  ${cl.length?"":`<p class="mu" style="color:var(--wat)">Belum ada data siswa, jadi token dibuat untuk <b>semua kelas</b>. Isi data siswa di tab 👥 Siswa agar token dibuat per kelas.</p>`}
   ${cloud()&&!A.token?`<p class="mu" style="color:var(--wat)">⚠️ Tidak terhubung ke server: token hanya tersimpan di perangkat ini dan tidak bisa dipakai siswa di perangkat lain.</p>`:""}
   <div class="foot" style="margin:.6rem 0"><button onclick="TKA.tkall(false)">🎲 Buat token yang belum ada</button><button class="sec" onclick="TKA.tkall(true)">🔄 Ganti semua token</button></div>
   <div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Kelas</th><th>Token</th><th>Aksi</th></tr>${rows.join("")}</table></div>`;
 }
 Object.assign(TKA,{tokgo,
+ rsp:async(m,p)=>{
+  const kf=A.fk&&A.fk!=="all"?A.fk:null;
+  const list=srcAll().filter(r=>r.m===m&&pidOf(r)===p&&(!kf||clsOf(r)===kf));
+  if(!list.length){alert("Belum ada hasil untuk paket ini"+(kf?" di kelas "+kf:"")+".");return}
+  if(!confirm("Reset paket "+(BANK[m]?BANK[m].nama:m)+" • "+gP(m,p).nama+(kf?" • Kelas "+kf:" • semua kelas")+"?\n\n"+list.length+" hasil siswa akan dihapus dan mereka dapat mengerjakan paket ini satu kali lagi."))return;
+  const ids=list.map(rid);
+  if(cloud()&&A.token&&A.srv){
+    const sv=ids.filter(id=>A.srv.some(x=>rid(x)===id));let gagal=0;
+    for(let q=0;q<sv.length;q+=4)await Promise.all(sv.slice(q,q+4).map(id=>gs("deleteResult",A.token,id).catch(e=>{gagal++;if(typeof isAuthErr==="function"&&isAuthErr(e))gagal=-1e9})));
+    if(gagal<0){alert("Sesi berakhir. Silakan masuk lagi.");A.ok=false;adm();return}
+    if(gagal)alert(gagal+" hasil gagal dihapus di server. Coba lagi.");
+    await pull();
+  }
+  ls.s("tka_results",(ls.g("tka_results")||[]).filter(x=>!ids.includes(rid(x))));panel()},
  tkg:async i=>{const k=A.tkl&&A.tkl[i];if(!k)return;(A.tk=A.tk||{})[k]=tkGen();if((await tokSave())!==false)panel()},
  tkall:async f=>{
   if(f&&!confirm("Ganti SEMUA token?\n\nToken lama tidak berlaku lagi dan harus dibagikan ulang ke siswa."))return;
