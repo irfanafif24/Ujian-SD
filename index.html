@@ -5230,7 +5230,22 @@ const tkTeacher=()=>{const ts=teachersList();if(!cloud()||ts.length<2)return"";c
 const srvNote=()=>!cloud()?`<p class="mu" style="font-size:.85rem">Mode lokal: hasil hanya tersimpan di perangkat ini.</p>`:A.srv?`<p class="mu" style="font-size:.85rem">☁️ Terhubung ke server. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Muat ulang</button></p>`:`<p class="mu" style="font-size:.85rem">⚠️ Data server belum bisa dimuat, yang tampil hanya data perangkat ini. <button class="sec" style="padding:.2rem .6rem" onclick="TKA.rl()">🔄 Coba lagi</button></p>`;
 /*TKA-CLOUD-END*/
 /* ===== Validasi nama siswa terhadap data siswa (huruf besar/kecil bebas) ===== */
-const RS={};
+const RS={},RT={};let tokV="";
+const tkNorm=x=>String(x||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const tkKey=(m,p,c)=>m+"|"+p+"|"+(c||"");
+const tkSig=(n,k,m,p)=>nk(n)+"|"+kk(k)+"|"+m+"|"+p;
+const tkGen=()=>{const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let t="";for(let i=0;i<5;i++)t+=ch[Math.floor(Math.random()*ch.length)];return t};
+function tokLocal(tid){let o={};try{if(typeof state!=="undefined"&&typeof config!=="undefined"&&state.tid===tid&&config.tkaTokens)o=config.tkaTokens;else o=(Storage.loadConfig(tid)||{}).tkaTokens||{}}catch(e){}return o||{}}
+/* Token dicari per mata uji + paket + kelas: kelas persis, lalu tingkat (mis. 6), lalu "semua kelas" */
+function tokFor(map,m,p,cls){
+  const c=kk(cls),ks=Object.keys(map||{});
+  const f=cc=>ks.find(k=>{const q=k.split("|");return q[0]===m&&q[1]===p&&kk(q.slice(2).join("|"))===cc});
+  let k=c?f(c):undefined;
+  if(!k){const g=/^\s*(\d+)/.exec(String(cls||""));if(g)k=f(g[1])}
+  if(!k)k=f("");
+  return k?String(map[k]||""):"";
+}
+const tokMap=()=>{const tid=tidOf();return cloud()&&RT[tid]?RT[tid]:tokLocal(tid)};
 const rosterOf=tid=>{
   const out=[],seen={};
   const add=a=>(Array.isArray(a)?a:[]).forEach(s=>{if(!s||!s.name)return;const id=nk(s.name)+"|"+kk(s.cls);if(!seen[id]){seen[id]=1;out.push({name:String(s.name).trim().replace(/\s+/g," "),cls:String(s.cls||"").trim()})}});
@@ -5243,7 +5258,7 @@ const rosterOf=tid=>{
 const rosterNow=()=>rosterOf(tidOf());
 async function rosterFetch(){
   const tid=tidOf();if(!cloud()||!tid)return;
-  try{const r=await gs("getConfig",tid,"");if(r&&r.exists&&r.config&&Array.isArray(r.config.roster))RS[tid]=r.config.roster}catch(e){}
+  try{const r=await gs("getConfig",tid,"");if(r&&r.exists&&r.config){if(Array.isArray(r.config.roster))RS[tid]=r.config.roster;if(r.config.tkaTokens&&typeof r.config.tkaTokens==="object")RT[tid]=r.config.tkaTokens}}catch(e){}
 }
 function swHint(v,fin){
   const k=$("#tk-kl"),h=$("#tk-nh"),x=String(v||"").trim(),rs=rosterNow();
@@ -5361,12 +5376,12 @@ function sysRows(){
 /* ================= BERANDA (LOBI) ================= */
 function keepIn(){const n=$("#tk-nm"),k=$("#tk-kl");if(n)sessionStorage.tkaN=n.value;if(k)sessionStorage.tkaK=k.value}
 function home(){
-  scr="home";
+  scr="home";tokV="";
   const rn=ls.g("tka_run"),hist=(ls.g("tka_results")||[]).slice(-5).reverse();
   const live=rn&&rn.end>Date.now()&&BANK[rn.m]&&PS(rn.m).some(p=>p.id===(rn.p||PS(rn.m)[0].id));
   const P=curPk();
   ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby">
-  <div class="xb-hero"><div><span class="chip">Tes Kemampuan Akademik • SD/MI</span><h1>Simulasi TKA Kelas 6</h1><p>Pilih mata uji dan paket soal, isi data diri, lalu mulai. Kamu bisa berpindah soal, menandai ragu-ragu, dan mengubah jawaban sebelum waktu habis.</p></div><div class="ic">🎯</div></div>
+  <div class="xb-hero"><div><span class="chip">Tes Kemampuan Akademik • SD/MI</span><h1>Simulasi TKA Kelas 6</h1><p>Pilih mata uji dan paket soal, isi data diri, masukkan token dari gurumu, lalu mulai. Kamu bisa berpindah soal, menandai ragu-ragu, dan mengubah jawaban sebelum waktu habis.</p></div><div class="ic">🎯</div></div>
   ${live?`<div class="xb-resume"><div><b>⏳ Ada ujian yang belum selesai</b><div class="mu">${esc(rn.name)} • ${esc(BANK[rn.m].nama)} • ${esc(gP(rn.m,rn.p).nama)} • sisa <b>${fmt(rn.end-Date.now())}</b>${rn.vio?` • pelanggaran ${rn.vio}/${MAXV}`:""}</div></div><button class="warn" onclick="TKA.resume()">▶ Lanjutkan Ujian</button></div>`:""}
   <div class="xb-cols"><div>
     <section class="xb-sec"><h2><span class="n">1</span>Pilih mata uji</h2><div class="xb-grid">
@@ -5406,6 +5421,7 @@ async function brief(){
   if(cloud())xtoast("⏳ Memeriksa status paket...");
   if(!(await kunci(n,k,pick,P.id))){alert(TOLAK);return}
   if(scr==="exam")return;
+  if(tokV!==tkSig(n,k,pick,P.id)){tokScr(n,k);return}
   scr="brief";
   const cf=CF(),acak=[cf.sq?"soal":"",cf.so?"pilihan jawaban":""].filter(Boolean).join(" dan ");
   ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby narrow"><div class="card">
@@ -5429,12 +5445,52 @@ async function brief(){
   </div></div></main></div>`;
 }
 
+/* ================= DATA SISWA + TOKEN ================= */
+function tokScr(n,k){
+  scr="token";
+  const B=BANK[pick],P=curPk();
+  const row=(l,v)=>`<div style="display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--bd)"><span class="mu">${l}</span><b style="text-align:right;overflow-wrap:anywhere">${v}</b></div>`;
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="xb-lobby narrow"><div class="card">
+  <span class="chip">🔑 Verifikasi token</span><h1 style="margin-top:.5rem">Data Siswa</h1>
+  <p class="mu">Periksa data di bawah. Jika sudah benar, masukkan token dari gurumu.</p>
+  <div style="margin:.4rem 0 1rem">
+   ${row("Nama",esc(n))}${row("Kelas",esc(k||"-"))}${row("Mata uji",B.ikon+" "+esc(B.nama))}${row("Paket soal","📦 "+esc(P.nama))}${row("Jumlah soal • Waktu",P.soal.length+" soal • "+P.menit+" menit")}
+  </div>
+  <label for="tk-tok" style="margin-top:0">Token ujian</label>
+  <input id="tk-tok" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="Contoh: AB3K9" style="text-transform:uppercase;letter-spacing:.25em;font-weight:800;text-align:center;font-size:1.4rem" onkeydown="if(event.key==='Enter')TKA.tokgo()">
+  <div id="tk-th" style="min-height:1.4rem;font-size:.9rem;margin:.1rem 0 .4rem;color:var(--er)" aria-live="polite"></div>
+  <p class="mu" style="font-size:.85rem">Token berbeda untuk setiap paket soal, dan sama untuk semua siswa dalam satu kelas. Minta token ke guru.</p>
+  <div class="foot"><button class="sec" onclick="TKA.home()">⬅ Ubah data</button><button id="tk-tg" onclick="TKA.tokgo()">Verifikasi ▶</button></div>
+  </div></div></main></div>`;
+  const i=$("#tk-tok");if(i)setTimeout(()=>i.focus(),50);
+}
+async function tokgo(){
+  const n=sessionStorage.tkaN||"",k=sessionStorage.tkaK||"",P=curPk(),inp=$("#tk-tok"),h=$("#tk-th"),b=$("#tk-tg");
+  const say=t=>{if(h)h.textContent=t};
+  const v=tkNorm(inp?inp.value:"");
+  say("");
+  if(!v){say("Isi token dari gurumu dulu ya.");if(inp)inp.focus();return}
+  if(b){b.disabled=true;b.textContent="⏳ Memeriksa..."}
+  try{
+    if(cloud())await Promise.race([rosterFetch(),new Promise(r=>setTimeout(r,6000))]);
+    const tk=tokFor(tokMap(),pick,P.id,k);
+    if(!tk){say("⚠️ Token untuk paket ini di kelas "+(k||"-")+" belum dibuat guru. Minta guru membuatnya.");return}
+    if(tkNorm(tk)!==v){say("❌ Token salah. Periksa lagi atau minta token ke guru.");if(inp){inp.focus();inp.select()}return}
+    tokV=tkSig(n,k,pick,P.id);
+    await brief();
+  }finally{
+    const b2=$("#tk-tg");if(b2&&scr==="token"){b2.disabled=false;b2.textContent="Verifikasi ▶"}
+  }
+}
+
 /* ================= UJIAN ================= */
 function start(){
   const P=curPk();
+  if(tokV!==tkSig(sessionStorage.tkaN,sessionStorage.tkaK,pick,P.id)){alert("Masukkan token dari guru dulu.");brief();return}
   if(sudah(sessionStorage.tkaN,sessionStorage.tkaK,pick,P.id)){alert(TOLAK);home();return}
   const o=mkOrder(P,CF());
   S={m:pick,p:P.id,name:sessionStorage.tkaN,cls:sessionStorage.tkaK,ans:P.soal.map(init),doubt:[],cur:0,t0:Date.now(),end:Date.now()+P.menit*60000,qo:o.qo,oo:o.oo,vio:0};
+  tokV="";
   RES=null;rf="all";skipFs=false;away=false;lastRi=-1;
   if(!save())xtoast("⚠️ Penyimpanan perangkat penuh atau nonaktif. Jawaban tidak bisa dipulihkan bila halaman dimuat ulang.");
   enterFs();begin();
@@ -5639,14 +5695,14 @@ async function lg(){
     }else{const t=Storage.loadTeachers().find(x=>x.id===id);ok=!!t&&String(t.pin)===pin}
   }catch(e){alert("PIN tidak bisa diperiksa. Periksa koneksi internet.");return}
   if(!ok){alert("PIN salah.");$("#tk-p").value="";return}
-  A.ok=true;A.tid=id;A.token=tok;A.srv=null;A.tab="st";
-  if(cloud()&&tok){if((await pull())===false){A.ok=false;adm();return}}
+  A.ok=true;A.tid=id;A.token=tok;A.srv=null;A.tab="st";A.tk=null;
+  if(cloud()&&tok){if((await pull())===false){A.ok=false;adm();return}await tokPull()}
   panel();
 }
 function panel(){
   if(!A.ok)return adm();
   const t=A.tab;
-  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><div class="foot" style="margin:0 0 .8rem"><button class="sec" onclick="TKA.out()">⬅ Keluar</button><button class="${t==="st"?"":"sec"}" onclick="TKA.tab('st')">📊 Statistik</button><button class="${t==="sl"||t==="ed"?"":"sec"}" onclick="TKA.tab('sl')">✏️ Soal</button><button class="${t==="sw"?"":"sec"}" onclick="TKA.tab('sw')">👥 Siswa</button><button class="${t==="cf"?"":"sec"}" onclick="TKA.tab('cf')">🔀 Pengaturan</button></div>${t==="st"?stat():t==="sl"?soalList():t==="sw"?siswa():t==="cf"?cfg():editor()}</div></div></main></div>`;
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><div class="foot" style="margin:0 0 .8rem"><button class="sec" onclick="TKA.out()">⬅ Keluar</button><button class="${t==="st"?"":"sec"}" onclick="TKA.tab('st')">📊 Statistik</button><button class="${t==="sl"||t==="ed"?"":"sec"}" onclick="TKA.tab('sl')">✏️ Soal</button><button class="${t==="sw"?"":"sec"}" onclick="TKA.tab('sw')">👥 Siswa</button><button class="${t==="tk"?"":"sec"}" onclick="TKA.tab('tk')">🔑 Token</button><button class="${t==="cf"?"":"sec"}" onclick="TKA.tab('cf')">🔀 Pengaturan</button></div>${t==="st"?stat():t==="sl"?soalList():t==="sw"?siswa():t==="cf"?cfg():t==="tk"?tokTab():editor()}</div></div></main></div>`;
 }
 function pie(d){
   const T=d.reduce((a,x)=>a+x.v,0);if(!T)return'<p class="mu">Belum ada data.</p>';
@@ -5925,6 +5981,58 @@ Object.assign(TKA,{wimp,swimp,swexp,swsave,
  swpick:v=>swHint(v,false),
  swchk:v=>swHint(v,true),
  rsf:async()=>{const e=$("#tk-nm");if(e)swHint(e.value,false);await rosterFetch();const f=$("#tk-nm");if(f&&scr==="home")swHint(f.value,false)}
+});
+
+/* ===== TOKEN TKA (guru): per mata uji + paket + kelas ===== */
+const tokClasses=()=>[...new Set(rosterOf(A.tid).map(x=>x.cls).filter(Boolean))].sort(nC);
+async function tokPull(){
+  A.tk=clone(tokLocal(A.tid));
+  if(!cloud()||!A.token)return;
+  try{const r=await gs("getConfig",A.tid,"");if(r&&r.exists&&r.config&&r.config.tkaTokens&&typeof r.config.tkaTokens==="object")A.tk=clone(r.config.tkaTokens)}catch(e){}
+}
+async function tokSave(){
+  const tid=A.tid,T=clone(A.tk||{});
+  try{
+    if(typeof state!=="undefined"&&typeof config!=="undefined"&&state.tid===tid){config.tkaTokens=clone(T);Storage.saveConfig(config)}
+    else{const c=Storage.loadConfig(tid);c.tkaTokens=clone(T);localStorage.setItem("ujian_cfg_"+tid,JSON.stringify(c))}
+  }catch(e){}
+  if(cloud()&&A.token){
+    try{
+      const r=await gs("getConfig",tid,"");
+      let base=(r&&r.exists&&r.config)?r.config:null;
+      if(!base){try{base=clone(state.tid===tid?config:Storage.loadConfig(tid))}catch(e){base={}}}
+      const m=Object.assign({},base,{tkaTokens:T});delete m.pin;
+      await gs("saveConfig",A.token,typeof clean==="function"?clean(m):m);
+      RT[tid]=T;
+    }catch(e){
+      if(typeof isAuthErr==="function"&&isAuthErr(e)){alert("Sesi berakhir. Silakan masuk lagi.");A.ok=false;adm();return false}
+      alert("⚠️ Token tersimpan di perangkat ini, tetapi gagal dikirim ke server. Coba lagi.");return false;
+    }
+  }
+  return true;
+}
+function tokTab(){
+  if(!A.tk)A.tk=clone(tokLocal(A.tid));
+  const T=A.tk,cl=tokClasses(),cols=cl.length?cl:[""],keys=[],rows=[];
+  Object.keys(BANK).forEach(m=>PS(m).forEach(p=>cols.forEach(c=>{
+    const key=tkKey(m,p.id,c),v=T[key]||"";keys.push(key);
+    rows.push(`<tr><td>${esc(BANK[m].nama)}</td><td>${esc(p.nama)}</td><td>${c?esc(c):"Semua kelas"}</td><td><b style="font-size:1.15rem;letter-spacing:2px">${v?esc(v):"—"}</b></td><td><button class="sec" onclick="TKA.tkg(${keys.length-1})">${v?"🔄 Ganti":"🎲 Buat"}</button></td></tr>`);
+  })));
+  A.tkl=keys;
+  return`<h2>🔑 Token TKA</h2>
+  <p class="mu">Setiap paket soal punya token sendiri. Dalam satu kelas, token paket yang sama berlaku untuk semua siswa. Bagikan token ke siswa saat ujian dimulai; siswa memasukkannya setelah menekan Lanjut.</p>
+  ${cl.length?"":`<p class="mu" style="color:var(--wat)">Belum ada data siswa, jadi token dibuat untuk <b>semua kelas</b>. Isi data siswa di tab 👥 Siswa agar token dibuat per kelas.</p>`}
+  ${cloud()&&!A.token?`<p class="mu" style="color:var(--wat)">⚠️ Tidak terhubung ke server: token hanya tersimpan di perangkat ini dan tidak bisa dipakai siswa di perangkat lain.</p>`:""}
+  <div class="foot" style="margin:.6rem 0"><button onclick="TKA.tkall(false)">🎲 Buat token yang belum ada</button><button class="sec" onclick="TKA.tkall(true)">🔄 Ganti semua token</button></div>
+  <div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Kelas</th><th>Token</th><th>Aksi</th></tr>${rows.join("")}</table></div>`;
+}
+Object.assign(TKA,{tokgo,
+ tkg:async i=>{const k=A.tkl&&A.tkl[i];if(!k)return;(A.tk=A.tk||{})[k]=tkGen();if((await tokSave())!==false)panel()},
+ tkall:async f=>{
+  if(f&&!confirm("Ganti SEMUA token?\n\nToken lama tidak berlaku lagi dan harus dibagikan ulang ke siswa."))return;
+  const T=A.tk=A.tk||{};let n=0;(A.tkl||[]).forEach(k=>{if(f||!T[k]){T[k]=tkGen();n++}});
+  if(!n){alert("Semua paket dan kelas sudah punya token.");return}
+  if((await tokSave())!==false)panel()}
 });
 
 Object.assign(TKA,{
