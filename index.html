@@ -5744,7 +5744,7 @@ function stat(){
   const rowsK=kl.map(k=>{const s=sm(byP.filter(r=>clsOf(r)===k));return`<tr><td><b>${esc(k)}</b></td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td><td>${s.ok} (${Math.round(s.ok/s.n*100)}%)</td><td style="min-width:6rem"><div style="background:var(--bd);border-radius:6px;height:.6rem"><div style="width:${s.avg}%;background:var(--pr);height:100%;border-radius:6px"></div></div></td></tr>`}).join("");
   const g={};byM.filter(r=>A.fk==="all"||clsOf(r)===A.fk).forEach(r=>{const k=r.m+"|"+pidOf(r);(g[k]=g[k]||{m:r.m,l:pnOf(r),a:[]}).a.push(r)});
   const rowsP=Object.keys(g).sort().map(k=>{const x=g[k],s=sm(x.a);return`<tr><td>${esc(BANK[x.m]?BANK[x.m].nama:x.m)}</td><td>${esc(x.l)}</td><td>${s.n}</td><td><b>${s.avg}</b></td><td>${s.hi}</td><td>${s.lo}</td><td><button class="sec" onclick="TKA.rsp('${x.m}','${k.split("|")[1]}')" title="Hapus semua hasil paket ini agar siswa bisa mengerjakan lagi">🔄 Reset paket</button></td></tr>`}).join("");
-  return`<h2>📊 Statistik hasil pengerjaan</h2>${srvNote()}
+  return`<h2>📊 Statistik hasil pengerjaan</h2>${srvNote()}${bukaKunci()}
   <label>Mata uji</label><div class="foot" style="margin:0 0 .6rem">${fb("all","Semua")}${fb("mat","Matematika")}${fb("bin","B. Indonesia")}</div>
   ${pks.length?`<label>Paket</label><div class="foot" style="margin:0 0 .6rem">${fpb("all","Semua paket")}${pks.map(p=>fpb(p.id,"📦 "+esc(p.nama))).join("")}</div>`:""}
   ${kl.length?`<label>Kelas</label><div class="foot" style="margin:0 0 1rem">${fkb(-1,"Semua kelas")}${kl.map((k,i)=>fkb(i,esc(k))).join("")}</div>`:""}
@@ -5756,6 +5756,15 @@ function stat(){
   <h2 style="margin-top:1.2rem">Daftar hasil terbaru</h2><div style="overflow:auto"><table><tr><th>Nama</th><th>Kelas</th><th>Mata uji</th><th>Paket</th><th>Nilai</th><th>Tanggal</th><th>Aksi</th></tr>${R.slice().reverse().slice(0,200).map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.cls)}</td><td>${esc(BANK[r.m]?BANK[r.m].nama:r.m)}</td><td>${esc(pnOf(r))}</td><td><b>${r.nilai}</b></td><td>${new Date(r.tgl).toLocaleDateString("id-ID")}</td><td><button class="sec" onclick="TKA.rsr('${rid(r)}')" title="Hapus hasil agar siswa bisa mengerjakan paket ini sekali lagi">🔄 Reset</button></td></tr>`).join("")}</table></div>
   <p class="mu" style="font-size:.85rem">Setiap paket hanya bisa dikerjakan satu kali per siswa. Tekan <b>Reset</b> pada baris siswa agar ia boleh mengerjakan paket itu sekali lagi (nilai lama dihapus).</p>
   <button class="sec" style="margin-top:1rem" onclick="TKA.clr()">🗑 Hapus semua hasil TKA</button>`:`<p class="mu">${byP.length?"Tidak ada hasil untuk kelas ini.":"Belum ada siswa yang menyelesaikan TKA di perangkat ini untuk pilihan ini."}</p>`}`;
+}
+function bukaKunci(){
+  const L=rosterOf(A.tid).filter(x=>kelasOK(x.cls)).sort((a,b)=>nC(a.cls,b.cls)||nC(a.name,b.name));A.bsl=L;
+  const ps=[];Object.keys(BANK).forEach(m=>PS(m).forEach(q=>ps.push([m+"|"+q.id,BANK[m].nama+" • "+q.nama])));
+  return`<details style="margin:.6rem 0 1rem"><summary><b>🔓 Buka kunci siswa</b> <span class="mu">(jika siswa masih terkunci padahal statistik kosong)</span></summary>
+  <div class="card" style="margin-top:.5rem"><p class="mu" style="margin-top:0">Menghapus catatan hasil siswa langsung di server berdasarkan nama, kelas, dan paket, walau tidak tampil di statistik. Setelah itu aplikasi memeriksa apakah server benar-benar sudah bersih.</p>
+  <label style="margin-top:0">Siswa</label><select id="tk-bs">${L.map((x,i)=>`<option value="${i}">${esc(x.name)} • ${esc(x.cls)}</option>`).join("")}</select>
+  <label>Mata uji dan paket</label><select id="tk-bp">${ps.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join("")}</select>
+  <div class="foot"><button onclick="TKA.bk()" ${L.length?"":"disabled"}>🔓 Buka kunci</button></div>${L.length?"":'<p class="mu">Belum ada data siswa Kelas 6A/6B.</p>'}</div></details>`;
 }
 const curP=()=>gP(A.mp,A.pp&&A.pp[A.mp]);
 const tgtP=m=>m===A.mp?curP():PS(m)[0];
@@ -6039,6 +6048,21 @@ function tokTab(){
   <div style="overflow:auto"><table><tr><th>Mata uji</th><th>Paket</th><th>Kelas</th><th>Token</th><th>Aksi</th></tr>${rows.join("")}</table></div>`;
 }
 Object.assign(TKA,{tokgo,
+ bk:async()=>{
+  const si=$("#tk-bs"),pk=$("#tk-bp");if(!si||!pk)return;
+  const r=(A.bsl||[])[+si.value];if(!r)return;
+  const[m,p]=pk.value.split("|"),id=rid({name:r.name,cls:r.cls,m,p});
+  if(!confirm("Buka kunci "+r.name+" (Kelas "+r.cls+")\n"+(BANK[m]?BANK[m].nama:m)+" • "+gP(m,p).nama+"?\n\nHasilnya dihapus dan siswa dapat mengerjakan paket ini satu kali lagi."))return;
+  ls.s("tka_results",(ls.g("tka_results")||[]).filter(x=>rid(x)!==id));
+  if(!(cloud()&&A.token)){alert("✅ Catatan di perangkat ini dihapus. (Mode lokal: tidak ada server.)");panel();return}
+  try{await gs("deleteResult",A.token,id)}
+  catch(e){if(typeof isAuthErr==="function"&&isAuthErr(e)){alert("Sesi berakhir. Silakan masuk lagi.");A.ok=false;adm();return}alert("Gagal menghapus di server. Periksa koneksi lalu coba lagi.");return}
+  let ada=null;try{ada=!!(await gs("resultExists",id))}catch(e){}
+  await pull();
+  if(ada===true)alert("⚠️ Perintah hapus sudah dikirim, tetapi server MASIH mencatat hasil ini.\n\nKemungkinan hasil itu tersimpan atas nama pendidik lain, atau ada kendala di skrip Apps Script. Kirim kode skrip Apps Script (fungsi resultExists, deleteResult, saveResult, getResults) agar bisa diperbaiki.");
+  else if(ada===false)alert("✅ Kunci dibuka. Server sudah bersih, siswa bisa mengerjakan paket ini lagi.");
+  else alert("Perintah hapus terkirim, tetapi status server belum bisa diperiksa. Coba lagi beberapa saat.");
+  panel()},
  rsp:async(m,p)=>{
   const kf=A.fk&&A.fk!=="all"?A.fk:null;
   const list=srcAll().filter(r=>r.m===m&&pidOf(r)===p&&(!kf||clsOf(r)===kf));
