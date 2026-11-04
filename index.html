@@ -5308,9 +5308,10 @@ const rosterOf=tid=>{
   return out;
 };
 const rosterNow=()=>rosterOf(tidOf());
-async function rosterFetch(){
-  const tid=tidOf();if(!cloud()||!tid)return;
-  try{const r=await gs("getConfig",tid,"");if(r&&r.exists&&r.config){if(Array.isArray(r.config.roster))RS[tid]=r.config.roster;if(r.config.tkaTokens&&typeof r.config.tkaTokens==="object")RT[tid]=r.config.tkaTokens}}catch(e){}
+async function rosterFetch(apply){
+  const tid=tidOf();if(!cloud()||!tid)return false;
+  try{const r=await gs("getConfig",tid,"");if(r&&r.exists&&r.config){if(Array.isArray(r.config.roster))RS[tid]=r.config.roster;if(r.config.tkaTokens&&typeof r.config.tkaTokens==="object")RT[tid]=r.config.tkaTokens;if(apply&&scr==="home")return bankApply(r.config,false,tid)==="ok"}}catch(e){}
+  return false;
 }
 function swHint(v,fin){
   const k=$("#tk-kl"),h=$("#tk-nh"),x=String(v||"").trim(),rs=rosterNow();
@@ -5329,11 +5330,11 @@ function swHint(v,fin){
 }
 function rosterInit(){
   const v=sessionStorage.tkaN;if(v)swHint(v,false);
-  rosterFetch().then(()=>{const e=$("#tk-nm");if(e&&scr==="home")swHint(e.value,false)});
+  rosterFetch(true).then(ch=>{if(ch&&scr==="home"){home();return}const e=$("#tk-nm");if(e&&scr==="home")swHint(e.value,false)});
 }
 const sm=a=>{const v=a.map(r=>r.nilai),n=v.length;return{n,avg:n?Math.round(v.reduce((x,y)=>x+y,0)/n):0,hi:n?Math.max(...v):0,lo:n?Math.min(...v):0,ok:v.filter(x=>x>=70).length}};
 function loadBank(){const c=ls.g("tka_bank");BANK=mig(c&&c.bank?c.bank:clone(BANK0));STIM=c&&c.stim?c.stim:clone(STIM0)}
-const saveBank=()=>{if(!ls.s("tka_bank",{bank:BANK,stim:STIM}))alert("⚠️ Memori penuh, soal terakhir mungkin tidak tersimpan. Kurangi jumlah atau ukuran gambar.")};loadBank();
+const saveBank=()=>{if(!ls.s("tka_bank",{bank:BANK,stim:STIM,ts:Date.now(),src:(typeof A!=="undefined"&&A.tid)||tidOf()}))alert("⚠️ Memori penuh, soal terakhir mungkin tidak tersimpan. Kurangi jumlah atau ukuran gambar.");if(typeof bankSyncSoon==="function")bankSyncSoon()};loadBank();
 const save=()=>ls.s("tka_run",S);
 const fmt=ms=>{ms=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(ms/60)).padStart(2,"0")+":"+String(ms%60).padStart(2,"0")};
 
@@ -5749,7 +5750,7 @@ async function lg(){
   }catch(e){alert("PIN tidak bisa diperiksa. Periksa koneksi internet.");return}
   if(!ok){alert("PIN salah.");$("#tk-p").value="";return}
   A.ok=true;A.tid=id;A.token=tok;A.srv=null;A.tab="st";A.tk=null;
-  if(cloud()&&tok){if((await pull())===false){A.ok=false;adm();return}await tokPull()}
+  if(cloud()&&tok){if((await pull())===false){A.ok=false;adm();return}await tokPull();if((await bankPull(false))==="push")bankSyncSoon()}
   panel();
 }
 function panel(){
@@ -5825,6 +5826,7 @@ function cfg(){
   <p class="mu">Berlaku untuk semua paket soal di perangkat ini. Urutan diacak sendiri untuk setiap siswa saat ujian dimulai, dan tetap sama bila siswa melanjutkan ujian yang terputus.</p>
   ${row("sq","🔀","Acak urutan soal","Soal yang memakai bacaan atau data yang sama tetap dikelompokkan, jadi bacaan tidak terpisah dari pertanyaannya.")}
   ${row("so","🔠","Acak urutan pilihan jawaban","Berlaku untuk pilihan ganda, pilihan ganda kompleks, dan urutan pernyataan pada soal menjodohkan. Penilaian dan pembahasan tetap sesuai tampilan siswa.")}
+  ${syncBox()}
   <div class="tk-note"><span aria-hidden="true">ℹ️</span><span>Perubahan tersimpan otomatis dan berlaku untuk ujian yang dimulai setelah ini. Ujian yang sedang berjalan tidak berubah.</span></div>`;
 }
 function editor(){
@@ -6017,7 +6019,7 @@ Object.assign(TKA,{adm,lg,
  qedit:i=>{D=clone(curP().soal[i]);D.s=D.s||"";D.b=D.b||"";EI=i;A.tab="ed";panel()},
  qdel:i=>{if(confirm("Hapus soal nomor "+(i+1)+"?")){curP().soal.splice(i,1);saveBank();panel()}},
  qmv:(i,d)=>{const a=curP().soal,j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];saveBank();panel()},
- rst:()=>{if(confirm("Kembalikan semua ke soal contoh? Semua paket dan soal buatan Anda akan hilang.")){ls.d("tka_bank");loadBank();panel()}},
+ rst:()=>{if(confirm("Kembalikan semua ke soal contoh? Semua paket dan soal buatan Anda akan hilang.")){ls.d("tka_bank");loadBank();saveBank();panel()}},
  ecx:()=>{A.tab="sl";panel()},esv,
  dty:v=>{const o=D,n=blank(v);n.t=o.t;n.b=o.b;n.s=o.s;n._n=o._n;n.img=o.img;D=n;panel()},
  ds:(f,v)=>{D[f]=v},dstx:v=>{D._n=v},dst:v=>{D.s=v;panel()},dopt:(i,v)=>{D.o[i]=v},
@@ -6042,7 +6044,7 @@ Object.assign(TKA,{wimp,swimp,swexp,swsave,
  swclr:()=>{if(confirm("Hapus SEMUA data siswa? Tindakan ini juga berlaku di tab Siswa & Rapor dasbor guru.")){swSave([]);panel()}},
  swpick:v=>swHint(v,false),
  swchk:v=>swHint(v,true),
- rsf:async()=>{const e=$("#tk-nm");if(e)swHint(e.value,false);await rosterFetch();const f=$("#tk-nm");if(f&&scr==="home")swHint(f.value,false)}
+ rsf:async()=>{const e=$("#tk-nm");if(e)swHint(e.value,false);if(await rosterFetch(true)&&scr==="home"){home();return}const f=$("#tk-nm");if(f&&scr==="home")swHint(f.value,false)}
 });
 
 /* ===== TOKEN TKA (guru): per mata uji + paket + kelas ===== */
@@ -6073,6 +6075,62 @@ async function tokSave(){
   }
   return true;
 }
+/* ===== SINKRON SOAL & PENGATURAN KE SERVER (sama di semua perangkat) ===== */
+const SYNC_MAX=45000; /* batas aman isi satu sel Google Sheets (±50.000 karakter); ubah bila server Anda mendukung lebih besar */
+let bkT=null,bkBusy=false,bkAgain=false;
+const bkLoc=()=>ls.g("tka_bank")||{};
+function bankApply(c,force,tid){
+  /* kembalikan "ok" bila data server dipakai, "push" bila data perangkat lebih baru/server kosong, "same" bila sama */
+  if(!c)return"same";
+  const sb=c.tkaBank,L=bkLoc();let st="same";
+  if(sb&&sb.bank&&typeof sb.bank==="object"){
+    const t=+sb.ts||0,lt=+L.ts||0;
+    if(force||L.src!==tid||t>lt){BANK=mig(clone(sb.bank));STIM=sb.stim&&typeof sb.stim==="object"?clone(sb.stim):{};ls.s("tka_bank",{bank:BANK,stim:STIM,ts:t||Date.now(),src:tid});st="ok"}
+    else if(lt>t)st="push";
+  }else st="push";
+  const sc=c.tkaCfg,lc=ls.g("tka_cfg")||{};
+  if(sc&&typeof sc==="object"&&(force||(+sc.ts||0)>(+lc.ts||0))){ls.s("tka_cfg",Object.assign({},sc));st="ok"}
+  return st;
+}
+async function bankPull(force){
+  const tid=A.tid||tidOf();if(!cloud()||!tid)return null;
+  try{const r=await gs("getConfig",tid,"");return(r&&r.exists&&r.config)?bankApply(r.config,force,tid):"push"}catch(e){return null}
+}
+function bankSyncSoon(){clearTimeout(bkT);bkT=setTimeout(()=>bankSync(false),900)}
+async function bankSync(manual){
+  if(!(cloud()&&A.ok&&A.token)){if(manual)xtoast("Tidak terhubung ke server.");return false}
+  if(bkBusy){bkAgain=true;return false}
+  bkBusy=true;let res=true;
+  try{
+    do{
+      bkAgain=false;
+      const tid=A.tid,t=+bkLoc().ts||Date.now();
+      ls.s("tka_bank",{bank:BANK,stim:STIM,ts:t,src:tid});
+      const bk={bank:BANK,stim:STIM,ts:t},cg=Object.assign({},ls.g("tka_cfg")||{});
+      if(!cg.ts){cg.ts=Date.now();ls.s("tka_cfg",cg)}
+      const sz=JSON.stringify(bk).length,big=sz>SYNC_MAX,put={tkaCfg:cg};
+      if(!big)put.tkaBank=bk;
+      try{
+        if(typeof state!=="undefined"&&typeof config!=="undefined"&&state.tid===tid){Object.assign(config,put);Storage.saveConfig(config)}
+        else{const c=Storage.loadConfig(tid);Object.assign(c,put);localStorage.setItem("ujian_cfg_"+tid,JSON.stringify(c))}
+      }catch(e){}
+      const r=await gs("getConfig",tid,"");
+      let base=(r&&r.exists&&r.config)?r.config:null;
+      if(!base){try{base=clone(state.tid===tid?config:Storage.loadConfig(tid))}catch(e){base={}}}
+      const m=Object.assign({},base,put);delete m.pin;
+      await gs("saveConfig",A.token,typeof clean==="function"?clean(m):m);
+      if(big){res=false;xtoast("⚠️ Soal terlalu besar untuk disinkronkan ("+Math.round(sz/1000)+" KB, batas "+Math.round(SYNC_MAX/1000)+" KB). Pengaturan terkirim, tetapi soal terbaru hanya ada di perangkat ini. Kurangi gambar atau jumlah soal.")}
+    }while(bkAgain);
+  }catch(e){
+    res=false;
+    if(typeof isAuthErr==="function"&&isAuthErr(e)){bkBusy=false;alert("Sesi berakhir. Silakan masuk lagi.");A.ok=false;adm();return false}
+    xtoast("⚠️ Gagal mengirim ke server. Soal tetap tersimpan di perangkat ini.");
+  }
+  bkBusy=false;
+  if(res){A.sy="Terakhir tersinkron pukul "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});if(manual)xtoast("☁️ Soal dan pengaturan tersimpan ke server")}
+  return res;
+}
+const syncBox=()=>`<h2 style="margin-top:1.4rem">☁️ Sinkron antar perangkat</h2><p class="mu">Soal, paket, dan pengaturan di atas otomatis dikirim ke server setiap kali disimpan, lalu dimuat otomatis saat guru masuk atau siswa membuka TKA di perangkat lain.</p>${cloud()&&A.token?`<div class="foot" style="margin:.6rem 0"><button onclick="TKA.sync()">⬆️ Kirim ke server sekarang</button><button class="sec" onclick="TKA.pullnow()">⬇️ Ambil dari server</button></div><p class="mu" style="font-size:.85rem;margin:0">${A.sy||""}</p>`:`<p class="mu" style="color:var(--wat)">⚠️ Tidak terhubung ke server, jadi soal hanya tersimpan di perangkat ini.</p>`}`;
 function tokTab(){
   if(!A.tk)A.tk=clone(tokLocal(A.tid));
   const T=A.tk,cl=tokClasses(),cols=cl.length?cl:[""],keys=[],rows=[];
@@ -6126,7 +6184,9 @@ Object.assign(TKA,{tokgo,
 });
 
 Object.assign(TKA,{
- cf:k=>{const c=CF();c[k]=!c[k];ls.s("tka_cfg",c);panel()},
+ sync:async()=>{xtoast("Mengirim ke server…");if(await bankSync(true))panel()},
+ pullnow:async()=>{if(!confirm("Ambil soal dan pengaturan dari server?\n\nSoal di perangkat ini akan diganti dengan versi di server."))return;const r=await bankPull(true);if(r==="ok"){alert("✅ Soal dan pengaturan dari server sudah dimuat.");panel()}else if(r==="push")alert("Belum ada soal TKA yang tersimpan di server. Tekan Kirim ke server dari perangkat yang soalnya sudah lengkap.");else alert("Server tidak terjangkau. Coba lagi.")},
+ cf:k=>{const c=CF();c[k]=!c[k];c.ts=Date.now();ls.s("tka_cfg",c);bankSyncSoon();panel()},
  fp:k=>{A.fp=k;panel()},fk:i=>{A.fk=i<0?"all":(A.kl||[])[i]||"all";panel()},
  psel:id=>{(A.pp=A.pp||{})[A.mp]=id;panel()},
  pnew:()=>{const m=BANK[A.mp],nm=prompt("Nama paket baru:","Paket "+(m.paket.length+1));if(!nm||!nm.trim())return;const p={id:newId(),nama:nm.trim(),menit:curP().menit,soal:[]};m.paket.push(p);(A.pp=A.pp||{})[A.mp]=p.id;saveBank();panel()},
