@@ -929,6 +929,46 @@ body::after{content:none}
  #tka-root .xb-mjr .bt{width:100%}
  #tka-root .xb-mjb{flex:1}
 }
+
+/* ---- Panel Pengaturan Guru: navigasi tab & tombol saklar (semua platform) ---- */
+#tka-root .tk-nav{display:flex;align-items:stretch;gap:.6rem;margin:0 0 1rem;flex-wrap:wrap}
+#tka-root .tk-nav .tk-back{flex:none;min-height:48px;padding:.5rem 1rem}
+#tka-root .tk-tabs{flex:1 1 0;min-width:0;display:flex;gap:.3rem;padding:.3rem;background:var(--bg);border:1px solid var(--bd);border-radius:14px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+#tka-root .tk-tabs::-webkit-scrollbar{display:none}
+#tka-root .tk-tab{flex:1 0 auto;scroll-snap-align:center;flex-direction:row;gap:.45rem;min-height:44px;padding:.45rem .9rem;background:transparent;color:var(--mu);border:0;border-radius:10px;font-size:.95rem;white-space:nowrap}
+#tka-root .tk-tab:hover{background:var(--prl);color:var(--tx)}
+#tka-root .tk-tab .ic{font-size:1.15rem;line-height:1}
+#tka-root .tk-tab.on,#tka-root .tk-tab.on:hover{background:var(--pr);color:#fff;box-shadow:0 2px 8px -2px rgba(37,99,235,.55)}
+#tka-root .tk-sw{position:relative;display:flex;align-items:center;gap:.9rem;margin:.6rem 0;padding:.9rem 1rem;border:2px solid var(--bd);border-radius:14px;background:var(--card);cursor:pointer;font-weight:500;-webkit-tap-highlight-color:transparent;transition:border-color .15s,background .15s}
+#tka-root .tk-sw:hover{border-color:var(--pr)}
+#tka-root .tk-sw.on{border-color:var(--pr);background:var(--prl)}
+#tka-root label.tk-sw>input[type=checkbox]{position:absolute;opacity:0;width:1px;height:1px;margin:0;min-height:0;pointer-events:none}
+#tka-root .tk-sw .tk-ic{flex:none;width:2.6rem;height:2.6rem;display:grid;place-items:center;border-radius:12px;background:var(--bg);font-size:1.3rem}
+#tka-root .tk-sw.on .tk-ic{background:var(--card)}
+#tka-root .tk-sw .tk-tx{flex:1;min-width:0}
+#tka-root .tk-sw .tk-tx b{display:block}
+#tka-root .tk-sw .tk-tx small{display:block;color:var(--mu);font-size:.88rem;line-height:1.4;margin-top:.15rem}
+#tka-root .tk-sw .tk-tg{flex:none;position:relative;width:3.2rem;height:1.9rem;border-radius:99px;background:var(--bd);transition:background .2s}
+#tka-root .tk-sw .tk-tg::after{content:"";position:absolute;top:.2rem;left:.2rem;width:1.5rem;height:1.5rem;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s}
+#tka-root .tk-sw.on .tk-tg{background:var(--ok)}
+#tka-root .tk-sw.on .tk-tg::after{transform:translateX(1.3rem)}
+#tka-root .tk-sw input:focus-visible~.tk-tg{outline:3px solid var(--wa);outline-offset:3px}
+#tka-root .tk-note{display:flex;gap:.6rem;align-items:flex-start;margin-top:1rem;padding:.8rem 1rem;border-radius:12px;background:var(--wal);color:var(--wat);font-size:.9rem}
+#tka-root .rv>div[style*="display:flex"]{flex-wrap:wrap}
+@media(max-width:640px){
+ #tka-root .tk-nav{gap:.5rem}
+ #tka-root .tk-nav .tk-back{width:100%;min-height:44px}
+ #tka-root .tk-tabs{flex:1 1 100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.2rem;overflow:visible}
+ #tka-root .tk-tab{flex-direction:column;gap:.15rem;padding:.4rem .1rem;min-height:56px;font-size:.72rem;white-space:normal;line-height:1.15}
+ #tka-root .tk-tab .ic{font-size:1.3rem}
+ #tka-root .card{padding:1rem}
+ #tka-root .foot>*{flex:1 1 calc(50% - .6rem)}
+ #tka-root .tk-sw{gap:.7rem;padding:.8rem}
+ #tka-root .tk-sw .tk-ic{width:2.2rem;height:2.2rem;font-size:1.1rem}
+}
+@media(max-width:360px){#tka-root .tk-tab .lb{font-size:.66rem}}
+@media(hover:none){#tka-root button:hover{background:var(--pr)}#tka-root button.sec:hover{background:var(--card);border-color:var(--bd)}#tka-root .tk-tab:hover{background:transparent}#tka-root .tk-tab.on:hover{background:var(--pr)}}
+@media(prefers-reduced-motion:reduce){#tka-root .tk-sw,#tka-root .tk-tg,#tka-root .tk-tg::after{transition:none}}
 @media print{#tka-root{display:none!important}}
 
 
@@ -5715,7 +5755,7 @@ async function lg(){
 function panel(){
   if(!A.ok)return adm();
   const t=A.tab;
-  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><div class="foot" style="margin:0 0 .8rem"><button class="sec" onclick="TKA.out()">⬅ Keluar</button><button class="${t==="st"?"":"sec"}" onclick="TKA.tab('st')">📊 Statistik</button><button class="${t==="sl"||t==="ed"?"":"sec"}" onclick="TKA.tab('sl')">✏️ Soal</button><button class="${t==="sw"?"":"sec"}" onclick="TKA.tab('sw')">👥 Siswa</button><button class="${t==="tk"?"":"sec"}" onclick="TKA.tab('tk')">🔑 Token</button><button class="${t==="cf"?"":"sec"}" onclick="TKA.tab('cf')">🔀 Pengaturan</button></div>${t==="st"?stat():t==="sl"?soalList():t==="sw"?siswa():t==="cf"?cfg():t==="tk"?tokTab():editor()}</div></div></main></div>`;
+  ROOT.innerHTML=`<div class="xb">${kiosk(false)}<main class="xb-main"><div class="wrap"><div class="card"><div class="tk-nav"><button class="sec tk-back" onclick="TKA.out()">⬅ <span>Keluar</span></button><div class="tk-tabs" role="tablist" aria-label="Menu pengaturan guru">${[["st","📊","Statistik"],["sl","✏️","Soal"],["sw","👥","Siswa"],["tk","🔑","Token"],["cf","🔀","Pengaturan"]].map(x=>`<button role="tab" aria-selected="${(t===x[0]||(x[0]==="sl"&&t==="ed"))}" class="tk-tab ${(t===x[0]||(x[0]==="sl"&&t==="ed"))?"on":""}" onclick="TKA.tab('${x[0]}')"><span class="ic" aria-hidden="true">${x[1]}</span><span class="lb">${x[2]}</span></button>`).join("")}</div></div>${t==="st"?stat():t==="sl"?soalList():t==="sw"?siswa():t==="cf"?cfg():t==="tk"?tokTab():editor()}</div></div></main></div>`;
 }
 function pie(d){
   const T=d.reduce((a,x)=>a+x.v,0);if(!T)return'<p class="mu">Belum ada data.</p>';
@@ -5780,12 +5820,12 @@ function soalList(){
 }
 function cfg(){
   const c=CF();
-  const row=(k,ic,t,d)=>`<div class="opt sq ${c[k]?"on":""}" onclick="TKA.cf('${k}')"><span class="k">${c[k]?"✓":ic}</span><div><b>${t}</b><br><span class="mu">${d}</span></div></div>`;
+  const row=(k,ic,t,d)=>`<label class="tk-sw ${c[k]?"on":""}"><input type="checkbox" role="switch" ${c[k]?"checked":""} onchange="TKA.cf('${k}')"><span class="tk-ic" aria-hidden="true">${ic}</span><span class="tk-tx"><b>${t}</b><small>${d}</small></span><span class="tk-tg" aria-hidden="true"></span></label>`;
   return`<h2>🔀 Pengaturan ujian TKA</h2>
   <p class="mu">Berlaku untuk semua paket soal di perangkat ini. Urutan diacak sendiri untuk setiap siswa saat ujian dimulai, dan tetap sama bila siswa melanjutkan ujian yang terputus.</p>
   ${row("sq","🔀","Acak urutan soal","Soal yang memakai bacaan atau data yang sama tetap dikelompokkan, jadi bacaan tidak terpisah dari pertanyaannya.")}
   ${row("so","🔠","Acak urutan pilihan jawaban","Berlaku untuk pilihan ganda, pilihan ganda kompleks, dan urutan pernyataan pada soal menjodohkan. Penilaian dan pembahasan tetap sesuai tampilan siswa.")}
-  <p class="mu" style="margin-top:1rem">Perubahan berlaku untuk ujian yang dimulai setelah ini. Ujian yang sedang berjalan tidak berubah.</p>`;
+  <div class="tk-note"><span aria-hidden="true">ℹ️</span><span>Perubahan tersimpan otomatis dan berlaku untuk ujian yang dimulai setelah ini. Ujian yang sedang berjalan tidak berubah.</span></div>`;
 }
 function editor(){
   const q=D,pk=q.ty==="pk";
