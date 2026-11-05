@@ -6,6 +6,11 @@
     <meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)">
     <meta name="color-scheme" content="light dark">
     <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Ujian SD">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Ujian Sekolah Dasar</title>
     <meta name="description" content="Aplikasi ulangan harian online untuk siswa sekolah dasar">
@@ -183,7 +188,7 @@
         .doubt-box { background-color: var(--warning-light); border-color: #EAB308; color: var(--text-main); }
         .doubt-box input[type="checkbox"] { accent-color: #EAB308; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10000; backdrop-filter: blur(4px); }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10000; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
         .modal-card { background-color: var(--card); border-radius: 24px; padding: 24px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); border: 1px solid var(--border); }
 
         #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background-color: var(--text-main); color: var(--bg); padding: 12px 24px; border-radius: 999px; font-weight: 700; font-size: 0.95rem; z-index: 99999; transition: opacity 0.3s ease; opacity: 0; pointer-events: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); text-align: center; max-width: 90vw; }
@@ -545,7 +550,7 @@
         }
             .q-img-tap { cursor: zoom-in; -webkit-tap-highlight-color: transparent; }
         .q-img-hint { font-size: .8rem; color: var(--text-muted); margin: -10px 0 14px; font-weight: 600; }
-        #img-viewer { position: fixed; inset: 0; z-index: 90000; background: rgba(0,0,0,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; touch-action: none; }
+        #img-viewer { position: fixed; top:0;right:0;bottom:0;left:0; z-index: 90000; background: rgba(0,0,0,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; touch-action: none; }
         #img-viewer .iv-stage { flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #img-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; will-change: transform; }
         #img-viewer .iv-bar { display: flex; gap: 10px; padding: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
@@ -571,7 +576,7 @@
         body.exam-mode .q-passage { font-size: calc(1.05rem * var(--exam-fs, 1)); }
         body.exam-mode .nav-actions button { min-height: 56px; font-size: 1.1rem; }
         .exam-progress-text { text-align: center; font-weight: 700; color: var(--text-muted); margin: -6px 0 12px; font-size: 0.95rem; }
-        #fs-overlay { position: fixed; inset: 0; z-index: 99990; background: rgba(15,23,42,.97); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        #fs-overlay { position: fixed; top:0;right:0;bottom:0;left:0; z-index: 99990; background: rgba(15,23,42,.97); display: flex; align-items: center; justify-content: center; padding: 20px; }
         #fs-overlay .fs-card { background: #fff; color: #111; border-radius: 24px; padding: 28px; max-width: 440px; text-align: center; }
         #fs-overlay .fs-card button { margin-top: 10px; min-height: 56px; font-size: 1.1rem; }
 
@@ -701,7 +706,7 @@ body::after{content:none}
 #tka-root{--bg:#EEF2F7;--card:#fff;--tx:#0F172A;--mu:#64748B;--pr:#2563EB;--prh:#1D4ED8;--prl:#E8F0FE;--ok:#16A34A;--okl:#DCFCE7;--er:#DC2626;--erl:#FEE2E2;--wa:#F59E0B;--wal:#FEF3C7;--wat:#92400E;--bd:#D6DEE9;--kb:#0B1220;--sh:0 1px 2px rgba(15,23,42,.06),0 10px 30px -12px rgba(15,23,42,.18);--fs:1}
 @media(prefers-color-scheme:dark){#tka-root{--bg:#0B1220;--card:#131C2E;--tx:#E8EEF8;--mu:#93A3BC;--pr:#3B82F6;--prh:#2563EB;--prl:#172B4D;--okl:#0F3D26;--erl:#4A1717;--wal:#4A3410;--wat:#FCD34D;--bd:#2A3A55;--kb:#050912;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.6)}}
 #tka-root,#tka-root *{box-sizing:border-box}
-#tka-root{position:fixed;inset:0;z-index:9000;overflow:auto;margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;text-align:left;-webkit-text-size-adjust:100%;overscroll-behavior:contain}
+#tka-root{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9000;overflow:auto;margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5;text-align:left;-webkit-text-size-adjust:100%;overscroll-behavior:contain}
 #tka-root[hidden]{display:none}
 #tka-root h1,#tka-root h2,#tka-root h3{text-align:left;color:var(--tx);margin:.2rem 0 .6rem;line-height:1.25}
 #tka-root h1{font-size:1.6rem}#tka-root h2{font-size:1.15rem}#tka-root h2.c{text-align:center}
@@ -861,20 +866,20 @@ body::after{content:none}
 #tka-root .xb-bd{display:none}
 
 /* ---- dialog, overlay, toast ---- */
-#tka-root .xb-modal{position:fixed;inset:0;z-index:50;background:rgba(2,6,23,.62);display:grid;place-items:center;padding:1rem}
+#tka-root .xb-modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:50;background:rgba(2,6,23,.62);display:grid;place-items:center;padding:1rem}
 #tka-root .xb-dlg{background:var(--card);color:var(--tx);border-radius:18px;padding:1.4rem;width:100%;max-width:460px;max-height:90vh;overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.4)}
 #tka-root .xb-dlg h2{margin-top:0}
 #tka-root .xb-miss{display:flex;gap:.35rem;flex-wrap:wrap;margin:.4rem 0 .8rem}
 #tka-root .xb-miss button{min-height:36px;min-width:40px;padding:.2rem .6rem;background:var(--erl);color:var(--er);border:2px solid var(--er);border-radius:10px}
 #tka-root .xb-miss button.d{background:var(--wal);color:var(--wat);border-color:var(--wa)}
-#tka-root .xb-lock{position:fixed;inset:0;z-index:60;background:linear-gradient(160deg,#0B1220,#1E3A8A);display:grid;place-items:center;padding:1rem}
+#tka-root .xb-lock{position:fixed;top:0;right:0;bottom:0;left:0;z-index:60;background:linear-gradient(160deg,#0B1220,#1E3A8A);display:grid;place-items:center;padding:1rem}
 #tka-root .xb-lock .box{background:var(--card);border-radius:22px;padding:1.8rem;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.45)}
 #tka-root .xb-lock .box .ic{font-size:3.5rem;line-height:1.1}
 #tka-root .xb-lock .box button{width:100%;margin-top:.6rem}
 #tka-root .xb-lock.vio{background:rgba(127,29,29,.96);animation:tkvio .7s infinite alternate}
 @keyframes tkvio{from{background:rgba(185,28,28,.96)}to{background:rgba(69,10,10,.98)}}
 #tka-root .xb-lock.vio h2{color:var(--er);text-align:center}
-#tka-root .xb-zoom{position:fixed;inset:0;z-index:70;background:rgba(2,6,23,.92);display:grid;place-items:center;padding:1rem;overflow:auto}
+#tka-root .xb-zoom{position:fixed;top:0;right:0;bottom:0;left:0;z-index:70;background:rgba(2,6,23,.92);display:grid;place-items:center;padding:1rem;overflow:auto}
 #tka-root .xb-zoom img{max-width:100%;max-height:90vh;background:#fff;border-radius:10px}
 #tka-root .xb-zoom button{position:fixed;top:max(.8rem,env(safe-area-inset-top));right:.8rem}
 .xb-toast{position:fixed;left:50%;bottom:max(5rem,env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#0F172A;color:#fff;padding:.7rem 1.2rem;border-radius:99px;font:600 .95rem system-ui,sans-serif;opacity:0;pointer-events:none;transition:all .25s;z-index:9500;max-width:92vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -886,7 +891,7 @@ body::after{content:none}
 #tka-root .xb-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 #tka-root .xb-ring circle{fill:none;stroke-width:12;stroke-linecap:round}
 #tka-root .xb-ring .bg{stroke:var(--bd)}
-#tka-root .xb-ring .num{position:absolute;inset:0;display:grid;place-items:center;align-content:center;text-align:center}
+#tka-root .xb-ring .num{position:absolute;top:0;right:0;bottom:0;left:0;display:grid;place-items:center;align-content:center;text-align:center}
 #tka-root .xb-ring .num b{font-size:2.8rem;line-height:1}
 #tka-root .xb-ring .num small{color:var(--mu)}
 #tka-root .xb-bars{flex:1 1 260px;display:grid;gap:.7rem;min-width:0}
@@ -908,7 +913,7 @@ body::after{content:none}
  #tka-root .xb-stim{position:static;max-height:14rem}
  #tka-root .xb-side{position:fixed;left:0;right:0;bottom:0;z-index:40;border-radius:20px 20px 0 0;max-height:72vh;transform:translateY(105%);transition:transform .25s;padding-bottom:max(1rem,env(safe-area-inset-bottom))}
  #tka-root .xb-side.open{transform:none}
- #tka-root .xb-bd.on{display:block;position:fixed;inset:0;z-index:39;background:rgba(2,6,23,.5)}
+ #tka-root .xb-bd.on{display:block;position:fixed;top:0;right:0;bottom:0;left:0;z-index:39;background:rgba(2,6,23,.5)}
  #tka-root .nav{grid-template-columns:repeat(6,1fr)}
  #tka-root .xb-foot .xb-navbtn{display:inline-flex}
  #tka-root .xb-foot button{max-width:none}
@@ -1025,6 +1030,31 @@ body::after{content:none}
         .kat-b.on { background: var(--primary); color: #fff; border-color: var(--primary); }
         @media (max-width: 480px) { .kat-btns { width: 100%; } .kat-b { flex: 1; } }
     </style>
+    <style id="compat">
+        /* ===== Kompatibilitas lintas browser & perangkat ===== */
+        html { -webkit-tap-highlight-color: transparent; }
+        body { word-wrap: break-word; overflow-wrap: break-word; }
+        img { max-width: 100%; }
+        /* iOS/Safari: hilangkan bayangan & sudut bawaan pada kolom isian dan tombol */
+        input[type="text"], input[type="password"], input[type="number"], input[type="search"],
+        input:not([type]), textarea, button { -webkit-appearance: none; appearance: none; }
+        /* Cegah iOS memperbesar layar otomatis saat kolom isian difokuskan */
+        @media (max-width: 820px) {
+            input[type="text"], input[type="password"], input[type="number"], input[type="search"],
+            input:not([type]), select, textarea { font-size: 16px; }
+        }
+        /* Fokus keyboard jelas di desktop */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+        [tabindex]:focus-visible { outline: 3px solid #F59E0B; outline-offset: 2px; }
+        /* Cadangan untuk browser tanpa aspect-ratio */
+        @supports not (aspect-ratio: 1) { .q-num-btn { min-height: 44px; } }
+        /* Cegah teks terpilih/menu tekan-lama saat ujian di layar sentuh */
+        .dd-chip, body.exam-mode { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        body.exam-mode input, body.exam-mode textarea { -webkit-user-select: text; user-select: text; }
+        /* Layar sangat besar: batasi lebar isi agar tetap enak dibaca */
+        @media (min-width: 1600px) { html { font-size: 17px; } }
+        @media print { body { background: #fff; } #toast, .modal-overlay { display: none !important; } }
+    </style>
 </head>
 <body>
     <script>
@@ -1040,6 +1070,16 @@ body::after{content:none}
     })();
     </script>
     <div id="app" class="container"><p style="text-align:center;padding:48px 16px;font-size:1.2rem">⏳ Memuat ujian... (v3)</p></div>
+    <noscript><div style="max-width:520px;margin:40px auto;padding:20px;text-align:center;font-family:system-ui,sans-serif;border:2px solid #F59E0B;border-radius:16px">⚠️ JavaScript harus diaktifkan agar aplikasi ujian dapat berjalan.</div></noscript>
+    <script>
+    (function(){
+        var modern = !!(window.Promise && window.fetch && Object.assign && Array.prototype.includes && 'noModule' in HTMLScriptElement.prototype);
+        if (!modern) {
+            var a = document.getElementById('app');
+            if (a) a.innerHTML = '<div style="max-width:520px;margin:40px auto;padding:20px;text-align:center;font-family:system-ui,sans-serif;border:2px solid #EF4444;border-radius:16px">⚠️ Browser di perangkat ini terlalu lama. Perbarui browser, atau buka dengan Chrome, Edge, Firefox, atau Safari versi terbaru.</div>';
+        }
+    })();
+    </script>
     <div id="toast"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer onerror="window.XLSX=undefined"></script>
@@ -2965,7 +3005,7 @@ body::after{content:none}
         function cheatOverlay(msg, final) {
             const old = document.getElementById('cheat-overlay'); if (old) old.remove();
             const d = document.createElement('div'); d.id = 'cheat-overlay';
-            d.style.cssText = 'position:fixed;inset:0;background:rgba(185,28,28,.96);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:cheatBlink .6s infinite alternate';
+            d.style.cssText = 'position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(185,28,28,.96);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:cheatBlink .6s infinite alternate';
             d.innerHTML = `<style>@keyframes cheatBlink{from{background:rgba(185,28,28,.96)}to{background:rgba(69,10,10,.98)}}</style><div style="background:#fff;border-radius:24px;padding:28px;max-width:460px;text-align:center"><div style="font-size:4rem">🚨</div><h2 style="color:#b91c1c;margin:8px 0">PERINGATAN KECURANGAN!</h2><p style="font-size:1.1rem;font-weight:700">${esc(msg)}</p><p style="color:#555">Dilarang keluar atau berpindah tab saat ulangan.</p><button onclick="alarmStop();document.getElementById('cheat-overlay').remove();cheatBack()" style="background:#b91c1c;color:#fff">${final ? 'Tutup' : 'Saya mengerti, lanjut ulangan'}</button></div>`;
             document.body.appendChild(d); alarmStart();
         }
